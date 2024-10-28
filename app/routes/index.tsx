@@ -5,6 +5,6 @@ export default createRoute(async (c) => {
     <div className='c-container'>
       <a href="/login">ログイン</a>
     </div>,
-    { title: 'hoge' }
+    { title: 'top' }
   )
 })
