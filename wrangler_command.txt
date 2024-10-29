@@ -1,6 +1,0 @@
-# commandのメモ書き
-npx wrangler d1 create kakeibo
-npx wrangler d1 execute kakeibo  --local --file=./schema_local.sql
-npx wrangler d1 execute kakeibo  --remote --file=./schema_remote.sql
-
-
