@@ -9,6 +9,7 @@ declare module 'hono' {
     Bindings: {
       PROJECT_URL: string;
       API_KEY: string;
+      DB: D1Database;
     }
   }
 }

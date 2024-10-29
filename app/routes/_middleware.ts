@@ -1,18 +1,24 @@
-import { createRoute } from 'honox/factory'
-import { createMiddleware } from 'hono/factory'
-import { checkauth } from '../checkauth'
+import { createRoute } from 'honox/factory';
+import { createMiddleware } from 'hono/factory';
+import { checkauth } from '../checkauth';
+import { bearerAuth } from 'hono/bearer-auth';
 
-export const supabaseMiddleware = createMiddleware(async (c, next) => {
+const authMiddleware = createMiddleware(async (c, next) => {
+    const isAuthenticated = await checkauth(c);
     if (c.req.path.startsWith('/auth')) {
-        const f = await checkauth(c)
-        if (f) {
-            await next()
-            return
+        if (isAuthenticated) {
+            await next();
         } else {
-            return c.redirect('/', 303)
+            return c.redirect('/', 303);
         }
+    } else if (c.req.path.startsWith('/api')) {
+        // 仮 token
+        const token = 'honoiscool';
+        const auth = bearerAuth({ token });
+        return auth(c, next);
+    } else {
+        await next();
     }
-    await next()
-})
+});
 
-export default createRoute(supabaseMiddleware)
+export default createRoute(authMiddleware);

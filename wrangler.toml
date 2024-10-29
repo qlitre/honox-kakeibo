@@ -14,10 +14,10 @@ pages_build_output_dir = "./dist"
 # binding = "MY_BUCKET"
 # bucket_name = "my-bucket"
 
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "my-database"
-# database_id = ""
+[[d1_databases]]
+binding = "DB"
+database_name = "kakeibo"
+database_id = "144f2647-0756-46a8-8000-9d82100ecb9f"
 
 # [ai]
 # binding = "AI"

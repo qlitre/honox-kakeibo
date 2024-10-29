@@ -1,0 +1,17 @@
+import { createRoute } from 'honox/factory'
+import { findAssets } from '../../db'
+import { ListResponse, AssetWithCategory } from '../../@types/dbTypes'
+
+export default createRoute(async (c) => {
+    const db = c.env.DB
+    const _limit = c.req.query('limit') || '10'
+    const _offset = c.req.query('offset') || '0'
+    const limit = parseInt(_limit)
+    const offset = parseInt(_offset)
+    // findAssetsを呼び出してリストデータを取得
+    const response: ListResponse<AssetWithCategory> = await findAssets(db, limit, offset);
+    // JSONレスポンスとして返す
+    return c.json(response);
+})
+
+
