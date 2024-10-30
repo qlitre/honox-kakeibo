@@ -9,9 +9,11 @@ const fetchAssets = async (limit = 10, offset = 0): Promise<ListResponse<AssetWi
     const response = await fetch(`http://localhost:5173/api/assets?limit=${limit}&offset=${offset}`, {
         method: 'GET',
         headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         }
     });
+
     if (!response.ok) {
         throw new Error("Failed to fetch assets");
     }

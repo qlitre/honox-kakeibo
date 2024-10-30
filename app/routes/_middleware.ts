@@ -3,6 +3,7 @@ import { createMiddleware } from 'hono/factory';
 import { checkauth } from '../checkauth';
 import { bearerAuth } from 'hono/bearer-auth';
 
+
 const authMiddleware = createMiddleware(async (c, next) => {
     const isAuthenticated = await checkauth(c);
     if (c.req.path.startsWith('/auth')) {
@@ -15,7 +16,7 @@ const authMiddleware = createMiddleware(async (c, next) => {
         // 仮 token
         const token = 'honoiscool';
         const auth = bearerAuth({ token });
-        return auth(c, next);
+        return auth(c, next)
     } else {
         await next();
     }

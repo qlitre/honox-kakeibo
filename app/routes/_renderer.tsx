@@ -1,5 +1,4 @@
 import { reactRenderer } from '@hono/react-renderer'
-import { Header } from '../islands/Header'
 
 export default reactRenderer(({ children, title }) => {
   return (
@@ -19,7 +18,7 @@ export default reactRenderer(({ children, title }) => {
         )}
         {title ? <title>{title}</title> : ''}
       </head>
-      <body>        
+      <body>
         {children}
       </body>
     </html>
