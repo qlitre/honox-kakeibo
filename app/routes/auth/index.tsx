@@ -2,28 +2,12 @@ import { createRoute } from 'honox/factory'
 import { Header } from '../../islands/Header'
 import { PieChartTest } from '../../islands/PieChartTest'
 import { ListResponse, AssetWithCategory } from '../../@types/dbTypes'
-
-const fetchAssets = async (limit = 10, offset = 0): Promise<ListResponse<AssetWithCategory>> => {
-    // 仮token
-    const token = 'honoiscool';
-    const response = await fetch(`http://localhost:5173/api/asset?limit=${limit}&offset=${offset}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error("Failed to fetch assets");
-    }
-    // JSONパース後に型をアサート
-    const data: ListResponse<AssetWithCategory> = await response.json();
-    return data;
-};
+import { KakeiboClient } from '../../libs/kakeiboClient'
 
 export default createRoute(async (c) => {
-    const assets = await fetchAssets()
+    const client = new KakeiboClient('honoiscool')
+    const assets = await client.getListResponse<ListResponse<AssetWithCategory>>({ endpoint: 'asset' })
+
     return c.render(
         <>
             <Header></Header>

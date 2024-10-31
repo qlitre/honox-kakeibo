@@ -3,6 +3,7 @@ import { Header } from '../../../islands/Header'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import type { AssetCategory, ListResponse } from '../../../@types/dbTypes';
+import { KakeiboClient } from '../../../libs/kakeiboClient';
 
 const schema = z.object({
     date: z.string().length(10),
@@ -11,27 +12,9 @@ const schema = z.object({
     description: z.string()
 });
 
-const fetchAssetCategories = async (limit = 4, offset = 0): Promise<ListResponse<AssetCategory>> => {
-    // 仮token
-    const token = 'honoiscool';
-    const response = await fetch(`http://localhost:5173/api/asset_category?limit=${limit}&offset=${offset}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error("Failed to fetch assets");
-    }
-    // JSONパース後に型をアサート
-    const data: ListResponse<AssetCategory> = await response.json();
-    return data;
-};
-
 export default createRoute(async (c) => {
-    const categories = await fetchAssetCategories()
+    const client = new KakeiboClient('honoiscool')
+    const categories = await client.getListResponse<ListResponse<AssetCategory>>({ endpoint: 'asset_category', queries: { limit: 100 } })
     return c.render(
         <div>
             <Header></Header>
