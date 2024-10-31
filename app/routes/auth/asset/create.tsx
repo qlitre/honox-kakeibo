@@ -1,7 +1,8 @@
 import { createRoute } from 'honox/factory'
-import { Header } from '../../islands/Header'
+import { Header } from '../../../islands/Header'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
+import type { AssetCategory, ListResponse } from '../../../@types/dbTypes';
 
 const schema = z.object({
     date: z.string().length(10),
@@ -10,13 +11,33 @@ const schema = z.object({
     description: z.string()
 });
 
+const fetchAssetCategories = async (limit = 4, offset = 0): Promise<ListResponse<AssetCategory>> => {
+    // 仮token
+    const token = 'honoiscool';
+    const response = await fetch(`http://localhost:5173/api/asset_category?limit=${limit}&offset=${offset}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch assets");
+    }
+    // JSONパース後に型をアサート
+    const data: ListResponse<AssetCategory> = await response.json();
+    return data;
+};
+
 export default createRoute(async (c) => {
+    const categories = await fetchAssetCategories()
     return c.render(
         <div>
             <Header></Header>
             <main className='c-container'>
                 <h1 className="text-xl font-bold mb-4">資産追加</h1>
-                <form action="/auth/asset_create" method="post" className="space-y-4">
+                <form action="/auth/asset/create" method="post" className="space-y-4">
                     <div>
                         <label htmlFor="date" className="block text-sm font-medium text-gray-700">
                             日付
@@ -53,13 +74,11 @@ export default createRoute(async (c) => {
                             required
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         >
-                            <option value="1">現金</option>
-                            <option value="2">日本株式</option>
-                            <option value="3">株式投信</option>
-                            <option value="4">ビットコイン</option>
+                            {categories.contents.map((category) => (
+                                <option value={category.id}>{category.name}</option>
+                            ))}
                         </select>
                     </div>
-
                     <div>
                         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
                             説明
@@ -71,7 +90,6 @@ export default createRoute(async (c) => {
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         ></textarea>
                     </div>
-
                     <div>
                         <button
                             type="submit"
@@ -91,7 +109,7 @@ export default createRoute(async (c) => {
 export const POST = createRoute(
     zValidator('form', schema, (result, c) => {
         if (!result.success) {
-            return c.redirect('/auth/asset_create', 303)
+            return c.redirect('/auth/asset/create', 303)
         }
     }), async (c) => {
         const token = 'honoiscool'
@@ -109,7 +127,7 @@ export const POST = createRoute(
             asset_category_id: parsedCategoryId,
             description: description
         })
-        const response = await fetch(`http://localhost:5173/api/assets`, {
+        const response = await fetch(`http://localhost:5173/api/asset`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

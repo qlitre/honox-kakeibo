@@ -4,7 +4,7 @@ import { useState } from "react";
 export const Header = () => {
     const navItems = [
         { href: '/auth', name: '資産リスト' },
-        { href: '/auth/asset_create', name: '資産登録' },
+        { href: '/auth/asset/create', name: '資産登録' },
         { href: '/auth/dashboard', name: '資産ダッシュボード' },
         { href: '/auth/logout', name: 'ログアウト' },
     ]

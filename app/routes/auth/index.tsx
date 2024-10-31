@@ -6,7 +6,7 @@ import { ListResponse, AssetWithCategory } from '../../@types/dbTypes'
 const fetchAssets = async (limit = 10, offset = 0): Promise<ListResponse<AssetWithCategory>> => {
     // 仮token
     const token = 'honoiscool';
-    const response = await fetch(`http://localhost:5173/api/assets?limit=${limit}&offset=${offset}`, {
+    const response = await fetch(`http://localhost:5173/api/asset?limit=${limit}&offset=${offset}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

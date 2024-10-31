@@ -1,4 +1,4 @@
-import type { AssetWithCategory, ListResponse } from "./@types/dbTypes";
+import type { AssetWithCategory, AssetCategory, ListResponse } from "./@types/dbTypes";
 
 
 export const findAssets = async (
@@ -11,8 +11,7 @@ export const findAssets = async (
         FROM asset
         JOIN asset_category ON asset.asset_category_id = asset_category.id        
         ORDER BY asset.date DESC
-        LIMIT ? OFFSET ?
-        
+        LIMIT ? OFFSET ?        
     `;
     const countQuery = `SELECT COUNT(*) as totalCount FROM asset`;
 
@@ -60,4 +59,27 @@ export const addAsset = async (
         `;
     const asset = await db.prepare(selectQuery).bind(date, amount, asset_category_id).first<AssetWithCategory>();
     return asset ?? null
+}
+
+export const findAssetCategories = async (
+    db: D1Database,
+    limit: number = 10,
+    offset: number = 0): Promise<ListResponse<AssetCategory>> => {
+    const query = `
+        SELECT *
+        FROM asset_category
+        LIMIT ? OFFSET ?                
+    `
+    const countQuery = `SELECT COUNT(*) as totalCount FROM asset_category`;
+    const { results } = await db.prepare(query).bind(limit, offset).all<AssetCategory>();
+    const totalCountResult = await db.prepare(countQuery).first<{ totalCount: number }>();
+
+    const asset_categories = results ?? [];
+    const totalCount = totalCountResult?.totalCount ?? 0;
+    return {
+        contents: asset_categories,
+        totalCount: totalCount,
+        limit: limit,
+        offset: offset,
+    };
 }
