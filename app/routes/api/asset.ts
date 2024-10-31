@@ -8,9 +8,7 @@ export default createRoute(async (c) => {
     const _offset = c.req.query('offset') || '0'
     const limit = parseInt(_limit)
     const offset = parseInt(_offset)
-    // findAssetsを呼び出してリストデータを取得
     const response: ListResponse<AssetWithCategory> = await findAssets(db, limit, offset);
-    // JSONレスポンスとして返す
     return c.json(response);
 })
 

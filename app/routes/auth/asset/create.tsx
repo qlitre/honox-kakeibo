@@ -2,7 +2,7 @@ import { createRoute } from 'honox/factory'
 import { Header } from '../../../islands/Header'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import type { AssetCategory, ListResponse } from '../../../@types/dbTypes';
+import type { Asset, AssetCategory, ListResponse } from '../../../@types/dbTypes';
 import { KakeiboClient } from '../../../libs/kakeiboClient';
 
 const schema = z.object({
@@ -96,31 +96,21 @@ export const POST = createRoute(
         }
     }), async (c) => {
         const token = 'honoiscool'
+        const client = new KakeiboClient(token)
         const { date, amount, asset_category_id, description } = c.req.valid('form')
-        // `/api/assets`にPOSTリクエストを送信
         const parsedAmount = Number(amount);
         const parsedCategoryId = Number(asset_category_id);
-
         if (isNaN(parsedAmount) || isNaN(parsedCategoryId)) {
             return c.json({ error: 'Invalid number format' }, 400);
         }
-        const body = JSON.stringify({
+        const body = {
             date: date,
             amount: parsedAmount,
             asset_category_id: parsedCategoryId,
             description: description
-        })
-        const response = await fetch(`http://localhost:5173/api/asset`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token, // 認証トークンを追加
-            },
-            body: body
-        })
-        if (!response.ok) {
-            throw new Error('Failed to add asset');
         }
-        // 成功したらリダイレクトする
+        const response = await client.addData<Asset>({ endpoint: 'asset', data: body })
+            .catch((e) => { console.error(e) })
+        
         return c.redirect('/auth', 303);
     })

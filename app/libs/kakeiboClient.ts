@@ -1,4 +1,4 @@
-import { KakeiboQueries, GetListRequest } from "../@types/types";
+import { KakeiboQueries, GetListRequest, AddRequest } from "../@types/types";
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
     return value !== null && typeof value === 'object';
@@ -31,16 +31,15 @@ class KakeiboClient {
         this.baseUrl = `http://localhost:5173/api`;
     }
 
-    private async fetchKakeibo<T>(url: string): Promise<T> {
-        const options = {
-            method: 'GET',
+    private async fetchKakeibo<T>(url: string, options?: RequestInit): Promise<T> {
+        const defaultOptions = {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.token}`,
             },
         };
-
-        return fetch(url, options)
+        const finalOptions = { ...defaultOptions, ...options };
+        return fetch(url, finalOptions)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
@@ -70,6 +69,16 @@ class KakeiboClient {
         }
 
         return this.fetchKakeibo<T>(url);
+    }
+
+    public async addData<T>({ endpoint, data }: AddRequest): Promise<T> {
+        const url = `${this.baseUrl}/${endpoint}`;
+        const body = JSON.stringify(data);
+        const options: RequestInit = {
+            method: 'POST',
+            body: body,
+        };
+        return this.fetchKakeibo<T>(url, options);
     }
 }
 

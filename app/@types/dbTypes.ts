@@ -11,7 +11,6 @@ export type Asset = {
     description?: string;
 }
 
-// JOIN結果用の新しい型を定義
 export interface AssetWithCategory extends Asset {
     category_name: string;
 }
@@ -22,19 +21,3 @@ export interface ListResponse<T> {
     limit: number;
     offset: number;
 }
-
-/**
-CREATE TABLE IF NOT EXISTS asset_category (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS asset (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT NOT NULL,
-    amount INTEGER NOT NULL,
-    category_id INTEGER NOT NULL,
-    description TEXT,
-    FOREIGN KEY (category_id) REFERENCES asset_category(id) ON DELETE RESTRICT
-);
- */

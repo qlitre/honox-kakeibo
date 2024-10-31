@@ -10,3 +10,8 @@ export type GetListRequest = {
     endpoint: string;
     queries?: KakeiboQueries;
 }
+
+export type AddRequest = {
+    endpoint: string;
+    data: Record<string, any>;
+}

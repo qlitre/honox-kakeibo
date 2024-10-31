@@ -1,10 +1,10 @@
 import { createRoute } from 'honox/factory'
 import { findAssetCategories } from '../../db'
-import { ListResponse, AssetCategory, AssetWithCategory } from '../../@types/dbTypes'
+import { ListResponse, AssetCategory } from '../../@types/dbTypes'
 
 export default createRoute(async (c) => {
     const db = c.env.DB
-    const _limit = c.req.query('limit') || '100'
+    const _limit = c.req.query('limit') || '10'
     const _offset = c.req.query('offset') || '0'
     const limit = parseInt(_limit)
     const offset = parseInt(_offset)
