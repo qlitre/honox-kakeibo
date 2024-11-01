@@ -58,7 +58,7 @@ export default createRoute(async (c) => {
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         >
                             {categories.contents.map((category) => (
-                                <option value={category.id}>{category.name}</option>
+                                <option value={category.id} key={category.id}>{category.name}</option>
                             ))}
                         </select>
                     </div>
@@ -111,6 +111,6 @@ export const POST = createRoute(
         }
         const response = await client.addData<Asset>({ endpoint: 'asset', data: body })
             .catch((e) => { console.error(e) })
-        
+
         return c.redirect('/auth', 303);
     })
