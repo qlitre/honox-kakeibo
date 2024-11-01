@@ -5,9 +5,9 @@ import { ListResponse, AssetWithCategory } from '../../@types/dbTypes'
 import { KakeiboClient } from '../../libs/kakeiboClient'
 
 export default createRoute(async (c) => {
-    const client = new KakeiboClient('honoiscool')
+    const token = c.env.HONO_IS_COOL
+    const client = new KakeiboClient(token)
     const assets = await client.getListResponse<ListResponse<AssetWithCategory>>({ endpoint: 'asset' })
-
     return c.render(
         <>
             <Header></Header>

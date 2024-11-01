@@ -15,3 +15,8 @@ export type AddRequest = {
     endpoint: string;
     data: Record<string, any>;
 }
+
+export type GetDetailRequest = {
+    endpoint: string;
+    contentId: string;
+}

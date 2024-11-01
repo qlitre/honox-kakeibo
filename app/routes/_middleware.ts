@@ -13,8 +13,7 @@ const authMiddleware = createMiddleware(async (c, next) => {
             return c.redirect('/', 303);
         }
     } else if (c.req.path.startsWith('/api')) {
-        // 仮 token
-        const token = 'honoiscool';
+        const token = c.env.HONO_IS_COOL;
         const auth = bearerAuth({ token });
         return auth(c, next)
     } else {

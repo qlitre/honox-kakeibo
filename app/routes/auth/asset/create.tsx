@@ -4,6 +4,7 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import type { Asset, AssetCategory, ListResponse } from '../../../@types/dbTypes';
 import { KakeiboClient } from '../../../libs/kakeiboClient';
+import { AssetCreateForm } from '../../../components/AssetCreateForm';
 
 const schema = z.object({
     date: z.string().length(10),
@@ -12,77 +13,15 @@ const schema = z.object({
     description: z.string()
 });
 
+
 export default createRoute(async (c) => {
-    const client = new KakeiboClient('honoiscool')
+    const token = c.env.HONO_IS_COOL
+    const client = new KakeiboClient(token)
     const categories = await client.getListResponse<ListResponse<AssetCategory>>({ endpoint: 'asset_category', queries: { limit: 100 } })
     return c.render(
         <div>
             <Header></Header>
-            <main className='c-container'>
-                <h1 className="text-xl font-bold mb-4">資産追加</h1>
-                <form action="/auth/asset/create" method="post" className="space-y-4">
-                    <div>
-                        <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-                            日付
-                        </label>
-                        <input
-                            type="date"
-                            id="date"
-                            name="date"
-                            required
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
-                            金額
-                        </label>
-                        <input
-                            type="number"
-                            id="amount"
-                            name="amount"
-                            required
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="asset_category_id" className="block text-sm font-medium text-gray-700">
-                            カテゴリID
-                        </label>
-                        <select
-                            id="asset_category_id"
-                            name="asset_category_id"
-                            required
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        >
-                            {categories.contents.map((category) => (
-                                <option value={category.id} key={category.id}>{category.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                            説明
-                        </label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            rows={3}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        ></textarea>
-                    </div>
-                    <div>
-                        <button
-                            type="submit"
-                            className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            資産を追加
-                        </button>
-                    </div>
-                </form>
-            </main>
+            <AssetCreateForm title='資産追加' actionUrl='/auth/asset/create' method='post' categories={categories}></AssetCreateForm>
         </div>,
         { title: '資産追加' }
     )
@@ -90,12 +29,22 @@ export default createRoute(async (c) => {
 
 
 export const POST = createRoute(
-    zValidator('form', schema, (result, c) => {
+    zValidator('form', schema, async (result, c) => {
         if (!result.success) {
-            return c.redirect('/auth/asset/create', 303)
+            const token = c.env.HONO_IS_COOL
+            const client = new KakeiboClient(token)
+            const categories = await client.getListResponse<ListResponse<AssetCategory>>({ endpoint: 'asset_category', queries: { limit: 100 } })
+            const { date, amount, asset_category_id, description } = result.data
+            return c.render(
+                <AssetCreateForm data={{ date, amount, asset_category_id, description, error: result.error.flatten().fieldErrors }}
+                    title='資産追加'
+                    actionUrl='/auth/asset/create'
+                    method='post'
+                    categories={categories} />)
         }
-    }), async (c) => {
-        const token = 'honoiscool'
+    }),
+    async (c) => {
+        const token = c.env.HONO_IS_COOL
         const client = new KakeiboClient(token)
         const { date, amount, asset_category_id, description } = c.req.valid('form')
         const parsedAmount = Number(amount);

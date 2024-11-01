@@ -1,4 +1,4 @@
-import { KakeiboQueries, GetListRequest, AddRequest } from "../@types/types";
+import { KakeiboQueries, GetListRequest, GetDetailRequest, AddRequest } from "../@types/types";
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
     return value !== null && typeof value === 'object';
@@ -61,13 +61,8 @@ class KakeiboClient {
         return this.fetchKakeibo<T>(url);
     }
 
-    public async getDetail<T>(endpoint: string, contentId: string, queries?: KakeiboQueries): Promise<T> {
+    public async getDetail<T>({ endpoint, contentId }: GetDetailRequest): Promise<T> {
         let url = `${this.baseUrl}/${endpoint}/${contentId}`;
-        if (queries) {
-            const queryString = parseQuery(queries);
-            url += '?' + queryString;
-        }
-
         return this.fetchKakeibo<T>(url);
     }
 
