@@ -1,4 +1,10 @@
-import { KakeiboQueries, GetListRequest, GetDetailRequest, AddRequest } from "../@types/types";
+import {
+    KakeiboQueries,
+    GetListRequest,
+    GetDetailRequest,
+    AddRequest,
+    UpdateRequest
+} from "../@types/types";
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
     return value !== null && typeof value === 'object';
@@ -71,6 +77,15 @@ class KakeiboClient {
         const body = JSON.stringify(data);
         const options: RequestInit = {
             method: 'POST',
+            body: body,
+        };
+        return this.fetchKakeibo<T>(url, options);
+    }
+    public async updateData<T>({ endpoint, contentId, data }: UpdateRequest): Promise<T> {
+        const url = `${this.baseUrl}/${endpoint}/${contentId}`;
+        const body = JSON.stringify(data);
+        const options: RequestInit = {
+            method: 'PUT',
             body: body,
         };
         return this.fetchKakeibo<T>(url, options);

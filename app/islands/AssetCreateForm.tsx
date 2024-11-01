@@ -1,5 +1,6 @@
 import type { AssetCategory, ListResponse, Asset } from "../@types/dbTypes"
-import type { FC } from 'react'
+import type { FC, ChangeEvent } from 'react'
+import { useState } from "react"
 
 type Data = Omit<Asset, 'id' | 'amount' | 'asset_category_id'> & {
     amount: string;
@@ -11,16 +12,30 @@ type Props = {
     data?: Data;
     title: string;
     actionUrl: string;
-    method: 'post' | 'put'
     categories: ListResponse<AssetCategory>;
 }
 
-export const AssetCreateForm: FC<Props> = ({ data, title, actionUrl, method, categories }) => {
+export const AssetCreateForm: FC<Props> = ({ data, title, actionUrl, categories }) => {
+    const [formData, setFormData] = useState<Data>({
+        date: data?.date || '',
+        amount: data?.amount || '',
+        asset_category_id: data?.asset_category_id || '',
+        error: data?.error,
+    });
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
     return (
         <>
             <main className='c-container'>
                 <h1 className="text-xl font-bold mb-4">{title}</h1>
-                <form action={actionUrl} method={method} className="space-y-4">
+                <form action={actionUrl} method='post' className="space-y-4">
                     <div>
                         <label htmlFor="date" className="block text-sm font-medium text-gray-700">
                             日付
@@ -31,9 +46,10 @@ export const AssetCreateForm: FC<Props> = ({ data, title, actionUrl, method, cat
                             name="date"
                             required
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            value={data?.date}
+                            value={formData.date}
+                            onChange={handleChange}
                         />
-                        {data?.error?.date && <p className="text-red-500 text-sm mt-1">{data.error.date}</p>}
+                        {formData.error?.date && <p className="text-red-500 text-sm mt-1">{formData.error.date}</p>}
                     </div>
 
                     <div>
@@ -46,9 +62,10 @@ export const AssetCreateForm: FC<Props> = ({ data, title, actionUrl, method, cat
                             name="amount"
                             required
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            value={data?.amount}
+                            value={formData.amount}
+                            onChange={handleChange}
                         />
-                        {data?.error?.amount && <p className="text-red-500 text-sm mt-1">{data.error.amount}</p>}
+                        {formData.error?.amount && <p className="text-red-500 text-sm mt-1">{formData.error.amount}</p>}
                     </div>
 
                     <div>
@@ -60,14 +77,16 @@ export const AssetCreateForm: FC<Props> = ({ data, title, actionUrl, method, cat
                             name="asset_category_id"
                             required
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            value={data?.asset_category_id}
+                            value={formData.asset_category_id}
+                            onChange={handleChange}
                         >
                             {categories.contents.map((category) => (
                                 <option value={category.id} key={category.id}>{category.name}</option>
                             ))}
                         </select>
-                        {data?.error?.asset_category_id && <p className="text-red-500 text-sm mt-1">{data.error.asset_category_id}</p>}
+                        {formData.error?.asset_category_id && <p className="text-red-500 text-sm mt-1">{formData.error.asset_category_id}</p>}
                     </div>
+
                     <div>
                         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
                             説明
@@ -77,9 +96,11 @@ export const AssetCreateForm: FC<Props> = ({ data, title, actionUrl, method, cat
                             name="description"
                             rows={3}
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            onChange={handleChange}
                         ></textarea>
-                        {data?.error?.description && <p className="text-red-500 text-sm mt-1">{data.error.description}</p>}
+                        {formData.error?.description && <p className="text-red-500 text-sm mt-1">{formData.error.description}</p>}
                     </div>
+
                     <div>
                         <button
                             type="submit"

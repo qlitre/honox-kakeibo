@@ -26,7 +26,7 @@ export const Header = () => {
                 {/* md以上の画面幅で表示されるナビゲーションメニュー */}
                 <nav className="ml-auto hidden md:flex items-center">
                     {navItems.map((item, i) => (
-                        <a href={item.href} className="mr-4">{item.name}</a>
+                        <a href={item.href} className="mr-4" key={i}>{item.name}</a>
                     ))}
                 </nav>
 

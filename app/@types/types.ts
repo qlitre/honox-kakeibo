@@ -20,3 +20,9 @@ export type GetDetailRequest = {
     endpoint: string;
     contentId: string;
 }
+
+export type UpdateRequest = {
+    endpoint: string;
+    contentId: string
+    data: Record<string, any>;
+}

@@ -40,6 +40,9 @@ export default createRoute(async (c) => {
                                                 <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                                                     説明
                                                 </th>
+                                                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-200 bg-white">
@@ -56,6 +59,9 @@ export default createRoute(async (c) => {
                                                     </td>
                                                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                                         {asset.description || '-'}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                        <a href={`/auth/asset/${asset.id}/update`}>編集</a>
                                                     </td>
                                                 </tr>
                                             ))}
