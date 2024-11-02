@@ -60,6 +60,7 @@ export default createRoute(async (c) => {
                                                 </td>
                                                 <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                                     <a href={`/auth/asset/${asset.id}/update`}>編集</a>
+                                                    <a className='ml-4' href={`/auth/asset/${asset.id}/delete`}>削除</a>
                                                 </td>
                                             </tr>
                                         ))}

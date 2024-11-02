@@ -53,3 +53,23 @@ export const PUT = createRoute(async (c) => {
     }
 })
 
+export const DELETE = createRoute(async (c) => {
+    const db = c.env.DB
+    const id = c.req.param('id')
+    try {
+        const deleteQuery = `
+        DELETE FROM asset
+        WHERE ID = ?;
+    `;
+        const deleteResult = await db.prepare(deleteQuery)
+            .bind(id ?? null)
+            .run();
+        if (!deleteResult.success) {
+            throw new Error("Failed to delete asset");
+        }
+        return c.json({ message: 'Asset deleted successfully' }, 200)
+    } catch (error) {
+        console.error('Error delete asset', error)
+        return c.json({ error: 'Failed to delete asset' }, 500)
+    }
+})

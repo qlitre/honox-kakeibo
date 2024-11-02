@@ -3,7 +3,8 @@ import {
     GetListRequest,
     GetDetailRequest,
     AddRequest,
-    UpdateRequest
+    UpdateRequest,
+    DeleteRequest
 } from "../@types/types";
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
@@ -87,6 +88,14 @@ class KakeiboClient {
         const options: RequestInit = {
             method: 'PUT',
             body: body,
+        };
+        return this.fetchKakeibo<T>(url, options);
+    }
+
+    public async deleteData<T>({ endpoint, contentId }: DeleteRequest): Promise<T> {
+        const url = `${this.baseUrl}/${endpoint}/${contentId}`;
+        const options: RequestInit = {
+            method: 'DELETE',
         };
         return this.fetchKakeibo<T>(url, options);
     }

@@ -23,6 +23,11 @@ export type GetDetailRequest = {
 
 export type UpdateRequest = {
     endpoint: string;
-    contentId: string
+    contentId: string;
     data: Record<string, any>;
+}
+
+export type DeleteRequest = {
+    endpoint: string;
+    contentId: string;
 }
