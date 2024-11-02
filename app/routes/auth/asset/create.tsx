@@ -19,10 +19,9 @@ export default createRoute(async (c) => {
     const client = new KakeiboClient(token)
     const categories = await client.getListResponse<ListResponse<AssetCategory>>({ endpoint: 'asset_category', queries: { limit: 100 } })
     return c.render(
-        <div>
-            <Header></Header>
+        <>
             <AssetCreateForm title='資産追加' actionUrl='/auth/asset/create' categories={categories}></AssetCreateForm>
-        </div>,
+        </>,
         { title: '資産追加' }
     )
 })

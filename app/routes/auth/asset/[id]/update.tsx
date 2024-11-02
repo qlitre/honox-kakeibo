@@ -20,14 +20,13 @@ export default createRoute(async (c) => {
     const categories = await client.getListResponse<ListResponse<AssetCategory>>({ endpoint: 'asset_category', queries: { limit: 100 } })
     const assetDetail = await client.getDetail<AssetWithCategory>({ endpoint: 'asset', contentId: id })
     return c.render(
-        <div>
-            <Header></Header>
+        <>
             <AssetCreateForm data={{
                 date: assetDetail.date, amount: String(assetDetail.amount),
                 asset_category_id: String(assetDetail.asset_category_id),
                 description: assetDetail.description
             }} title='資産編集' actionUrl={`/auth/asset/${id}/update`} categories={categories}></AssetCreateForm>
-        </div>,
+        </>,
         { title: '資産編集' }
     )
 })
