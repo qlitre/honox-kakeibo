@@ -1,6 +1,7 @@
 import { createRoute } from 'honox/factory';
 import type { AssetWithCategory, ListResponse } from '../../../../../../@types/dbTypes';
 import { KakeiboClient } from '../../../../../../libs/kakeiboClient';
+import { AssetPieChart } from '../../../../../../islands/AssetPieChart';
 
 // 前月の年を返す
 const getPrevMonthYear = (year: number, month: number) => {
@@ -187,7 +188,8 @@ export default createRoute(async (c) => {
                 <div className="flex-1 bg-white shadow-md rounded-lg p-4">
                     <h2 className="text-lg font-semibold mb-2">アセットアロケーション</h2>
                     <div className="h-64 bg-gray-100 flex items-center justify-center">
-                        <span className="text-gray-500">グラフがここに表示されます</span>
+                        <AssetPieChart assets={asset.contents}></AssetPieChart>
+                        <></>
                     </div>
                 </div>
             </div>
