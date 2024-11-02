@@ -1,7 +1,8 @@
 import { createRoute } from 'honox/factory';
-import type { AssetWithCategory, ListResponse } from '../../../../../../@types/dbTypes';
+import type { AssetWithCategory, ListResponse, AssetCategory } from '../../../../../../@types/dbTypes';
 import { KakeiboClient } from '../../../../../../libs/kakeiboClient';
 import { AssetPieChart } from '../../../../../../islands/AssetPieChart';
+import { AssetBarChart } from '../../../../../../islands/AssetBarChart';
 
 // 前月の年を返す
 const getPrevMonthYear = (year: number, month: number) => {
@@ -106,7 +107,22 @@ export default createRoute(async (c) => {
     const totalDiff = totalAmount - prevTotalAmount
     const totalDiffRatio = totalDiff / prevTotalAmount
 
-    // テーブルデータの描画
+    // BarChart用のデータ
+    const preReq = await client.getListResponse<ListResponse<AssetWithCategory>>({ endpoint: 'asset' })
+    const totalCount = preReq.totalCount
+    const allAssets = await client.getListResponse<ListResponse<AssetWithCategory>>({
+        endpoint: 'asset', queries: {
+            limit: totalCount
+        }
+    })
+    const categories = await client.getListResponse<ListResponse<AssetCategory>>({
+        endpoint: 'asset_category', queries: {
+            limit: 100
+        }
+    })
+
+
+
     return c.render(
         <div>
             <h1 className="text-2xl font-bold mb-6 text-gray-800">資産ダッシュボード</h1>
@@ -187,18 +203,15 @@ export default createRoute(async (c) => {
 
                 <div className="flex-1 bg-white shadow-md rounded-lg p-4">
                     <h2 className="text-lg font-semibold mb-2">アセットアロケーション</h2>
-                    <div className="h-64 bg-gray-100 flex items-center justify-center">
+                    <div className="flex items-center justify-center">
                         <AssetPieChart assets={asset.contents}></AssetPieChart>
-                        <></>
                     </div>
                 </div>
             </div>
-
-            <div className="bg-white shadow-md rounded-lg p-4">
+            {/* 棒グラフコンポーネントを横一杯に広げる */}
+            <div className="bg-white shadow-md rounded-lg p-4 w-full"> {/* 高さを h-64 に設定 */}
                 <h2 className="text-lg font-semibold mb-2">資産の推移グラフ</h2>
-                <div className="h-64 bg-gray-100 flex items-center justify-center">
-                    <span className="text-gray-500">グラフがここに表示されます</span>
-                </div>
+                <AssetBarChart assets={allAssets.contents} categories={categories.contents} />
             </div>
         </div>,
         { title: '資産ダッシュボード' }
