@@ -38,15 +38,22 @@ export default createRoute(async (c) => {
             }
         }
     }
+    let countQuery = `
+        SELECT COUNT(asset.id) as totalCount
+        FROM asset
+        JOIN asset_category ON asset.asset_category_id = asset_category.id
+    `;
     if (opes) {
         const addChar = opes.join(' AND ')
         query += ` WHERE ${addChar}`
+        countQuery += ` WHERE ${addChar}`
     }
     const bindParams: any[] = []
     query += ` ORDER BY asset.date DESC LIMIT ? OFFSET ?`;
     bindParams.push(limit, offset)
     const { results } = await db.prepare(query).bind(...bindParams).all<AssetWithCategory>();
-    const countQuery = `SELECT COUNT(*) as totalCount FROM asset`;
+
+
     const totalCountResult = await db.prepare(countQuery).first<{ totalCount: number }>();
     // Set up ListResponse
     const assets = results ?? [];

@@ -25,12 +25,11 @@ export default createRoute(async (c) => {
     // APIからデータを取得
     const asset = await client.getListResponse<ListResponse<AssetWithCategory>>({
         endpoint: 'asset',
-        queries: { filters: `date[greater_equal]${ge}[and]date[less_equal]${le}` }
+        queries: { limit: 100, filters: `date[greater_equal]${ge}[and]date[less_equal]${le}` }
     });
 
     // 合計金額の計算
     const totalAmount = asset.contents.reduce((sum, item) => sum + item.amount, 0);
-
     return c.render(
         <div>
             <h1 className="text-2xl font-bold mb-6 text-gray-800">資産ダッシュボード</h1>
