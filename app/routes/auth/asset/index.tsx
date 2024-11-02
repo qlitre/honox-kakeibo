@@ -1,8 +1,7 @@
 import { createRoute } from 'honox/factory'
-import { Header } from '../../islands/Header'
-import { PieChartTest } from '../../islands/PieChartTest'
-import { ListResponse, AssetWithCategory } from '../../@types/dbTypes'
-import { KakeiboClient } from '../../libs/kakeiboClient'
+import { ListResponse, AssetWithCategory } from '../../../@types/dbTypes'
+import { KakeiboClient } from '../../../libs/kakeiboClient'
+import { LayoutContainer } from '../../../components/LayoutContainer'
 
 export default createRoute(async (c) => {
     const token = c.env.HONO_IS_COOL
@@ -71,6 +70,7 @@ export default createRoute(async (c) => {
                     </div>
                 </div>
             </div>
+
         </>,
         { title: '資産管理' }
     )

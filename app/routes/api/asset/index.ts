@@ -6,20 +6,48 @@ export default createRoute(async (c) => {
     const db = c.env.DB
     const _limit = c.req.query('limit') || '10'
     const _offset = c.req.query('offset') || '0'
+    const filters = c.req.query('filters')
     const limit = parseInt(_limit)
     const offset = parseInt(_offset)
-    const query = `
+    let query = `
         SELECT asset.id, asset.date, asset.amount, asset.description, asset_category.name AS category_name
         FROM asset
         JOIN asset_category ON asset.asset_category_id = asset_category.id        
-        ORDER BY asset.date DESC
-        LIMIT ? OFFSET ?        
     `;
-    const countQuery = `SELECT COUNT(*) as totalCount FROM asset`;
-    // Prepare and execute the queries
-    const { results } = await db.prepare(query).bind(limit, offset).all<AssetWithCategory>();
-    const totalCountResult = await db.prepare(countQuery).first<{ totalCount: number }>();
 
+    const opes: string[] = []
+    const conditions: Record<string, string> = {
+        '[greater_than]': '>',
+        '[less_than]': '<',
+        '[greater_equal]': '>=',
+        '[less_equal]': '<='
+    }
+    if (filters) {
+        //date[greater_equal]2024-11-01[and]date[less_equal]2024-11-30
+        //みたいな文字から動的にSQL文をつくる
+        for (const chars of filters.split('[and]')) {
+            for (const k in conditions) {
+                if (chars.indexOf(k) > 0) {
+                    const arr = chars.split(k)
+                    const field = 'asset.' + arr[0]
+                    const ope = conditions[k]
+                    const value = arr[1]
+                    const str = `${field} ${ope} '${value}'`
+                    opes.push(str)
+                }
+            }
+        }
+    }
+    if (opes) {
+        const addChar = opes.join(' AND ')
+        query += ` WHERE ${addChar}`
+    }
+    const bindParams: any[] = []
+    query += ` ORDER BY asset.date DESC LIMIT ? OFFSET ?`;
+    bindParams.push(limit, offset)
+    const { results } = await db.prepare(query).bind(...bindParams).all<AssetWithCategory>();
+    const countQuery = `SELECT COUNT(*) as totalCount FROM asset`;
+    const totalCountResult = await db.prepare(countQuery).first<{ totalCount: number }>();
     // Set up ListResponse
     const assets = results ?? [];
     const totalCount = totalCountResult?.totalCount ?? 0;

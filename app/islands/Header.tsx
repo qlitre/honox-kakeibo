@@ -2,10 +2,16 @@ import { useState } from "react";
 
 
 export const Header = () => {
+    const date = new Date();
+    let year = date.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric' });
+    let month = date.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', month: 'numeric' });
+    // 2024年、11月のようになるので、最後の文字を取り除く
+    year = year.slice(0, year.length - 1)
+    month = month.slice(0, month.length - 1)
     const navItems = [
-        { href: '/auth', name: '資産リスト' },
+        { href: '/auth/asset', name: '資産リスト' },
         { href: '/auth/asset/create', name: '資産登録' },
-        { href: '/auth/dashboard', name: '資産ダッシュボード' },
+        { href: `/auth/asset/dashboard/${year}/${month}`, name: '資産ダッシュボード' },
         { href: '/auth/logout', name: 'ログアウト' },
     ]
 
