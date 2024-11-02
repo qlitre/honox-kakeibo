@@ -10,7 +10,7 @@ export default createRoute(async (c) => {
     const limit = parseInt(_limit)
     const offset = parseInt(_offset)
     let query = `
-        SELECT asset.id, asset.date, asset.amount, asset.description, asset_category.name AS category_name
+        SELECT asset.id, asset.date, asset.amount, asset.description, asset.asset_category_id, asset_category.name AS category_name
         FROM asset
         JOIN asset_category ON asset.asset_category_id = asset_category.id        
     `;
@@ -39,11 +39,11 @@ export default createRoute(async (c) => {
         }
     }
     let countQuery = `
-        SELECT COUNT(asset.id) as totalCount
+        SELECT COUNT(*) as totalCount
         FROM asset
         JOIN asset_category ON asset.asset_category_id = asset_category.id
     `;
-    if (opes) {
+    if (opes.length > 0) {
         const addChar = opes.join(' AND ')
         query += ` WHERE ${addChar}`
         countQuery += ` WHERE ${addChar}`
@@ -52,8 +52,6 @@ export default createRoute(async (c) => {
     query += ` ORDER BY asset.date DESC LIMIT ? OFFSET ?`;
     bindParams.push(limit, offset)
     const { results } = await db.prepare(query).bind(...bindParams).all<AssetWithCategory>();
-
-
     const totalCountResult = await db.prepare(countQuery).first<{ totalCount: number }>();
     // Set up ListResponse
     const assets = results ?? [];
