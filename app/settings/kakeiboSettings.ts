@@ -28,7 +28,7 @@ export const colorSchema = ['rgba(166.65098039215687,206.8078431372549,227.89019
 // 家計簿の年初の月を指定
 export const annualStartMonth = 1
 
-export const assetMenu =() => {
+export const assetMenu = () => {
     const date = new Date();
     let year = date.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric' });
     let month = date.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', month: 'numeric' });
@@ -37,7 +37,6 @@ export const assetMenu =() => {
     month = month.slice(0, month.length - 1)
     return [
         { name: '資産リスト', href: '/auth/asset' },
-        { name: '資産登録', href: '/auth/asset/create' },
         { name: '資産ダッシュボード', href: `/auth/asset/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}` },
         { name: '資産カテゴリリスト', href: '/auth/asset_category' },
     ];
