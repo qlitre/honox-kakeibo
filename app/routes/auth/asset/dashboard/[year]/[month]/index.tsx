@@ -6,14 +6,13 @@ import { AssetBarChart } from '../../../../../../islands/AssetBarChart';
 import {
     getPrevMonthYear,
     getPrevMonth,
-    getNextMonthYear,
-    getNextMonth,
     getBeginningOfMonth,
     getEndOfMonth,
     getAnnualStartYear,
 } from '../../../../../../utils/dashboardUtils';
 import { annualStartMonth } from '../../../../../../settings/kakeiboSettings';
 import { PageHeader } from '../../../../../../components/PageHeader';
+import { MonthPager } from '../../../../../../components/MonthPager';
 
 
 export default createRoute(async (c) => {
@@ -135,23 +134,7 @@ export default createRoute(async (c) => {
     return c.render(
         <div>
             <PageHeader title='資産ダッシュボード'></PageHeader>
-            <div className="flex items-center justify-center space-x-4 py-4">
-                <a
-                    href={`/auth/asset/dashboard/${prevYear}/${prevMonth}`}
-                    className="text-gray-600 bg-gray-200 rounded-full px-3 py-1 hover:bg-gray-300 transition"
-                >
-                    前月
-                </a>
-                <span className="text-lg font-semibold text-gray-800">
-                    {year}-{String(month).padStart(2, '0')}
-                </span>
-                <a
-                    href={`/auth/asset/dashboard/${getNextMonthYear(year, month)}/${getNextMonth(month)}`}
-                    className="text-gray-600 bg-gray-200 rounded-full px-3 py-1 hover:bg-gray-300 transition"
-                >
-                    次月
-                </a>
-            </div>
+            <MonthPager year={year} month={month} hrefPrefix='/auth/asset/dashboard'></MonthPager>
             <div className="flex flex-col lg:flex-row gap-4 mb-6">
                 <div className="flex-1 bg-white shadow-md rounded-lg p-4 overflow-auto">
                     <h2 className="text-lg font-semibold mb-2">当月の資産カテゴリ別一覧</h2>
@@ -211,7 +194,6 @@ export default createRoute(async (c) => {
                         </tbody>
                     </table>
                 </div>
-
                 <div className="flex-1 bg-white shadow-md rounded-lg p-4">
                     <div className="flex items-center justify-center">
                         <AssetPieChart assets={asset.contents}></AssetPieChart>
