@@ -42,7 +42,7 @@ export const Header = () => {
                 {isOpen && (
                     <div className="absolute top-16 right-0 bg-white shadow-md md:hidden">
                         <nav className="flex flex-col p-4">
-                            <FlyoutMenu items={assetMenu} title="資産メニュー"></FlyoutMenu>
+                            <FlyoutMenu items={assetMenu()} title="資産メニュー"></FlyoutMenu>
                             {navItems.map((item, i) => (
                                 <a href={item.href} className='mt-2 text-lg font-semibold'>{item.name}</a>
                             ))}
