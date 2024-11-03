@@ -3,7 +3,9 @@ DROP TABLE IF EXISTS asset_category;
 
 CREATE TABLE IF NOT EXISTS asset_category (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
 );
 
 CREATE TABLE IF NOT EXISTS asset (
@@ -12,6 +14,8 @@ CREATE TABLE IF NOT EXISTS asset (
     amount INTEGER NOT NULL,
     asset_category_id INTEGER NOT NULL,
     description TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (asset_category_id) REFERENCES asset_category(id) ON DELETE RESTRICT
 );
 

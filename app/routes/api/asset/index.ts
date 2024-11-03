@@ -112,11 +112,10 @@ export const POST = createRoute(async (c) => {
         asset.id, asset.date, asset.amount, asset.description, asset_category.name AS category_name
         FROM asset
         JOIN asset_category ON asset.asset_category_id = asset_category.id
-        WHERE asset.date = ? AND asset.amount = ? AND asset.asset_category_id = ?
-        ORDER BY asset.id DESC
+        ORDER BY asset.created_at DESC
         LIMIT 1
         `;
-        const newAsset = await db.prepare(selectQuery).bind(date, amount, asset_category_id).first<AssetWithCategory>();
+        const newAsset = await db.prepare(selectQuery).first<AssetWithCategory>();
         return c.json(newAsset, 201)
     } catch (error) {
         console.error('Error adding asset', error)
