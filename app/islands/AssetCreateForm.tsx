@@ -3,9 +3,11 @@ import type { FC, ChangeEvent } from 'react'
 import { useState } from "react"
 import { PageHeader } from "../components/PageHeader";
 
-type Data = Omit<Asset, 'id' | 'amount' | 'asset_category_id' | 'created_at' | 'updated_at'> & {
+type Data = {
+    date: string;
     amount: string;
     asset_category_id: string;
+    description: string
     error?: Record<string, string[] | undefined>
 }
 
@@ -21,6 +23,7 @@ export const AssetCreateForm: FC<Props> = ({ data, title, actionUrl, categories 
         date: data?.date || '',
         amount: data?.amount || '',
         asset_category_id: data?.asset_category_id || '',
+        description: data?.description || '',
         error: data?.error,
     });
 

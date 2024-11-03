@@ -1,9 +1,9 @@
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import type { Asset, AssetCategoryResponse} from '../../../@types/dbTypes';
+import type { Asset } from '../../../@types/dbTypes';
 import { KakeiboClient } from '../../../libs/kakeiboClient';
-import { AssetCreateForm } from '../../../islands/AssetCreateForm';
+
 
 const schema = z.object({
     date: z.string().length(10),
@@ -12,32 +12,11 @@ const schema = z.object({
     description: z.string()
 });
 
-
-export default createRoute(async (c) => {
-    const token = c.env.HONO_IS_COOL
-    const client = new KakeiboClient(token)
-    const categories = await client.getListResponse<AssetCategoryResponse>({ endpoint: 'asset_category', queries: { limit: 100 } })
-    return c.render(
-        <>
-            <AssetCreateForm title='資産追加' actionUrl='/auth/asset/create' categories={categories}></AssetCreateForm>
-        </>,
-        { title: '資産追加' }
-    )
-})
-
-
 export const POST = createRoute(
     zValidator('form', schema, async (result, c) => {
+        // 万が一失敗した時の考慮をどうするか。
         if (!result.success) {
-            const token = c.env.HONO_IS_COOL
-            const client = new KakeiboClient(token)
-            const categories = await client.getListResponse<AssetCategoryResponse>({ endpoint: 'asset_category', queries: { limit: 100 } })
-            const { date, amount, asset_category_id, description } = result.data
-            return c.render(
-                <AssetCreateForm data={{ date, amount, asset_category_id, description, error: result.error.flatten().fieldErrors }}
-                    title='資産追加'
-                    actionUrl='/auth/asset/create'
-                    categories={categories} />)
+            c.redirect('/auth/asset', 303);
         }
     }),
     async (c) => {

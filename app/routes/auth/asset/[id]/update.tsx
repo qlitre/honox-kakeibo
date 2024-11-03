@@ -12,38 +12,11 @@ const schema = z.object({
     description: z.string()
 });
 
-export default createRoute(async (c) => {
-    const token = c.env.HONO_IS_COOL
-    const client = new KakeiboClient(token)
-    const id = c.req.param('id')
-    const categories = await client.getListResponse<AssetCategoryResponse>({ endpoint: 'asset_category', queries: { limit: 100 } })
-    const assetDetail = await client.getDetail<AssetWithCategory>({ endpoint: 'asset', contentId: id })
-    return c.render(
-        <>
-            <AssetCreateForm data={{
-                date: assetDetail.date, amount: String(assetDetail.amount),
-                asset_category_id: String(assetDetail.asset_category_id),
-                description: assetDetail.description
-            }} title='資産編集' actionUrl={`/auth/asset/${id}/update`} categories={categories}></AssetCreateForm>
-        </>,
-        { title: '資産編集' }
-    )
-})
-
-
 export const POST = createRoute(
     zValidator('form', schema, async (result, c) => {
+        // 作成と同様に失敗した時をどうするか。
         if (!result.success) {
-            const id = c.req.param('id')
-            const token = c.env.HONO_IS_COOL
-            const client = new KakeiboClient(token)
-            const categories = await client.getListResponse<AssetCategoryResponse>({ endpoint: 'asset_category', queries: { limit: 100 } })
-            const { date, amount, asset_category_id, description } = result.data
-            return c.render(
-                <AssetCreateForm data={{ date, amount, asset_category_id, description, error: result.error.flatten().fieldErrors }}
-                    title='資産編集'
-                    actionUrl={`/auth/asset/${id}/update`}
-                    categories={categories} />)
+            c.redirect('/auth/asset', 303);
         }
     }),
     async (c) => {
