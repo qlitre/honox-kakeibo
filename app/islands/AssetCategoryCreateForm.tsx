@@ -1,5 +1,6 @@
 import type { FC, ChangeEvent } from 'react'
 import { useState } from "react"
+import { PageHeader } from '../components/PageHeader'
 
 type Data = {
     name: string
@@ -28,7 +29,7 @@ export const AssetCategoryCreateForm: FC<Props> = ({ data, title, actionUrl }) =
 
     return (
         <>
-            <h1 className="text-xl font-bold mb-4">{title}</h1>
+            <PageHeader title={title}></PageHeader>
             <form action={actionUrl} method='post' className="space-y-4">
                 <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">

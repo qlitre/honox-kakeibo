@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { FlyoutMenu } from "./FlyoutMenu";
 import { assetMenu } from "../settings/kakeiboSettings";
+import type { FC } from 'react'
 
-export const Header = () => {
+export const Header: FC = () => {
     const navItems = [
         { href: '/auth/logout', name: 'ログアウト' },
     ]

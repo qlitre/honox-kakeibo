@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import type { AssetCategory } from '../@types/dbTypes'
+import { PageHeader } from '../components/PageHeader'
 
 type Props = {
     errorMessage?: string;
@@ -10,7 +11,7 @@ export const AssetCategoryDeleteForm: FC<Props> = ({ errorMessage, detail }) => 
     return (
         <>
             <div className="p-6 max-w-lg mx-auto border border-gray-300 rounded-lg bg-white shadow-md">
-                <h1 className="text-2xl font-bold mb-4 text-gray-800">資産カテゴリ削除</h1>
+                <PageHeader title='資産カテゴリ削除'></PageHeader>
                 {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
                 <div className="mb-4">
                     <p className="text-lg mb-2">

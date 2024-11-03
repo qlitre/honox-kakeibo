@@ -1,6 +1,7 @@
 import type { AssetCategoryResponse, Asset } from "../@types/dbTypes"
 import type { FC, ChangeEvent } from 'react'
 import { useState } from "react"
+import { PageHeader } from "../components/PageHeader";
 
 type Data = Omit<Asset, 'id' | 'amount' | 'asset_category_id' | 'created_at' | 'updated_at'> & {
     amount: string;
@@ -33,7 +34,7 @@ export const AssetCreateForm: FC<Props> = ({ data, title, actionUrl, categories 
 
     return (
         <>
-            <h1 className="text-xl font-bold mb-4">{title}</h1>
+            <PageHeader title={title}></PageHeader>
             <form action={actionUrl} method='post' className="space-y-4">
                 <div>
                     <label htmlFor="date" className="block text-sm font-medium text-gray-700">

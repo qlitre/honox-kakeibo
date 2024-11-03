@@ -6,7 +6,7 @@ export default reactRenderer(({ children, Layout, title }) => {
         <Layout title={title}>
             <>
                 <Header></Header>
-                <main className='container mx-auto py-32 px-4'>
+                <main className='container mx-auto py-16 px-4'>
                     {children}
                 </main>
             </>

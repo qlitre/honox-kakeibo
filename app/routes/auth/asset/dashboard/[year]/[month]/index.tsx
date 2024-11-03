@@ -13,6 +13,7 @@ import {
     getAnnualStartYear,
 } from '../../../../../../utils/dashboardUtils';
 import { annualStartMonth } from '../../../../../../settings/kakeiboSettings';
+import { PageHeader } from '../../../../../../components/PageHeader';
 
 
 export default createRoute(async (c) => {
@@ -133,7 +134,7 @@ export default createRoute(async (c) => {
 
     return c.render(
         <div>
-            <h1 className="text-2xl font-bold mb-6 text-gray-800">資産ダッシュボード</h1>
+            <PageHeader title='資産ダッシュボード'></PageHeader>
             <div className="flex items-center justify-center space-x-4 py-4">
                 <a
                     href={`/auth/asset/dashboard/${prevYear}/${prevMonth}`}
