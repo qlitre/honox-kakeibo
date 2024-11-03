@@ -2,23 +2,28 @@ import { createRoute } from 'honox/factory'
 import { AssetWithCategoryResponse } from '../../../@types/dbTypes'
 import { KakeiboClient } from '../../../libs/kakeiboClient'
 import { PageHeader } from '../../../components/PageHeader'
+import { Pagination } from '../../../components/Pagination'
 
 export default createRoute(async (c) => {
+    let page = c.req.query('page') ?? '1'
+    const p = parseInt(page)
+    const limit = 10
+    const offset = limit * (p - 1)
     const token = c.env.HONO_IS_COOL
     const client = new KakeiboClient(token)
     const assets = await client.getListResponse<AssetWithCategoryResponse>({
         endpoint: 'asset', queries: {
-            orders: '-date,asset_category_id'
+            orders: '-date,asset_category_id',
+            limit: limit,
+            offset: offset
         }
     })
+    const pageSize = assets.pageSize
+    const query = c.req.query()
     return c.render(
         <>
             <div className="px-4 sm:px-6 lg:px-8">
-                <div className="sm:flex sm:items-center">
-                    <div className="sm:flex-auto">
-                        <PageHeader title='資産リスト'></PageHeader>
-                    </div>
-                </div>
+                <PageHeader title='資産リスト'></PageHeader>
                 <div className="mt-8 flow-root">
                     <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -70,8 +75,8 @@ export default createRoute(async (c) => {
                         </div>
                     </div>
                 </div>
+                <Pagination pageSize={pageSize} currentPage={p} hrefPrefix='/auth/asset' query={query}></Pagination>
             </div>
-
         </>,
         { title: '資産管理' }
     )

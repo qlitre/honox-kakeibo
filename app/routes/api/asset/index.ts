@@ -78,11 +78,13 @@ export default createRoute(async (c) => {
     // Set up ListResponse
     const assets = results ?? [];
     const totalCount = totalCountResult?.totalCount ?? 0;
+    const pageSize = Math.ceil(totalCount / limit)
     const response: AssetWithCategoryResponse = {
         contents: assets,
         totalCount: totalCount,
         limit: limit,
         offset: offset,
+        pageSize:pageSize,
     };
     return c.json(response, 200);
 })

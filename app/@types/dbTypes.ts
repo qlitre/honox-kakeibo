@@ -25,6 +25,7 @@ export type ListResponse<T> = {
     totalCount: number;
     limit: number;
     offset: number;
+    pageSize: number;
 }
 
 export type AssetWithCategoryResponse = ListResponse<AssetWithCategory>

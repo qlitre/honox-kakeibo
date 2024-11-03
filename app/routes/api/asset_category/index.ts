@@ -19,11 +19,13 @@ export default createRoute(async (c) => {
 
     const asset_categories = results ?? [];
     const totalCount = totalCountResult?.totalCount ?? 0;
+    const pageSize = Math.ceil(totalCount / limit)
     const response: AssetCategoryResponse = {
         contents: asset_categories,
         totalCount: totalCount,
         limit: limit,
         offset: offset,
+        pageSize: pageSize
     };
     // JSONレスポンスとして返す
     return c.json(response, 200);
