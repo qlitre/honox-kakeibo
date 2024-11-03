@@ -48,8 +48,30 @@ export default createRoute(async (c) => {
         query += ` WHERE ${addChar}`
         countQuery += ` WHERE ${addChar}`
     }
+    const orderParams = c.req.query('orders')
+    if (orderParams) {
+        query += ' ORDER BY'
+        const fieldsArray = orderParams.split(',')
+        const orderClauses = []
+
+        for (const field of fieldsArray) {
+            let sortOrder = ''
+            let columnName = ''
+
+            if (field[0] === '-') {
+                sortOrder = 'DESC'
+                columnName = 'asset.' + field.slice(1)
+            } else {
+                sortOrder = 'ASC'
+                columnName = 'asset.' + field
+            }
+            orderClauses.push(`${columnName} ${sortOrder}`)
+        }
+        const orderByClause = orderClauses.join(', ') // 並べ替え条件の結合
+        query += ` ${orderByClause}`
+    }
     const bindParams: any[] = []
-    query += ` ORDER BY asset.date DESC LIMIT ? OFFSET ?`;
+    query += ` LIMIT ? OFFSET ?`;
     bindParams.push(limit, offset)
     const { results } = await db.prepare(query).bind(...bindParams).all<AssetWithCategory>();
     const totalCountResult = await db.prepare(countQuery).first<{ totalCount: number }>();

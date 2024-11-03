@@ -19,10 +19,6 @@ type Dataset = {
 
 export const AssetBarChart = (props: Props) => {
     const set = new Set()
-    //todo: そもそもデータ取得時にORDERBY指定できるようにする
-    props.assets.reverse()
-
-
     const labels = []
     const datasets: Dataset[] = []
     // datasetのひな型を作る

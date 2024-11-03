@@ -112,7 +112,8 @@ export default createRoute(async (c) => {
     const totalCount = preReq.totalCount
     const allAssets = await client.getListResponse<ListResponse<AssetWithCategory>>({
         endpoint: 'asset', queries: {
-            limit: totalCount
+            limit: totalCount,
+            orders: 'date,asset_category_id'
         }
     })
     const categories = await client.getListResponse<ListResponse<AssetCategory>>({
@@ -120,8 +121,6 @@ export default createRoute(async (c) => {
             limit: 100
         }
     })
-
-
 
     return c.render(
         <div>
