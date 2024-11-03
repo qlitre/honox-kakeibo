@@ -12,6 +12,7 @@ export const Header = () => {
         { href: '/auth/asset', name: '資産リスト' },
         { href: '/auth/asset/create', name: '資産登録' },
         { href: `/auth/asset/dashboard/${year}/${month}`, name: '資産ダッシュボード' },
+        { href: `/auth/asset_category`, name: '資産カテゴリリスト' },
         { href: '/auth/logout', name: 'ログアウト' },
     ]
 

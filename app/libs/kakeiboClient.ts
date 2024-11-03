@@ -37,7 +37,6 @@ class KakeiboClient {
         this.token = token
         this.baseUrl = `http://localhost:5173/api`;
     }
-
     private async fetchKakeibo<T>(url: string, options?: RequestInit): Promise<T> {
         const defaultOptions = {
             headers: {
@@ -47,15 +46,22 @@ class KakeiboClient {
         };
         const finalOptions = { ...defaultOptions, ...options };
         return fetch(url, finalOptions)
-            .then((response) => {
+            .then(async (response) => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
+                    const errorBody = await response.json().catch(() => ({}));
+                    let errorMessage = response.statusText;
+
+                    if (isObject(errorBody) && 'error' in errorBody && typeof errorBody.error === 'string') {
+                        errorMessage = errorBody.error;
+                    }
+
+                    throw new Error(errorMessage);
                 }
                 return response.json() as Promise<T>;
             })
             .catch((error) => {
                 console.error('There has been a problem with your fetch operation:', error);
-                throw error
+                throw error;
             });
     }
 

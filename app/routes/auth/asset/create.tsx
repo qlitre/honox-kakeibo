@@ -58,5 +58,5 @@ export const POST = createRoute(
         const response = await client.addData<Asset>({ endpoint: 'asset', data: body })
             .catch((e) => { console.error(e) })
 
-        return c.redirect('/auth', 303);
+        return c.redirect('/auth/asset', 303);
     })

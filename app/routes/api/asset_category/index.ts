@@ -28,3 +28,33 @@ export default createRoute(async (c) => {
     // JSONレスポンスとして返す
     return c.json(response, 200);
 })
+
+export const POST = createRoute(async (c) => {
+    const db = c.env.DB
+    const { name } = await c.req.json();
+    if (!name) {
+        return c.json({ error: 'name required' }, 400);
+    }
+    try {
+        const insertQuery = `
+        INSERT INTO asset_category (name)
+        VALUES (?)
+    `;
+        const insertResult = await db.prepare(insertQuery)
+            .bind(name ?? null)
+            .run();
+        if (!insertResult.success) {
+            throw new Error("Failed to add asset_category");
+        }
+        const selectQuery = `
+        SELECT * FROM asset_category
+        ORDER BY created_at DESC
+        LIMIT 1
+        `;
+        const newAssetCategory = await db.prepare(selectQuery).first<AssetCategory>();
+        return c.json(newAssetCategory, 201)
+    } catch (error) {
+        console.error('Error adding asset_category', error)
+        return c.json({ error: 'Failed to add asset_category' }, 500)
+    }
+})

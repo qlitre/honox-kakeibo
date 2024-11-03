@@ -43,5 +43,5 @@ export const POST = createRoute(
         const client = new KakeiboClient(token)
         const response = await client.deleteData({ endpoint: 'asset', contentId: id })
             .catch((e) => { console.error(e) })
-        return c.redirect('/auth', 303);
+        return c.redirect('/auth/asset', 303);
     })
