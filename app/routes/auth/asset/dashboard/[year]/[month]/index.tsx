@@ -1,5 +1,5 @@
 import { createRoute } from 'honox/factory';
-import type { AssetWithCategory, ListResponse, AssetCategory } from '../../../../../../@types/dbTypes';
+import type { AssetCategoryResponse, AssetWithCategoryResponse } from '../../../../../../@types/dbTypes';
 import { KakeiboClient } from '../../../../../../libs/kakeiboClient';
 import { AssetPieChart } from '../../../../../../islands/AssetPieChart';
 import { AssetBarChart } from '../../../../../../islands/AssetBarChart';
@@ -24,7 +24,7 @@ export default createRoute(async (c) => {
     const le = getEndOfMonth(year, month)
 
     // APIからデータを取得
-    const asset = await client.getListResponse<ListResponse<AssetWithCategory>>({
+    const asset = await client.getListResponse<AssetWithCategoryResponse>({
         endpoint: 'asset',
         queries: { limit: 100, filters: `date[greater_equal]${ge}[and]date[less_equal]${le}` }
     });
@@ -34,7 +34,7 @@ export default createRoute(async (c) => {
     const prevMonth = getPrevMonth(month)
     const prevGe = getBeginningOfMonth(prevYear, prevMonth)
     const prevLe = getEndOfMonth(prevYear, prevMonth)
-    const prevAsset = await client.getListResponse<ListResponse<AssetWithCategory>>({
+    const prevAsset = await client.getListResponse<AssetWithCategoryResponse>({
         endpoint: 'asset',
         queries: { limit: 100, filters: `date[greater_equal]${prevGe}[and]date[less_equal]${prevLe}` }
     });
@@ -42,7 +42,7 @@ export default createRoute(async (c) => {
     const annualStartYear = getAnnualStartYear(year, month)
     const annualStartGe = getBeginningOfMonth(annualStartYear, annualStartMonth)
     const annualStartLe = getEndOfMonth(annualStartYear, annualStartMonth)
-    const annualStartAsset = await client.getListResponse<ListResponse<AssetWithCategory>>({
+    const annualStartAsset = await client.getListResponse<AssetWithCategoryResponse>({
         endpoint: 'asset',
         queries: { limit: 100, filters: `date[greater_equal]${annualStartGe}[and]date[less_equal]${annualStartLe}` }
     })
@@ -117,15 +117,15 @@ export default createRoute(async (c) => {
     const annualTotalDiffRatio = annualTotalDiff / annualTotalAmount
 
     // BarChart用のデータの取得
-    const preReq = await client.getListResponse<ListResponse<AssetWithCategory>>({ endpoint: 'asset' })
+    const preReq = await client.getListResponse<AssetWithCategoryResponse>({ endpoint: 'asset' })
     const totalCount = preReq.totalCount
-    const allAssets = await client.getListResponse<ListResponse<AssetWithCategory>>({
+    const allAssets = await client.getListResponse<AssetWithCategoryResponse>({
         endpoint: 'asset', queries: {
             limit: totalCount,
             orders: 'date,asset_category_id'
         }
     })
-    const categories = await client.getListResponse<ListResponse<AssetCategory>>({
+    const categories = await client.getListResponse<AssetCategoryResponse>({
         endpoint: 'asset_category', queries: {
             limit: 100
         }

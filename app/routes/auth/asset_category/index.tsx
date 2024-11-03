@@ -1,12 +1,12 @@
 import { createRoute } from 'honox/factory'
-import { ListResponse, AssetCategory } from '../../../@types/dbTypes'
+import { AssetCategoryResponse } from '../../../@types/dbTypes'
 import { KakeiboClient } from '../../../libs/kakeiboClient'
 
 
 export default createRoute(async (c) => {
     const token = c.env.HONO_IS_COOL
     const client = new KakeiboClient(token)
-    const asset_categories = await client.getListResponse<ListResponse<AssetCategory>>({
+    const asset_categories = await client.getListResponse<AssetCategoryResponse>({
         endpoint: 'asset_category', queries: {
             orders: 'id'
         }

@@ -1,5 +1,5 @@
 import { createRoute } from 'honox/factory'
-import { ListResponse, AssetWithCategory } from '../../../@types/dbTypes'
+import { AssetWithCategoryResponse, AssetWithCategory } from '../../../@types/dbTypes'
 
 
 export default createRoute(async (c) => {
@@ -78,7 +78,7 @@ export default createRoute(async (c) => {
     // Set up ListResponse
     const assets = results ?? [];
     const totalCount = totalCountResult?.totalCount ?? 0;
-    const response: ListResponse<AssetWithCategory> = {
+    const response: AssetWithCategoryResponse = {
         contents: assets,
         totalCount: totalCount,
         limit: limit,

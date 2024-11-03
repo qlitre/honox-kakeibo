@@ -1,8 +1,8 @@
-import type { AssetCategory, ListResponse, Asset } from "../@types/dbTypes"
+import type { AssetCategoryResponse, Asset } from "../@types/dbTypes"
 import type { FC, ChangeEvent } from 'react'
 import { useState } from "react"
 
-type Data = Omit<Asset, 'id' | 'amount' | 'asset_category_id'> & {
+type Data = Omit<Asset, 'id' | 'amount' | 'asset_category_id' | 'created_at' | 'updated_at'> & {
     amount: string;
     asset_category_id: string;
     error?: Record<string, string[] | undefined>
@@ -12,7 +12,7 @@ type Props = {
     data?: Data;
     title: string;
     actionUrl: string;
-    categories: ListResponse<AssetCategory>;
+    categories: AssetCategoryResponse;
 }
 
 export const AssetCreateForm: FC<Props> = ({ data, title, actionUrl, categories }) => {

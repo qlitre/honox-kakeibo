@@ -1,5 +1,5 @@
 import { createRoute } from 'honox/factory'
-import { AssetCategory } from '../../../../@types/dbTypes';
+import type { AssetCategory } from '../../../../@types/dbTypes';
 import { KakeiboClient } from '../../../../libs/kakeiboClient';
 import { AssetCategoryDeleteForm } from '../../../../islands/AssetCategoryDeleteForm';
 

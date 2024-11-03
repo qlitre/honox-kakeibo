@@ -9,7 +9,6 @@ const schema = z.object({
     name: z.string().min(1),
 });
 
-
 export default createRoute(async (c) => {
     return c.render(
         <>

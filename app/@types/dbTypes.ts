@@ -1,9 +1,14 @@
-export type AssetCategory = {
+type KakeiboBaseField = {
+    created_at: string;
+    updated_at: string
+}
+
+export type AssetCategory = KakeiboBaseField & {
     id: number;
     name: string
 }
 
-export type Asset = {
+export type Asset = KakeiboBaseField & {
     id: number;
     date: string;
     amount: number;
@@ -11,13 +16,16 @@ export type Asset = {
     description?: string;
 }
 
-export interface AssetWithCategory extends Asset {
+export type AssetWithCategory = Asset & {
     category_name: string;
 }
 
-export interface ListResponse<T> {
+export type ListResponse<T> = {
     contents: T[];
     totalCount: number;
     limit: number;
     offset: number;
 }
+
+export type AssetWithCategoryResponse = ListResponse<AssetWithCategory>
+export type AssetCategoryResponse = ListResponse<AssetCategory>
