@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FlyoutMenu } from "./FlyoutMenu";
 import { assetMenu } from "../settings/kakeiboSettings";
 import type { FC } from 'react'
+import { Button } from "./Button";
 
 export const Header: FC = () => {
     const navItems = [
