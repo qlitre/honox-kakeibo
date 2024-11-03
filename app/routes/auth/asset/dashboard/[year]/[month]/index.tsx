@@ -3,48 +3,17 @@ import type { AssetWithCategory, ListResponse, AssetCategory } from '../../../..
 import { KakeiboClient } from '../../../../../../libs/kakeiboClient';
 import { AssetPieChart } from '../../../../../../islands/AssetPieChart';
 import { AssetBarChart } from '../../../../../../islands/AssetBarChart';
+import {
+    getPrevMonthYear,
+    getPrevMonth,
+    getNextMonthYear,
+    getNextMonth,
+    getBeginningOfMonth,
+    getEndOfMonth,
+    getAnnualStartYear,
+} from '../../../../../../utils/dashboardUtils';
+import { annualStartMonth } from '../../../../../../settings/kakeiboSettings';
 
-// 前月の年を返す
-const getPrevMonthYear = (year: number, month: number) => {
-    if (month == 1) return year - 1
-    return year
-}
-
-// 前月を返す
-const getPrevMonth = (month: number) => {
-    if (month == 1) return 12
-    return month - 1
-}
-
-const getNextMonthYear = (year: number, month: number) => {
-    if (month == 12) return year + 1
-    return year
-}
-
-const getNextMonth = (month: number) => {
-    if (month == 12) return 1
-    return month + 1
-}
-
-
-
-// 日本時間を考慮してDateオブジェクトを作成
-const getJSTDate = (date: Date) => {
-    const jstOffset = 9 * 60 * 60 * 1000; // 9時間をミリ秒に変換
-    return new Date(date.getTime() + jstOffset);
-};
-
-const getBeginningOfMonth = (year: number, month: number) => {
-    let d = new Date(year, month - 1, 1);
-    d = getJSTDate(d);
-    return d.toISOString().split('T')[0];
-}
-
-const getEndOfMonth = (year: number, month: number) => {
-    let d = new Date(year, month, 0);
-    d = getJSTDate(d);
-    return d.toISOString().split('T')[0];
-}
 
 export default createRoute(async (c) => {
     const token = c.env.HONO_IS_COOL;
@@ -60,31 +29,46 @@ export default createRoute(async (c) => {
         queries: { limit: 100, filters: `date[greater_equal]${ge}[and]date[less_equal]${le}` }
     });
 
+    // 前月
     const prevYear = getPrevMonthYear(year, month)
     const prevMonth = getPrevMonth(month)
     const prevGe = getBeginningOfMonth(prevYear, prevMonth)
     const prevLe = getEndOfMonth(prevYear, prevMonth)
-    // APIからデータを取得
     const prevAsset = await client.getListResponse<ListResponse<AssetWithCategory>>({
         endpoint: 'asset',
         queries: { limit: 100, filters: `date[greater_equal]${prevGe}[and]date[less_equal]${prevLe}` }
     });
+    // 年初
+    const annualStartYear = getAnnualStartYear(year, month)
+    const annualStartGe = getBeginningOfMonth(annualStartYear, annualStartMonth)
+    const annualStartLe = getEndOfMonth(annualStartYear, annualStartMonth)
+    const annualStartAsset = await client.getListResponse<ListResponse<AssetWithCategory>>({
+        endpoint: 'asset',
+        queries: { limit: 100, filters: `date[greater_equal]${annualStartGe}[and]date[less_equal]${annualStartLe}` }
+    })
+    // テーブルを構成していく
     type TableItem = {
-        categoryName: string
-        now: number
-        prevDiff: number
-        prevDiffRatio: number
+        categoryName: string;
+        now: number;
+        prevDiff: number;
+        prevDiffRatio: number;
+        annualStartDiff: number;
+        annualStartDiffRatio: number;
     }
     const tableItems: Record<string, TableItem> = {}
+    // 当月の記入
     for (const elm of asset.contents) {
         const categoryId = elm.asset_category_id
         tableItems[categoryId] = {
             categoryName: elm.category_name,
             now: elm.amount,
             prevDiff: 0,
-            prevDiffRatio: 0
+            prevDiffRatio: 0,
+            annualStartDiff: 0,
+            annualStartDiffRatio: 0,
         }
     }
+    // 前月の記入
     for (const elm of prevAsset.contents) {
         const categoryId = elm.asset_category_id
         if (categoryId in tableItems) {
@@ -97,17 +81,42 @@ export default createRoute(async (c) => {
                 categoryName: elm.category_name,
                 now: 0,
                 prevDiff: -1 * elm.amount,
-                prevDiffRatio: -1
+                prevDiffRatio: -1,
+                annualStartDiff: 0,
+                annualStartDiffRatio: 0
             }
         }
     }
+    // 年初の記入
+    for (const elm of annualStartAsset.contents) {
+        const categoryId = elm.asset_category_id
+        if (categoryId in tableItems) {
+            const obj = tableItems[categoryId]
+            const diff = obj.now - elm.amount
+            obj.annualStartDiff = diff
+            obj.annualStartDiffRatio = diff / elm.amount
+        } else {
+            tableItems[categoryId] = {
+                categoryName: elm.category_name,
+                now: 0,
+                prevDiff: 0,
+                prevDiffRatio: 0,
+                annualStartDiff: -1 * elm.amount,
+                annualStartDiffRatio: -1
+            }
+        }
+    }
+
     // 合計金額の計算
     const totalAmount = asset.contents.reduce((sum, item) => sum + item.amount, 0);
     const prevTotalAmount = prevAsset.contents.reduce((sum, item) => sum + item.amount, 0);
-    const totalDiff = totalAmount - prevTotalAmount
-    const totalDiffRatio = totalDiff / prevTotalAmount
+    const prevTotalDiff = totalAmount - prevTotalAmount
+    const prevTotalDiffRatio = prevTotalDiff / prevTotalAmount
+    const annualTotalAmount = annualStartAsset.contents.reduce((sum, item) => sum + item.amount, 0);
+    const annualTotalDiff = totalAmount - annualTotalAmount
+    const annualTotalDiffRatio = annualTotalDiff / annualTotalAmount
 
-    // BarChart用のデータ
+    // BarChart用のデータの取得
     const preReq = await client.getListResponse<ListResponse<AssetWithCategory>>({ endpoint: 'asset' })
     const totalCount = preReq.totalCount
     const allAssets = await client.getListResponse<ListResponse<AssetWithCategory>>({
@@ -170,8 +179,10 @@ export default createRoute(async (c) => {
                                     </td>
                                     <td className="px-2 py-1">
                                         <div className="flex flex-col">
-                                            <span className="text-xs">-</span>
-                                            <span className="text-gray-500 text-xxs">-</span>
+                                            <span className="text-xs">¥{item.annualStartDiff.toLocaleString()}</span>
+                                            <span className="text-gray-500 text-xxs">
+                                                {(item.annualStartDiffRatio * 100).toFixed(2)}%
+                                            </span>
                                         </div>
                                     </td>
                                     <td className="px-2 py-1">
@@ -184,14 +195,14 @@ export default createRoute(async (c) => {
                                 <td className="px-2 py-1">¥{totalAmount.toLocaleString()}</td>
                                 <td className="px-2 py-1">
                                     <div className="flex flex-col">
-                                        <span className="text-xs">¥{totalDiff.toLocaleString()}</span>
-                                        <span className="text-gray-500 text-xxs">{(totalDiffRatio * 100).toFixed(2)}%</span>
+                                        <span className="text-xs">¥{prevTotalDiff.toLocaleString()}</span>
+                                        <span className="text-gray-500 text-xxs">{(prevTotalDiffRatio * 100).toFixed(2)}%</span>
                                     </div>
                                 </td>
                                 <td className="px-2 py-1">
                                     <div className="flex flex-col">
-                                        <span className="text-xs">-</span>
-                                        <span className="text-gray-500 text-xxs">-</span>
+                                        <span className="text-xs">¥{annualTotalDiff.toLocaleString()}</span>
+                                        <span className="text-gray-500 text-xxs">{(annualTotalDiffRatio * 100).toFixed(2)}%</span>
                                     </div>
                                 </td>
                                 <td className="px-2 py-1">100%</td>

@@ -1,5 +1,4 @@
 import { createRoute } from 'honox/factory'
-import { Header } from '../../../islands/Header'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import type { Asset, AssetCategory, ListResponse } from '../../../@types/dbTypes';
