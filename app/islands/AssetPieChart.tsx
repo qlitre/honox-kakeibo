@@ -23,7 +23,7 @@ export const AssetPieChart = (props: Props) => {
         },
       },
     },
-    responsive:true
+    responsive: true
   };
 
   const labels = []
@@ -52,7 +52,7 @@ export const AssetPieChart = (props: Props) => {
 
   return (
     <div className='h-64'>
-    <Pie data={data} options={options} />
+      <Pie data={data} options={options} />
     </div>
   );
 };

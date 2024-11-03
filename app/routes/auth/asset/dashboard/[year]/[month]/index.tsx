@@ -212,15 +212,12 @@ export default createRoute(async (c) => {
                 </div>
 
                 <div className="flex-1 bg-white shadow-md rounded-lg p-4">
-                    <h2 className="text-lg font-semibold mb-2">アセットアロケーション</h2>
                     <div className="flex items-center justify-center">
                         <AssetPieChart assets={asset.contents}></AssetPieChart>
                     </div>
                 </div>
             </div>
-            {/* 棒グラフコンポーネントを横一杯に広げる */}
-            <div className="bg-white shadow-md rounded-lg p-4 w-full"> {/* 高さを h-64 に設定 */}
-                <h2 className="text-lg font-semibold mb-2">資産の推移グラフ</h2>
+            <div className="bg-white shadow-md rounded-lg p-4 w-full">
                 <AssetBarChart assets={allAssets.contents} categories={categories.contents} />
             </div>
         </div>,

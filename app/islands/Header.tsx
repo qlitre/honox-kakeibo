@@ -1,18 +1,9 @@
 import { useState } from "react";
-
+import { FlyoutMenu } from "./FlyoutMenu";
+import { assetMenu } from "../settings/kakeiboSettings";
 
 export const Header = () => {
-    const date = new Date();
-    let year = date.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric' });
-    let month = date.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', month: 'numeric' });
-    // 2024年、11月のようになるので、最後の文字を取り除く
-    year = year.slice(0, year.length - 1)
-    month = month.slice(0, month.length - 1)
     const navItems = [
-        { href: '/auth/asset', name: '資産リスト' },
-        { href: '/auth/asset/create', name: '資産登録' },
-        { href: `/auth/asset/dashboard/${year}/${month}`, name: '資産ダッシュボード' },
-        { href: `/auth/asset_category`, name: '資産カテゴリリスト' },
         { href: '/auth/logout', name: 'ログアウト' },
     ]
 
@@ -32,9 +23,11 @@ export const Header = () => {
 
                 {/* md以上の画面幅で表示されるナビゲーションメニュー */}
                 <nav className="ml-auto hidden md:flex items-center">
+                    <FlyoutMenu items={assetMenu()} title="資産メニュー"></FlyoutMenu>
                     {navItems.map((item, i) => (
-                        <a href={item.href} className="mr-4" key={i}>{item.name}</a>
+                        <a href={item.href} className="ml-8 text-lg font-semibold" key={i}>{item.name}</a>
                     ))}
+
                 </nav>
 
                 {/* md以下の画面幅で表示されるメニューアイコン */}
@@ -49,8 +42,9 @@ export const Header = () => {
                 {isOpen && (
                     <div className="absolute top-16 right-0 bg-white shadow-md md:hidden">
                         <nav className="flex flex-col p-4">
+                            <FlyoutMenu items={assetMenu} title="資産メニュー"></FlyoutMenu>
                             {navItems.map((item, i) => (
-                                <a href={item.href} className='mt-2'>{item.name}</a>
+                                <a href={item.href} className='mt-2 text-lg font-semibold'>{item.name}</a>
                             ))}
                         </nav>
                     </div>
