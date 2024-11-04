@@ -8,6 +8,8 @@ import { getCookie } from 'hono/cookie'
 import { alertCookieKey } from '@/settings/kakeiboSettings'
 import { CreateModal } from '@/islands/common/CreateModal'
 import { ExpenseCreateForm } from '@/islands/expense/ExpenseCreateForm'
+import { DeleteModal } from '@/islands/common/DeleteModal'
+import { ExpenseDeleteConfirm } from '@/islands/expense/ExpenseDeleteConfirm'
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
@@ -42,7 +44,7 @@ export default createRoute(async (c) => {
                 {message && <AlertSuccess message={message}></AlertSuccess>}
                 <div className="flex items-center justify-between">
                     <PageHeader title="支出リスト" />
-                    <CreateModal title='支出追加'>
+                    <CreateModal buttonType='primary' title='支出追加'>
                         <ExpenseCreateForm
                             title='支出追加'
                             actionUrl='/auth/expense/create'
@@ -96,7 +98,25 @@ export default createRoute(async (c) => {
                                                     {expense.description || '-'}
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 flex space-x-4 justify-center">
-                                                    {/* modal */}
+                                                    <CreateModal buttonType='success' title='編集'>
+                                                        <ExpenseCreateForm
+                                                            data={{
+                                                                date: expense.date,
+                                                                amount: String(expense.amount),
+                                                                expense_category_id: String(expense.expense_category_id),
+                                                                payment_method_id: String(expense.payment_method_id),
+                                                                description: expense.description || ''
+                                                            }}
+                                                            title='支出編集'
+                                                            actionUrl={`/auth/expense/${expense.id}/update`}
+                                                            categories={categories}
+                                                            payment_methods={paymentMethods}
+                                                        ></ExpenseCreateForm>
+                                                    </CreateModal>
+                                                    <DeleteModal title='支出削除' actionUrl={`/auth/expense/${expense.id}/delete`}>
+                                                        <ExpenseDeleteConfirm expense={expense} />
+                                                    </DeleteModal>
+
                                                 </td>
                                             </tr>
                                         ))}
@@ -107,7 +127,7 @@ export default createRoute(async (c) => {
                     </div>
                 </div>
                 <Pagination pageSize={pageSize} currentPage={p} hrefPrefix="/auth/expense" query={query} />
-            </div>
+            </div >
         </>, { title: '支出リスト' }
     );
 })
