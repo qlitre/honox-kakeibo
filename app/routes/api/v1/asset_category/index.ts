@@ -1,5 +1,5 @@
 import { createRoute } from 'honox/factory'
-import { AssetCategoryResponse, AssetCategory } from '../../../@types/dbTypes'
+import { AssetCategoryResponse, AssetCategory } from '../../../../@types/dbTypes'
 
 export default createRoute(async (c) => {
     const db = c.env.DB

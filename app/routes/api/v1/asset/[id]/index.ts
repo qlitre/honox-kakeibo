@@ -1,5 +1,5 @@
 import { createRoute } from 'honox/factory'
-import { AssetWithCategory } from '../../../../@types/dbTypes'
+import { AssetWithCategory } from '../../../../../@types/dbTypes'
 
 const getDetailQuery = `
         SELECT asset.id, asset.date, asset.amount, asset.asset_category_id, asset.description, asset_category.name AS category_name

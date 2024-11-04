@@ -1,6 +1,6 @@
 import { createRoute } from 'honox/factory'
-import { AssetWithCategoryResponse, AssetWithCategory } from '../../../@types/dbTypes'
-import { buildSqlWhereClause, buildSqlOrderByClause } from '../../../utils/sqlUtils'
+import { AssetWithCategoryResponse, AssetWithCategory } from '../../../../@types/dbTypes'
+import { buildSqlWhereClause, buildSqlOrderByClause } from '../../../../utils/sqlUtils'
 
 export default createRoute(async (c) => {
     const db = c.env.DB
@@ -82,4 +82,3 @@ export const POST = createRoute(async (c) => {
         return c.json({ error: 'Failed to add asset' }, 500)
     }
 })
-

@@ -99,6 +99,7 @@ export const AssetCreateForm: FC<Props> = ({ data, title, actionUrl, categories 
                         name="description"
                         rows={3}
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={formData.description}
                         onChange={handleChange}
                     ></textarea>
                     {formData.error?.description && <p className="text-red-500 text-sm mt-1">{formData.error.description}</p>}
