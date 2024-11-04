@@ -6,7 +6,8 @@ import { Pagination } from '@/components/Pagination'
 import { AlertSuccess } from '@/islands/AlertSuccess'
 import { getCookie } from 'hono/cookie'
 import { alertCookieKey } from '@/settings/kakeiboSettings'
-
+import { CreateModal } from '@/islands/common/CreateModal'
+import { ExpenseCreateForm } from '@/islands/expense/ExpenseCreateForm'
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
@@ -26,6 +27,11 @@ export default createRoute(async (c) => {
             limit: 100
         }
     })
+    const paymentMethods = await client.getListResponse<PaymentMethodResponse>({
+        endpoint: 'payment_method', queries: {
+            limit: 100
+        }
+    })
     const pageSize = assets.pageSize
     const query = c.req.query()
     const message = getCookie(c, alertCookieKey)
@@ -36,7 +42,13 @@ export default createRoute(async (c) => {
                 {message && <AlertSuccess message={message}></AlertSuccess>}
                 <div className="flex items-center justify-between">
                     <PageHeader title="支出リスト" />
-                    {/* modal */}
+                    <CreateModal title='支出追加'>
+                        <ExpenseCreateForm
+                            title='支出追加'
+                            actionUrl='/auth/expense/create'
+                            categories={categories}
+                            payment_methods={paymentMethods} />
+                    </CreateModal>
                 </div>
                 <div className="mt-8 flow-root">
                     <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
