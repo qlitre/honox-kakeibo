@@ -98,8 +98,8 @@ export default createRoute(async (c) => {
                                                     {expense.description || '-'}
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 flex space-x-4 justify-center">
-                                                    <CreateModal buttonType='success' title='編集'>
-                                                        <ExpenseCreateForm
+                                                    <CreateModal buttonType='success' title='編集' key={expense.id}>
+                                                        <ExpenseCreateForm key={expense.id}
                                                             data={{
                                                                 date: expense.date,
                                                                 amount: String(expense.amount),
@@ -113,8 +113,8 @@ export default createRoute(async (c) => {
                                                             payment_methods={paymentMethods}
                                                         ></ExpenseCreateForm>
                                                     </CreateModal>
-                                                    <DeleteModal title='支出削除' actionUrl={`/auth/expense/${expense.id}/delete`}>
-                                                        <ExpenseDeleteConfirm expense={expense} />
+                                                    <DeleteModal title='支出削除' actionUrl={`/auth/expense/${expense.id}/delete`} key={expense.id}>
+                                                        <ExpenseDeleteConfirm expense={expense} key={expense.id}/>
                                                     </DeleteModal>
 
                                                 </td>

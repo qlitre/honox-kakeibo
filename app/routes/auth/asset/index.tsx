@@ -83,7 +83,7 @@ export default createRoute(async (c) => {
                                                     {asset.description || '-'}
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 flex space-x-4 justify-center">
-                                                    <CreateModal buttonType='success' title='資産編集'>
+                                                    <CreateModal buttonType='success' title='資産編集' key={asset.id}>
                                                         <AssetCreateForm
                                                             data={{
                                                                 date: asset.date,
@@ -93,10 +93,10 @@ export default createRoute(async (c) => {
                                                             }}
                                                             title='編集'
                                                             actionUrl={`/auth/asset/${asset.id}/update`}
-                                                            categories={categories} />
+                                                            categories={categories} key={asset.id} />
                                                     </CreateModal>
-                                                    <DeleteModal title='資産削除' actionUrl={`/auth/asset/${asset.id}/delete`}>
-                                                        <AssetDeleteConfirm asset={asset} />
+                                                    <DeleteModal title='資産削除' actionUrl={`/auth/asset/${asset.id}/delete`} key={asset.id}>
+                                                        <AssetDeleteConfirm asset={asset} key={asset.id} />
                                                     </DeleteModal>
                                                 </td>
                                             </tr>

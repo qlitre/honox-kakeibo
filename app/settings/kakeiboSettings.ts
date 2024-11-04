@@ -28,21 +28,27 @@ export const colorSchema = ['rgba(166.65098039215687,206.8078431372549,227.89019
 // 家計簿の年初の月を指定
 export const annualStartMonth = 1
 
-export const assetMenu = () => {
+export const kakeiboMenu = () => {
     const date = new Date();
     let year = date.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric' });
     let month = date.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', month: 'numeric' });
-    // 2024年、11月のようになるので、最後の文字を取り除く
-    year = year.slice(0, year.length - 1)
-    month = month.slice(0, month.length - 1)
-    return [
-        { name: '資産リスト', href: '/auth/asset' },
-        { name: '資産ダッシュボード', href: `/auth/asset/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}` },
-        { name: '資産カテゴリリスト', href: '/auth/asset_category' },
-        { name: '支出リスト', href: '/auth/expense' },
 
-    ];
-}
+    // 2024年、11月のようになるので、最後の文字を取り除く
+    year = year.slice(0, year.length - 1);
+    month = month.slice(0, month.length - 1);
+
+    return {
+        '資産メニュー': [
+            { name: '資産リスト', href: '/auth/asset' },
+            { name: '資産ダッシュボード', href: `/auth/asset/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}` },
+            { name: '資産カテゴリリスト', href: '/auth/asset_category' },
+        ],
+        '支出メニュー': [
+            { name: '支出リスト', href: '/auth/expense' },
+        ],
+    };
+};
+
 
 // alertメッセージのキー
 export const alertCookieKey = 'message'

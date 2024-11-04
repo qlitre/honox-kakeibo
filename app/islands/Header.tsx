@@ -1,18 +1,23 @@
 import { useState } from "react";
 import { FlyoutMenu } from "@/islands/FlyoutMenu";
-import { assetMenu } from "@/settings/kakeiboSettings";
-import type { FC } from 'react'
+import { kakeiboMenu } from "@/settings/kakeiboSettings";
+import type { FC } from 'react';
 
 export const Header: FC = () => {
     const navItems = [
         { href: '/auth/logout', name: 'ログアウト' },
-    ]
+    ];
 
     const [isOpen, setIsOpen] = useState(false);
+
     // メニューの開閉を制御する関数
     const toggleMenu = () => {
         setIsOpen(!isOpen);
     };
+
+    // kakeiboMenu を取得
+    const menuItems = kakeiboMenu();
+
     return (
         <header className="p-4 c-wrapper">
             <div className="container mx-auto flex items-center relative">
@@ -23,12 +28,14 @@ export const Header: FC = () => {
                 </h1>
 
                 {/* md以上の画面幅で表示されるナビゲーションメニュー */}
-                <nav className="ml-auto hidden md:flex items-center">
-                    <FlyoutMenu items={assetMenu()} title="資産メニュー"></FlyoutMenu>
+                <nav className="ml-auto hidden md:flex items-center space-x-8">
+                    <FlyoutMenu items={menuItems['資産メニュー']} title="資産メニュー" />
+                    <FlyoutMenu items={menuItems['支出メニュー']} title="支出メニュー" />
                     {navItems.map((item, i) => (
-                        <a href={item.href} className="ml-8 text-lg font-semibold" key={i}>{item.name}</a>
+                        <a href={item.href} className="text-lg font-semibold" key={i}>
+                            {item.name}
+                        </a>
                     ))}
-
                 </nav>
 
                 {/* md以下の画面幅で表示されるメニューアイコン */}
@@ -42,10 +49,13 @@ export const Header: FC = () => {
                 {/* ドロップダウンメニュー */}
                 {isOpen && (
                     <div className="absolute top-16 right-0 bg-white shadow-md md:hidden">
-                        <nav className="flex flex-col p-4">
-                            <FlyoutMenu items={assetMenu()} title="資産メニュー"></FlyoutMenu>
+                        <nav className="flex flex-col p-4 space-y-2">
+                            <FlyoutMenu items={menuItems['資産メニュー']} title="資産メニュー" />
+                            <FlyoutMenu items={menuItems['支出メニュー']} title="支出メニュー" />
                             {navItems.map((item, i) => (
-                                <a href={item.href} className='mt-2 text-lg font-semibold'>{item.name}</a>
+                                <a href={item.href} className="text-lg font-semibold" key={i}>
+                                    {item.name}
+                                </a>
                             ))}
                         </nav>
                     </div>
