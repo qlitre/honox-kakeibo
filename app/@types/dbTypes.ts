@@ -3,6 +3,15 @@ type KakeiboBaseField = {
     updated_at: string
 }
 
+
+export type KakeiboListResponse<T> = {
+    contents: T[];
+    totalCount: number;
+    limit: number;
+    offset: number;
+    pageSize: number;
+}
+
 export type AssetCategory = KakeiboBaseField & {
     id: number;
     name: string
@@ -20,13 +29,33 @@ export type AssetWithCategory = Asset & {
     category_name: string;
 }
 
-export type ListResponse<T> = {
-    contents: T[];
-    totalCount: number;
-    limit: number;
-    offset: number;
-    pageSize: number;
+
+export type ExpenseCategory = KakeiboBaseField & {
+    id: number;
+    name: string;
+};
+
+export type PaymentMethod = KakeiboBaseField & {
+    id: number;
+    method_name: string;
+};
+
+export type Expense = KakeiboBaseField & {
+    id: number;
+    date: string;
+    amount: number;
+    expense_category_id: number;
+    payment_method_id: number;
+    description?: string;
 }
 
-export type AssetWithCategoryResponse = ListResponse<AssetWithCategory>
-export type AssetCategoryResponse = ListResponse<AssetCategory>
+export type ExpenseWithDetails = Expense & {
+    expense_category_name: string;
+    payment_method_name: string;
+}
+
+export type AssetWithCategoryResponse = KakeiboListResponse<AssetWithCategory>
+export type AssetCategoryResponse = KakeiboListResponse<AssetCategory>
+export type ExpenseWithDetailsResPonse = KakeiboListResponse<ExpenseWithDetails>
+export type ExpenseCategoryResponse = KakeiboListResponse<ExpenseCategory>
+export type PaymentMethodResponse = KakeiboListResponse<PaymentMethod>

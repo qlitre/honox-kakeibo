@@ -1,6 +1,6 @@
 import { createRoute } from 'honox/factory'
 import { AssetWithCategoryResponse, AssetWithCategory } from '../../../@types/dbTypes'
-import { buildSqlWhereClause, buildSqlOrderByClause } from '../../../utils/sqlUtils'
+
 
 export default createRoute(async (c) => {
     const db = c.env.DB
@@ -10,28 +10,88 @@ export default createRoute(async (c) => {
     const limit = parseInt(_limit)
     const offset = parseInt(_offset)
     let query = `
-        SELECT asset.id, asset.date, asset.amount, asset.description, asset.asset_category_id, asset_category.name AS category_name
-        FROM asset
-        JOIN asset_category ON asset.asset_category_id = asset_category.id        
-    `;
+        SELECT 
+            expense.id,
+            expense.date,
+            expense.amount,
+            expense.expense_category_id,
+            expense.payment_method_id,
+            expense.description,
+            expense.created_at,
+            expense.updated_at,
+            expense_category.name AS expense_category_name,
+            payment_method.method_name AS payment_method_name
+        FROM 
+            expense
+        JOIN 
+            expense_category 
+        ON 
+            expense.expense_category_id = expense_category.id
+        JOIN 
+            payment_method 
+        ON 
+            expense.payment_method_id = payment_method.id;
+        `;
+
+    const opes: string[] = []
+    const conditions: Record<string, string> = {
+        '[greater_than]': '>',
+        '[less_than]': '<',
+        '[greater_equal]': '>=',
+        '[less_equal]': '<='
+    }
+    if (filters) {
+        //date[greater_equal]2024-11-01[and]date[less_equal]2024-11-30
+        //みたいな文字から動的にSQL文をつくる
+        for (const chars of filters.split('[and]')) {
+            for (const k in conditions) {
+                if (chars.indexOf(k) > 0) {
+                    const arr = chars.split(k)
+                    const field = 'asset.' + arr[0]
+                    const ope = conditions[k]
+                    const value = arr[1]
+                    const str = `${field} ${ope} '${value}'`
+                    opes.push(str)
+                }
+            }
+        }
+    }
     let countQuery = `
         SELECT COUNT(*) as totalCount
         FROM asset
         JOIN asset_category ON asset.asset_category_id = asset_category.id
     `;
-    if (filters) {
-        const whereClause = buildSqlWhereClause('asset', filters)
-        query += ` ${whereClause}`
-        countQuery += ` ${whereClause}`
+    if (opes.length > 0) {
+        const addChar = opes.join(' AND ')
+        query += ` WHERE ${addChar}`
+        countQuery += ` WHERE ${addChar}`
     }
     const orderParams = c.req.query('orders')
     if (orderParams) {
-        const orderByClause = buildSqlOrderByClause('asset', orderParams)
+        query += ' ORDER BY'
+        const fieldsArray = orderParams.split(',')
+        const orderClauses = []
+
+        for (const field of fieldsArray) {
+            let sortOrder = ''
+            let columnName = ''
+
+            if (field[0] === '-') {
+                sortOrder = 'DESC'
+                columnName = 'asset.' + field.slice(1)
+            } else {
+                sortOrder = 'ASC'
+                columnName = 'asset.' + field
+            }
+            orderClauses.push(`${columnName} ${sortOrder}`)
+        }
+        const orderByClause = orderClauses.join(', ') // 並べ替え条件の結合
         query += ` ${orderByClause}`
     }
+    const bindParams: any[] = []
     query += ` LIMIT ? OFFSET ?`;
-    const { results } = await db.prepare(query).bind(limit, offset).all<AssetWithCategory>();
-
+    bindParams.push(limit, offset)
+    const { results } = await db.prepare(query).bind(...bindParams).all<AssetWithCategory>();
     const totalCountResult = await db.prepare(countQuery).first<{ totalCount: number }>();
     // Set up ListResponse
     const assets = results ?? [];

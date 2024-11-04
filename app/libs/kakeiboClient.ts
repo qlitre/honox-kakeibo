@@ -34,7 +34,7 @@ const parseQuery = (queries: KakeiboQueries): string => {
 
 class KakeiboClient {
     private token: string;
-    private baseUrl: string
+    private baseUrl: string;
 
     constructor({ token, baseUrl }: KakeiboClientOptions) {
         this.token = token;

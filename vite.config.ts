@@ -21,25 +21,22 @@ export default defineConfig(async ({ mode }) => {
     }
   } else {
     const { env, dispose } = await getPlatformProxy();
-    try {
-      return {
-        ssr: {
-          external: ['react', 'react-dom', 'react-chartjs-2', 'chart.js', '@supabase/supabase-js'],
-          noExternal: [],
-        },
-        plugins: [
-          honox({ devServer: { env } }), build()
-        ],
-        server: {
-          watch: {
-            ignored: ['**/C:/DumpStack.log.tmp', '**/C:\\DumpStack.log.tmp'],
-            usePolling: true,
-            interval: 1000
-          }
-        },
-      };
-    } finally {
-      dispose();
+    return {
+      ssr: {
+        external: ['react', 'react-dom', 'react-chartjs-2', 'chart.js', '@supabase/supabase-js'],
+        noExternal: [],
+      },
+      plugins: [
+        honox({ devServer: { env } }),
+        build(),
+      ],
+      server: {
+        watch: {
+          ignored: ['**/C:/DumpStack.log.tmp', '**/C:\\DumpStack.log.tmp'],
+          usePolling: true, // ポーリングベースの監視に切り替え
+          interval: 1000    // ポーリングの間隔を調整
+        }
+      },
     }
   }
 })
