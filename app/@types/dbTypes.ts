@@ -50,7 +50,7 @@ export type Expense = KakeiboBaseField & {
 }
 
 export type ExpenseWithDetails = Expense & {
-    expense_category_name: string;
+    category_name: string;
     payment_method_name: string;
 }
 

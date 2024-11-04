@@ -1,7 +1,7 @@
 import { useState, FC } from 'react'
-import { Button } from './Button'
-import type { AssetWithCategory, AssetCategoryResponse } from '../@types/dbTypes'
-import { AssetCreateForm } from './AssetCreateForm'
+import { Button } from '../Button'
+import type { AssetWithCategory, AssetCategoryResponse } from '../../@types/dbTypes'
+import { AssetCreateForm } from '../AssetCreateForm'
 
 type Props = {
     asset: AssetWithCategory

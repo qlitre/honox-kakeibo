@@ -1,11 +1,8 @@
 import { createRoute } from 'honox/factory'
-import { AssetCategoryResponse, AssetWithCategoryResponse } from '../../../@types/dbTypes'
+import { ExpenseCategoryResponse, ExpenseWithDetailsResPonse, PaymentMethodResponse } from '../../../@types/dbTypes'
 import { KakeiboClient } from '../../../libs/kakeiboClient'
 import { PageHeader } from '../../../components/PageHeader'
 import { Pagination } from '../../../components/Pagination'
-import { DeleteModal } from '../../../islands/asset/DeleteModal'
-import { EditModal } from '../../../islands/asset/EditModal'
-import { CreateModal } from '../../../islands/asset/CreateModal'
 import { AlertSuccess } from '../../../islands/AlertSuccess'
 import { getCookie } from 'hono/cookie'
 import { alertCookieKey } from '../../../settings/kakeiboSettings'
@@ -16,18 +13,20 @@ export default createRoute(async (c) => {
     const limit = 10
     const offset = limit * (p - 1)
     const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
-    const assets = await client.getListResponse<AssetWithCategoryResponse>({
-        endpoint: 'asset', queries: {
-            orders: '-date,asset_category_id',
+    const assets = await client.getListResponse<ExpenseWithDetailsResPonse>({
+        endpoint: 'expense', queries: {
+            orders: '-date,expense_category_id',
             limit: limit,
             offset: offset
         }
     })
-    const categories = await client.getListResponse<AssetCategoryResponse>({
-        endpoint: 'asset_category', queries: {
+    /** 
+    const categories = await client.getListResponse<ExpenseCategoryResponse>({
+        endpoint: 'expense_category', queries: {
             limit: 100
         }
     })
+        */
     const pageSize = assets.pageSize
     const query = c.req.query()
     const message = getCookie(c, alertCookieKey)
@@ -37,8 +36,8 @@ export default createRoute(async (c) => {
             <div className="px-4 sm:px-6 lg:px-8">
                 {message && <AlertSuccess message={message}></AlertSuccess>}
                 <div className="flex items-center justify-between">
-                    <PageHeader title="資産リスト" />
-                    <CreateModal categories={categories} />
+                    <PageHeader title="支出リスト" />
+                    {/* modal */}
                 </div>
                 <div className="mt-8 flow-root">
                     <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -53,6 +52,9 @@ export default createRoute(async (c) => {
                                             <th scope="col" className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
                                                 カテゴリ
                                             </th>
+                                            <th scope="col" className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                                                支払い方法
+                                            </th>
                                             <th scope="col" className="px-6 py-4 text-right text-sm font-semibold text-gray-900">
                                                 金額
                                             </th>
@@ -65,23 +67,25 @@ export default createRoute(async (c) => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 bg-white">
-                                        {assets.contents.map((asset) => (
-                                            <tr key={asset.id} className="hover:bg-gray-50">
+                                        {assets.contents.map((expense) => (
+                                            <tr key={expense.id} className="hover:bg-gray-50">
                                                 <td className="whitespace-nowrap py-4 pl-6 text-sm text-gray-900">
-                                                    {asset.date}
+                                                    {expense.date}
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                                    {asset.category_name}
+                                                    {expense.category_name}
+                                                </td>
+                                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                                    {expense.payment_method_name}
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 text-right">
-                                                    {asset.amount.toLocaleString()} 円
+                                                    {expense.amount.toLocaleString()} 円
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 text-center">
-                                                    {asset.description || '-'}
+                                                    {expense.description || '-'}
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 flex space-x-4 justify-center">
-                                                    <EditModal asset={asset} categories={categories} />
-                                                    <DeleteModal asset={asset} />
+                                                    {/* modal */}
                                                 </td>
                                             </tr>
                                         ))}
@@ -91,8 +95,8 @@ export default createRoute(async (c) => {
                         </div>
                     </div>
                 </div>
-                <Pagination pageSize={pageSize} currentPage={p} hrefPrefix="/auth/asset" query={query} />
+                <Pagination pageSize={pageSize} currentPage={p} hrefPrefix="/auth/expense" query={query} />
             </div>
-        </>, { title: '資産リスト' }
+        </>, { title: '支出リスト' }
     );
 })

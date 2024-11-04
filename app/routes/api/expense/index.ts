@@ -1,6 +1,6 @@
 import { createRoute } from 'honox/factory'
-import { AssetWithCategoryResponse, AssetWithCategory } from '../../../@types/dbTypes'
-
+import { ExpenseWithDetailsResPonse, ExpenseWithDetails } from '../../../@types/dbTypes'
+import { buildSqlWhereClause, buildSqlOrderByClause } from '../../../utils/sqlUtils'
 
 export default createRoute(async (c) => {
     const db = c.env.DB
@@ -19,7 +19,7 @@ export default createRoute(async (c) => {
             expense.description,
             expense.created_at,
             expense.updated_at,
-            expense_category.name AS expense_category_name,
+            expense_category.name AS category_name,
             payment_method.method_name AS payment_method_name
         FROM 
             expense
@@ -30,75 +30,32 @@ export default createRoute(async (c) => {
         JOIN 
             payment_method 
         ON 
-            expense.payment_method_id = payment_method.id;
-        `;
-
-    const opes: string[] = []
-    const conditions: Record<string, string> = {
-        '[greater_than]': '>',
-        '[less_than]': '<',
-        '[greater_equal]': '>=',
-        '[less_equal]': '<='
-    }
-    if (filters) {
-        //date[greater_equal]2024-11-01[and]date[less_equal]2024-11-30
-        //みたいな文字から動的にSQL文をつくる
-        for (const chars of filters.split('[and]')) {
-            for (const k in conditions) {
-                if (chars.indexOf(k) > 0) {
-                    const arr = chars.split(k)
-                    const field = 'asset.' + arr[0]
-                    const ope = conditions[k]
-                    const value = arr[1]
-                    const str = `${field} ${ope} '${value}'`
-                    opes.push(str)
-                }
-            }
-        }
-    }
+            expense.payment_method_id = payment_method.id
+    `;
     let countQuery = `
         SELECT COUNT(*) as totalCount
-        FROM asset
-        JOIN asset_category ON asset.asset_category_id = asset_category.id
+        FROM expense
     `;
-    if (opes.length > 0) {
-        const addChar = opes.join(' AND ')
-        query += ` WHERE ${addChar}`
-        countQuery += ` WHERE ${addChar}`
+    if (filters) {
+        const whereClause = buildSqlWhereClause('expense', filters)
+        query += ` ${whereClause}`
+        countQuery += ` ${whereClause}`
     }
     const orderParams = c.req.query('orders')
     if (orderParams) {
-        query += ' ORDER BY'
-        const fieldsArray = orderParams.split(',')
-        const orderClauses = []
-
-        for (const field of fieldsArray) {
-            let sortOrder = ''
-            let columnName = ''
-
-            if (field[0] === '-') {
-                sortOrder = 'DESC'
-                columnName = 'asset.' + field.slice(1)
-            } else {
-                sortOrder = 'ASC'
-                columnName = 'asset.' + field
-            }
-            orderClauses.push(`${columnName} ${sortOrder}`)
-        }
-        const orderByClause = orderClauses.join(', ') // 並べ替え条件の結合
+        const orderByClause = buildSqlOrderByClause('expense', orderParams)
         query += ` ${orderByClause}`
     }
-    const bindParams: any[] = []
     query += ` LIMIT ? OFFSET ?`;
-    bindParams.push(limit, offset)
-    const { results } = await db.prepare(query).bind(...bindParams).all<AssetWithCategory>();
+    const { results } = await db.prepare(query).bind(limit, offset).all<ExpenseWithDetails>();
+
     const totalCountResult = await db.prepare(countQuery).first<{ totalCount: number }>();
     // Set up ListResponse
-    const assets = results ?? [];
+    const expense = results ?? [];
     const totalCount = totalCountResult?.totalCount ?? 0;
     const pageSize = Math.ceil(totalCount / limit)
-    const response: AssetWithCategoryResponse = {
-        contents: assets,
+    const response: ExpenseWithDetailsResPonse = {
+        contents: expense,
         totalCount: totalCount,
         limit: limit,
         offset: offset,
@@ -108,38 +65,6 @@ export default createRoute(async (c) => {
 })
 
 export const POST = createRoute(async (c) => {
-    const db = c.env.DB
-    // リクエストボディから必要なデータを取得
-    const { date, amount, asset_category_id, description } = await c.req.json();
-    // バリデーションチェック
-    if (!date || !amount || !asset_category_id) {
-        return c.json({ error: 'date, amount, and asset_category_id are required' }, 400);
-    }
-    try {
-        const insertQuery = `
-        INSERT INTO asset (date, amount, asset_category_id, description)
-        VALUES (?, ?, ?, ?)
-    `;
-        const insertResult = await db.prepare(insertQuery)
-            .bind(date, amount, asset_category_id, description ?? null)
-            .run();
-        if (!insertResult.success) {
-            throw new Error("Failed to add asset");
-        }
-        // 挿入した資産を再度取得する
-        const selectQuery = `
-        SELECT 
-        asset.id, asset.date, asset.amount, asset.description, asset_category.name AS category_name
-        FROM asset
-        JOIN asset_category ON asset.asset_category_id = asset_category.id
-        ORDER BY asset.created_at DESC
-        LIMIT 1
-        `;
-        const newAsset = await db.prepare(selectQuery).first<AssetWithCategory>();
-        return c.json(newAsset, 201)
-    } catch (error) {
-        console.error('Error adding asset', error)
-        return c.json({ error: 'Failed to add asset' }, 500)
-    }
+
 })
 

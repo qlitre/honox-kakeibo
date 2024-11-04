@@ -113,3 +113,41 @@ INSERT INTO asset (date, amount, asset_category_id, description) VALUES ('2024-1
 INSERT INTO asset (date, amount, asset_category_id, description) VALUES ('2024-11-01', 145000, 2, '11月の日本株式残高');
 INSERT INTO asset (date, amount, asset_category_id, description) VALUES ('2024-11-01', 190000, 3, '11月の株式投信残高');
 INSERT INTO asset (date, amount, asset_category_id, description) VALUES ('2024-11-01', 72000, 4, '11月のビットコイン残高');
+
+-- Expense categories
+INSERT INTO expense_category (name) VALUES ('食費');
+INSERT INTO expense_category (name) VALUES ('交通費');
+INSERT INTO expense_category (name) VALUES ('家賃');
+INSERT INTO expense_category (name) VALUES ('娯楽');
+
+-- Payment methods
+INSERT INTO payment_method (method_name) VALUES ('現金');
+INSERT INTO payment_method (method_name) VALUES ('クレジットカード');
+INSERT INTO payment_method (method_name) VALUES ('デビットカード');
+INSERT INTO payment_method (method_name) VALUES ('電子マネー');
+
+-- Expense data from 2024-01 to 2024-11
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-01-05', 1500, 1, 1, 'ランチ代');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-01-10', 5000, 2, 2, '電車定期代');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-01-15', 80000, 3, 3, '家賃支払い');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-01-20', 3000, 4, 4, '映画鑑賞');
+
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-02-05', 1600, 1, 1, 'ランチ代');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-02-10', 5200, 2, 2, '電車定期代');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-02-15', 80000, 3, 3, '家賃支払い');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-02-20', 3500, 4, 4, 'カフェでの飲み物');
+
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-03-05', 1700, 1, 1, '昼食費');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-03-10', 5300, 2, 2, 'バス定期代');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-03-15', 80000, 3, 3, '家賃支払い');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-03-20', 4000, 4, 4, 'コンサートチケット');
+
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-04-05', 1800, 1, 1, 'ディナー代');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-04-10', 5400, 2, 2, '電車定期代');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-04-15', 80000, 3, 3, '家賃支払い');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-04-20', 3200, 4, 4, '映画チケット');
+
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-05-05', 1500, 1, 1, 'カフェでの軽食');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-05-10', 5500, 2, 2, 'タクシー代');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-05-15', 80000, 3, 3, '家賃支払い');
+INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-05-20', 2800, 4, 4, 'ミュージカル観劇');

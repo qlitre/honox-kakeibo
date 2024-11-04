@@ -39,6 +39,8 @@ export const assetMenu = () => {
         { name: '資産リスト', href: '/auth/asset' },
         { name: '資産ダッシュボード', href: `/auth/asset/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}` },
         { name: '資産カテゴリリスト', href: '/auth/asset_category' },
+        { name: '支出リスト', href: '/auth/expense' },
+
     ];
 }
 
