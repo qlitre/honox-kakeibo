@@ -1,5 +1,8 @@
 DROP TABLE IF EXISTS asset;
 DROP TABLE IF EXISTS asset_category;
+DROP TABLE IF EXISTS expense;
+DROP TABLE IF EXISTS expense_category;
+DROP TABLE IF EXISTS payment_method;
 
 CREATE TABLE IF NOT EXISTS asset_category (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,6 +21,34 @@ CREATE TABLE IF NOT EXISTS asset (
     updated_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (asset_category_id) REFERENCES asset_category(id) ON DELETE RESTRICT
 );
+
+CREATE TABLE IF NOT EXISTS expense_category (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS payment_method (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    method_name TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS expense (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    amount INTEGER NOT NULL,
+    expense_category_id INTEGER NOT NULL,
+    payment_method_id INTEGER NOT NULL,
+    description TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (expense_category_id) REFERENCES expense_category(id) ON DELETE RESTRICT,
+    FOREIGN KEY (payment_method_id) REFERENCES payment_method(id) ON DELETE RESTRICT
+);
+
 
 -- Asset categories
 INSERT INTO asset_category (name) VALUES ('現金');

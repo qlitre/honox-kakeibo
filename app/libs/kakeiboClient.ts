@@ -12,8 +12,6 @@ const isObject = (value: unknown): value is Record<string, unknown> => {
     return value !== null && typeof value === 'object';
 };
 
-
-
 const parseQuery = (queries: KakeiboQueries): string => {
     if (!isObject(queries)) {
         throw new Error('queries is not object');
@@ -39,7 +37,7 @@ class KakeiboClient {
     private baseUrl: string
 
     constructor({ token, baseUrl }: KakeiboClientOptions) {
-        this.token = token
+        this.token = token;
         this.baseUrl = baseUrl;
     }
     private async fetchKakeibo<T>(url: string, options?: RequestInit): Promise<T> {
