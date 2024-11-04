@@ -1,6 +1,11 @@
 import { createRoute } from 'honox/factory'
-import { AssetWithCategory } from '@/@types/dbTypes'
-import { schema, generateSelectQuery, generateUpdateQuery, getAndValidateFormData, generateQueryBindValues } from '@/utils/sqlUtils';
+import {
+    schema,
+    generateSelectQuery,
+    generateUpdateQuery,
+    getAndValidateFormData,
+    generateQueryBindValues
+} from '@/utils/sqlUtils';
 import type { TableName } from '@/utils/sqlUtils';
 
 
@@ -13,7 +18,7 @@ export default createRoute(async (c) => {
     let selectQuery = generateSelectQuery(tableName)
     selectQuery += ` WHERE ${tableName}.id = ?`
     const db = c.env.DB;
-    const { results } = await db.prepare(selectQuery).bind(id).all<AssetWithCategory>();
+    const { results } = await db.prepare(selectQuery).bind(id).all();
 
     if (results.length === 0) {
         return c.json({ error: `${tableName} not found` }, 404);
@@ -72,11 +77,11 @@ export const DELETE = createRoute(async (c) => {
             .bind(id ?? null)
             .run();
         if (!deleteResult.success) {
-            throw new Error("Failed to delete asset");
+            throw new Error(`Failed to delete ${tabaleName}`);
         }
         return c.json({ message: `${tabaleName} deleted successfully` }, 200)
     } catch (error: any) {
-        console.error('Error delete asset_category', error)
+        console.error(`Error delete ${tabaleName}`, error)
         if (error.message.includes('SQLITE_CONSTRAINT')) {
             return c.json({ error: 'このカテゴリは利用されているため削除できません。' }, 409)
         }

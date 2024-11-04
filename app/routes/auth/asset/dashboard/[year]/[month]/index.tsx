@@ -1,8 +1,8 @@
 import { createRoute } from 'honox/factory';
 import type { AssetCategoryResponse, AssetWithCategoryResponse } from '@/@types/dbTypes';
 import { KakeiboClient } from '@/libs/kakeiboClient';
-import { AssetPieChart } from '@/islands/AssetPieChart';
-import { AssetBarChart } from '@/islands/AssetBarChart';
+import { AssetPieChart } from '@/islands/asset/AssetPieChart';
+import { AssetBarChart } from '@/islands/asset/AssetBarChart';
 import {
     getPrevMonthYear,
     getPrevMonth,

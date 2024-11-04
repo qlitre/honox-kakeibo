@@ -1,5 +1,13 @@
 import { createRoute } from 'honox/factory'
-import { schema, generateSelectQuery, getAndValidateFormData, generateInsertQueryAndValues, buildSqlWhereClause, buildSqlOrderByClause } from '@/utils/sqlUtils'
+import {
+    schema,
+    generateSelectQuery,
+    getAndValidateFormData,
+    generateInsertQuery,
+    generateQueryBindValues,
+    buildSqlWhereClause,
+    buildSqlOrderByClause
+} from '@/utils/sqlUtils'
 import type { TableName } from '@/utils/sqlUtils';
 
 
@@ -67,8 +75,9 @@ export const POST = createRoute(async (c) => {
         return c.json({ error }, 400);
     }
     if (!data) return
-    // 動的にINSERTクエリとバインドする値を生成
-    const { insertQuery, values } = await generateInsertQueryAndValues(tableName, data);
+    // INSERTクエリとバインドする値を生成
+    const insertQuery = await generateInsertQuery(tableName);
+    const values = await generateQueryBindValues(tableName, data);
     try {
         const insertResult = await db.prepare(insertQuery)
             .bind(...values)
@@ -78,7 +87,7 @@ export const POST = createRoute(async (c) => {
         }
 
         let query = generateSelectQuery(tableName)
-        query += ` ORDER BY asset.created_at DESC LIMIT 1;`
+        query += ` ORDER BY ${tableName}.created_at DESC LIMIT 1;`
         const newItem = await db.prepare(query).first();
         return c.json(newItem, 201);
     } catch (error) {

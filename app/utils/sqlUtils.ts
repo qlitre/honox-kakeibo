@@ -82,16 +82,14 @@ export const schema: Schema = {
 
 export type TableName = keyof typeof schema;
 
-
 export const generateSelectQuery = (tableName: TableName) => {
-
     const tableConfig = schema[tableName];
     // フィールドを作成
-    let fields = tableConfig.fields.map(field => `${tableConfig.tableName}.${field}`).join(', ');
+    let fields = tableConfig.fields.map(field => `${tableName}.${field}`).join(', ');
     const joinFields = tableConfig.joinFields.join(', ');
     if (joinFields) fields += `, ${joinFields}`
-    // クエリを作成
-    let query = `SELECT ${fields} FROM ${tableConfig.tableName}`;
+
+    let query = `SELECT ${fields} FROM ${tableName}`;
     if (tableConfig.joins && tableConfig.joins.length > 0) {
         tableConfig.joins.forEach(join => {
             query += ` JOIN ${join.table} ON ${join.condition}`;
@@ -122,18 +120,21 @@ export const getAndValidateFormData = async (formData: Record<any, any>, tableNa
 }
 
 
-// 動的にINSERTクエリとバインドする値を生成する関数
-export const generateInsertQueryAndValues = async (tableName: TableName, data: Record<string, any>) => {
-    const fields = [...schema[tableName].requiredFields, ...schema[tableName].optionalFields].flat();
+// 動的にINSERTクエリを生成
+export const generateInsertQuery = async (tableName: TableName) => {
+    const fields = []
+    for (const field of schema[tableName].requiredFields) {
+        fields.push(field)
+    }
+    for (const field of schema[tableName].optionalFields) {
+        fields.push(field)
+    }
     const placeholders = fields.map(() => '?').join(', ');
-    const values = fields.map(field => data[field]);
-
     const insertQuery = `
       INSERT INTO ${tableName} (${fields.join(', ')})
       VALUES (${placeholders})
     `;
-
-    return { insertQuery, values };
+    return insertQuery
 }
 
 export const generateQueryBindValues = async (tableName: TableName, data: Record<string, any>) => {

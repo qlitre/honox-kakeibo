@@ -3,12 +3,12 @@ import { Button } from '@/islands/Button'
 import { ReactNode } from 'react'
 
 type Props = {
-    title: string;
+    modalTitle: string;
     actionUrl: string
     children: ReactNode;
 }
 
-export const DeleteModal: FC<Props> = ({ title, actionUrl, children }) => {
+export const DeleteModal: FC<Props> = ({ modalTitle, actionUrl, children }) => {
     const [open, setOpen] = useState(false)
     const handleClick = () => {
         setOpen(true)
@@ -27,7 +27,7 @@ export const DeleteModal: FC<Props> = ({ title, actionUrl, children }) => {
 
                     {/* Dialog Panel */}
                     <div className="relative z-20 w-full max-w-md transform overflow-hidden rounded-lg bg-white px-6 py-4 shadow-xl transition-all sm:max-w-lg">
-                        <h1 className="text-2xl font-bold mb-4 text-gray-800">{title}</h1>
+                        <h1 className="text-2xl font-bold mb-4 text-gray-800">{modalTitle}</h1>
                         <form action={actionUrl} method='post'>
                             {children}
                             <div className="mt-6 text-center">

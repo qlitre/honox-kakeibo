@@ -3,7 +3,7 @@ import { AssetCategoryResponse } from '@/@types/dbTypes'
 import { KakeiboClient } from '@/libs/kakeiboClient'
 import { PageHeader } from '@/components/PageHeader'
 import { getCookie } from 'hono/cookie'
-import { AlertSuccess } from '@/islands/AlertSuccess'
+import { AlertSuccess } from '@/islands/common/AlertSuccess'
 import { alertCookieKey } from '@/settings/kakeiboSettings'
 
 export default createRoute(async (c) => {

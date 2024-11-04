@@ -4,7 +4,7 @@ import { KakeiboClient } from '@/libs/kakeiboClient'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
 import { DeleteModal } from '@/islands/common/DeleteModal'
-import { AlertSuccess } from '@/islands/AlertSuccess'
+import { AlertSuccess } from '@/islands/common/AlertSuccess'
 import { getCookie } from 'hono/cookie'
 import { alertCookieKey } from '@/settings/kakeiboSettings'
 import { CreateModal } from '@/islands/common/CreateModal'
@@ -39,7 +39,7 @@ export default createRoute(async (c) => {
                 {message && <AlertSuccess message={message}></AlertSuccess>}
                 <div className="flex items-center justify-between">
                     <PageHeader title="資産リスト" />
-                    <CreateModal buttonType='primary' title='資産追加'>
+                    <CreateModal buttonType='primary' buttonTitle='資産追加' key={0}>
                         <AssetCreateForm title='資産追加' actionUrl='/auth/asset/create' categories={categories} />
                     </CreateModal>
                 </div>
@@ -83,7 +83,7 @@ export default createRoute(async (c) => {
                                                     {asset.description || '-'}
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 flex space-x-4 justify-center">
-                                                    <CreateModal buttonType='success' title='資産編集' key={asset.id}>
+                                                    <CreateModal buttonType='success' buttonTitle='編集' key={asset.id}>
                                                         <AssetCreateForm
                                                             data={{
                                                                 date: asset.date,
@@ -95,7 +95,7 @@ export default createRoute(async (c) => {
                                                             actionUrl={`/auth/asset/${asset.id}/update`}
                                                             categories={categories} key={asset.id} />
                                                     </CreateModal>
-                                                    <DeleteModal title='資産削除' actionUrl={`/auth/asset/${asset.id}/delete`} key={asset.id}>
+                                                    <DeleteModal modalTitle='資産削除' actionUrl={`/auth/asset/${asset.id}/delete`} key={asset.id}>
                                                         <AssetDeleteConfirm asset={asset} key={asset.id} />
                                                     </DeleteModal>
                                                 </td>

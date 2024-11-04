@@ -3,7 +3,7 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import type { AssetCategory, } from '@/@types/dbTypes';
 import { KakeiboClient } from '@/libs/kakeiboClient';
-import { AssetCategoryCreateForm } from '@/islands/AssetCategoryCreateForm';
+import { AssetCategoryCreateForm } from '@/islands/asset/AssetCategoryCreateForm';
 import { setCookie } from 'hono/cookie';
 import { alertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
 

@@ -4,18 +4,18 @@ import { ReactNode } from 'react'
 
 type Props = {
     buttonType: 'primary' | 'success'
-    title: string
+    buttonTitle: string
     children: ReactNode
 }
 
-export const CreateModal: FC<Props> = ({ buttonType, title, children }) => {
+export const CreateModal: FC<Props> = ({ buttonType, buttonTitle, children }) => {
     const [open, setOpen] = useState(false)
     const handleClick = () => {
         setOpen(true)
     }
     return (
         <>
-            <Button type={buttonType} onClick={handleClick}>{title}</Button>
+            <Button type={buttonType} onClick={handleClick}>{buttonTitle}</Button>
             {open && (
                 <div className="fixed inset-0 z-10 flex items-center justify-center">
                     {/* Backdrop */}
