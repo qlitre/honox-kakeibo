@@ -3,6 +3,7 @@ import build from '@hono/vite-build/cloudflare-pages'
 import honox from 'honox/vite'
 import { defineConfig } from 'vite'
 import { getPlatformProxy } from 'wrangler'
+import path from 'path';
 
 export default defineConfig(async ({ mode }) => {
   if (mode === 'client') {
@@ -22,6 +23,11 @@ export default defineConfig(async ({ mode }) => {
   } else {
     const { env, dispose } = await getPlatformProxy();
     return {
+      resolve: {
+        alias: {
+          '@': path.resolve(__dirname, 'app'), // src ディレクトリを '@' で参照できるように設定
+        },
+      },
       ssr: {
         external: ['react', 'react-dom', 'react-chartjs-2', 'chart.js', '@supabase/supabase-js'],
         noExternal: [],

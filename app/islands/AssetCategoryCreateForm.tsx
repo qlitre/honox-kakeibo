@@ -1,6 +1,6 @@
 import type { FC, ChangeEvent } from 'react'
 import { useState } from "react"
-import { PageHeader } from '../components/PageHeader'
+import { PageHeader } from '@/components/PageHeader'
 
 type Data = {
     name: string

@@ -1,18 +1,18 @@
 import { createRoute } from 'honox/factory';
-import type { AssetCategoryResponse, AssetWithCategoryResponse } from '../../../../../../@types/dbTypes';
-import { KakeiboClient } from '../../../../../../libs/kakeiboClient';
-import { AssetPieChart } from '../../../../../../islands/AssetPieChart';
-import { AssetBarChart } from '../../../../../../islands/AssetBarChart';
+import type { AssetCategoryResponse, AssetWithCategoryResponse } from '@/@types/dbTypes';
+import { KakeiboClient } from '@/libs/kakeiboClient';
+import { AssetPieChart } from '@/islands/AssetPieChart';
+import { AssetBarChart } from '@/islands/AssetBarChart';
 import {
     getPrevMonthYear,
     getPrevMonth,
     getBeginningOfMonth,
     getEndOfMonth,
     getAnnualStartYear,
-} from '../../../../../../utils/dashboardUtils';
-import { annualStartMonth } from '../../../../../../settings/kakeiboSettings';
-import { PageHeader } from '../../../../../../components/PageHeader';
-import { MonthPager } from '../../../../../../components/MonthPager';
+} from '@/utils/dashboardUtils';
+import { annualStartMonth } from '@/settings/kakeiboSettings';
+import { PageHeader } from '@/components/PageHeader';
+import { MonthPager } from '@/components/MonthPager';
 
 
 export default createRoute(async (c) => {

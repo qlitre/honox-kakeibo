@@ -1,7 +1,7 @@
 import { createRoute } from 'honox/factory'
-import { AssetWithCategory } from '../../../../@types/dbTypes'
-import { schema, generateSelectQuery, generateUpdateQuery, getAndValidateFormData, generateQueryBindValues } from '../../../../utils/sqlUtils';
-import type { TableName } from '../../../../utils/sqlUtils';
+import { AssetWithCategory } from '@/@types/dbTypes'
+import { schema, generateSelectQuery, generateUpdateQuery, getAndValidateFormData, generateQueryBindValues } from '@/utils/sqlUtils';
+import type { TableName } from '@/utils/sqlUtils';
 
 
 export default createRoute(async (c) => {

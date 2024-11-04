@@ -1,4 +1,4 @@
-import { annualStartMonth } from "../settings/kakeiboSettings"
+import { annualStartMonth } from "@/settings/kakeiboSettings"
 
 // 前月の年を返す
 export const getPrevMonthYear = (year: number, month: number) => {

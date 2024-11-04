@@ -1,11 +1,12 @@
 import { createRoute } from 'honox/factory'
-import { ExpenseCategoryResponse, ExpenseWithDetailsResPonse, PaymentMethodResponse } from '../../../@types/dbTypes'
-import { KakeiboClient } from '../../../libs/kakeiboClient'
-import { PageHeader } from '../../../components/PageHeader'
-import { Pagination } from '../../../components/Pagination'
-import { AlertSuccess } from '../../../islands/AlertSuccess'
+import { ExpenseCategoryResponse, ExpenseWithDetailsResPonse, PaymentMethodResponse } from '@/@types/dbTypes'
+import { KakeiboClient } from '@/libs/kakeiboClient'
+import { PageHeader } from '@/components/PageHeader'
+import { Pagination } from '@/components/Pagination'
+import { AlertSuccess } from '@/islands/AlertSuccess'
 import { getCookie } from 'hono/cookie'
-import { alertCookieKey } from '../../../settings/kakeiboSettings'
+import { alertCookieKey } from '@/settings/kakeiboSettings'
+
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
@@ -20,13 +21,11 @@ export default createRoute(async (c) => {
             offset: offset
         }
     })
-    /** 
     const categories = await client.getListResponse<ExpenseCategoryResponse>({
         endpoint: 'expense_category', queries: {
             limit: 100
         }
     })
-        */
     const pageSize = assets.pageSize
     const query = c.req.query()
     const message = getCookie(c, alertCookieKey)

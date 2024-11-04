@@ -1,7 +1,7 @@
 import { ArcElement, Legend, Tooltip, Chart as chartJs, ChartOptions } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import { colorSchema } from '../settings/kakeiboSettings';
-import type { AssetWithCategory } from '../@types/dbTypes';
+import { colorSchema } from '@/settings/kakeiboSettings';
+import type { AssetWithCategory } from '@/@types/dbTypes';
 
 type Props = {
   assets: AssetWithCategory[]

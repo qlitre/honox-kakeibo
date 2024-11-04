@@ -1,10 +1,10 @@
 import { createRoute } from 'honox/factory'
-import { AssetCategoryResponse } from '../../../@types/dbTypes'
-import { KakeiboClient } from '../../../libs/kakeiboClient'
-import { PageHeader } from '../../../components/PageHeader'
+import { AssetCategoryResponse } from '@/@types/dbTypes'
+import { KakeiboClient } from '@/libs/kakeiboClient'
+import { PageHeader } from '@/components/PageHeader'
 import { getCookie } from 'hono/cookie'
-import { AlertSuccess } from '../../../islands/AlertSuccess'
-import { alertCookieKey } from '../../../settings/kakeiboSettings'
+import { AlertSuccess } from '@/islands/AlertSuccess'
+import { alertCookieKey } from '@/settings/kakeiboSettings'
 
 export default createRoute(async (c) => {
     const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })

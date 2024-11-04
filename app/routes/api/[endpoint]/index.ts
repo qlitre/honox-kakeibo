@@ -1,6 +1,6 @@
 import { createRoute } from 'honox/factory'
-import { schema, generateSelectQuery, getAndValidateFormData, generateInsertQueryAndValues, buildSqlWhereClause, buildSqlOrderByClause } from '../../../utils/sqlUtils'
-import type { TableName } from '../../../utils/sqlUtils';
+import { schema, generateSelectQuery, getAndValidateFormData, generateInsertQueryAndValues, buildSqlWhereClause, buildSqlOrderByClause } from '@/utils/sqlUtils'
+import type { TableName } from '@/utils/sqlUtils';
 
 
 export default createRoute(async (c) => {

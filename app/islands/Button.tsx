@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { BaseProps } from '../@types/common'
+import { BaseProps } from '@/@types/common'
 import { ReactNode } from 'react';
 
 type Props = BaseProps & {

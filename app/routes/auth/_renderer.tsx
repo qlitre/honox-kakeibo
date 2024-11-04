@@ -1,5 +1,5 @@
 import { reactRenderer } from '@hono/react-renderer'
-import { Header } from '../../islands/Header'
+import { Header } from '@/islands/Header'
 
 export default reactRenderer(({ children, Layout, title }) => {
     return (

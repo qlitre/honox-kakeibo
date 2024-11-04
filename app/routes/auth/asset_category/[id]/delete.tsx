@@ -1,9 +1,9 @@
 import { createRoute } from 'honox/factory'
-import type { AssetCategory } from '../../../../@types/dbTypes';
-import { KakeiboClient } from '../../../../libs/kakeiboClient';
-import { AssetCategoryDeleteForm } from '../../../../islands/AssetCategoryDeleteForm';
+import type { AssetCategory } from '@/@types/dbTypes';
+import { KakeiboClient } from '@/libs/kakeiboClient';
+import { AssetCategoryDeleteForm } from '@/islands/AssetCategoryDeleteForm';
 import { setCookie } from 'hono/cookie';
-import { alertCookieKey, alertCookieMaxage } from '../../../../settings/kakeiboSettings';
+import { alertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
 
 
 export default createRoute(async (c) => {

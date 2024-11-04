@@ -1,7 +1,7 @@
 import { createRoute } from 'honox/factory'
-import { KakeiboClient } from '../../../../libs/kakeiboClient';
+import { KakeiboClient } from '@/libs/kakeiboClient';
 import { setCookie } from 'hono/cookie';
-import { alertCookieKey, alertCookieMaxage } from '../../../../settings/kakeiboSettings';
+import { alertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
 
 export const POST = createRoute(
     async (c) => {

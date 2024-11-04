@@ -1,6 +1,6 @@
 import type { FC } from 'react'
-import type { AssetCategory } from '../@types/dbTypes'
-import { PageHeader } from '../components/PageHeader'
+import type { AssetCategory } from '@/@types/dbTypes'
+import { PageHeader } from '@/components/PageHeader'
 
 type Props = {
     errorMessage?: string;

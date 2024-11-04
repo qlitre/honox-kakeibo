@@ -6,7 +6,7 @@ import {
     AddRequest,
     UpdateRequest,
     DeleteRequest
-} from "../@types/types";
+} from "@/@types/types";
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
     return value !== null && typeof value === 'object';

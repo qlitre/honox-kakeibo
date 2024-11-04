@@ -1,5 +1,5 @@
 import { createRoute } from 'honox/factory';
-import { assetMenu } from '../../settings/kakeiboSettings';
+import { assetMenu } from '@/settings/kakeiboSettings';
 
 export default createRoute(async (c) => {
   const assetItems = assetMenu()
