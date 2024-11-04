@@ -6,6 +6,9 @@ import { Pagination } from '../../../components/Pagination'
 import { DeleteModal } from '../../../islands/DeleteModal'
 import { EditModal } from '../../../islands/EditModal'
 import { CreateModal } from '../../../islands/CreateModal'
+import { AlertSuccess } from '../../../islands/AlertSuccess'
+import { getCookie } from 'hono/cookie'
+import { alertCookieKey } from '../../../settings/kakeiboSettings'
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
@@ -28,10 +31,12 @@ export default createRoute(async (c) => {
     })
     const pageSize = assets.pageSize
     const query = c.req.query()
+    const message = getCookie(c, alertCookieKey)
 
     return c.render(
         <>
             <div className="px-4 sm:px-6 lg:px-8">
+                {message && <AlertSuccess message={message}></AlertSuccess>}
                 <div className="flex items-center justify-between">
                     <PageHeader title="資産リスト" />
                     <CreateModal categories={categories} />

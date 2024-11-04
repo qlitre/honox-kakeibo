@@ -2,6 +2,9 @@ import { createRoute } from 'honox/factory'
 import type { AssetCategory } from '../../../../@types/dbTypes';
 import { KakeiboClient } from '../../../../libs/kakeiboClient';
 import { AssetCategoryDeleteForm } from '../../../../islands/AssetCategoryDeleteForm';
+import { setCookie } from 'hono/cookie';
+import { alertCookieKey, alertCookieMaxage } from '../../../../settings/kakeiboSettings';
+
 
 export default createRoute(async (c) => {
     const id = c.req.param('id')
@@ -15,7 +18,7 @@ export default createRoute(async (c) => {
     );
 })
 
-// frontend
+
 export const POST = createRoute(
     async (c) => {
         const id = c.req.param('id')
@@ -23,6 +26,7 @@ export const POST = createRoute(
         const client = new KakeiboClient(token)
         try {
             const r = await client.deleteData<AssetCategory>({ endpoint: 'asset_category', contentId: id })
+            setCookie(c, alertCookieKey, '資産カテゴリの削除に成功しました', { maxAge: alertCookieMaxage })
             return c.redirect('/auth/asset_category', 303)
         } catch (e: any) {
             console.error(e)

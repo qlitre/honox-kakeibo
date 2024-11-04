@@ -40,4 +40,9 @@ export const assetMenu = () => {
         { name: '資産ダッシュボード', href: `/auth/asset/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}` },
         { name: '資産カテゴリリスト', href: '/auth/asset_category' },
     ];
-} 
+}
+
+// alertメッセージのキー
+export const alertCookieKey = 'message'
+// alertメッセージの保持期間
+export const alertCookieMaxage = 1

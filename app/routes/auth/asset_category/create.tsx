@@ -4,6 +4,8 @@ import { z } from 'zod'
 import type { AssetCategory } from '../../../@types/dbTypes';
 import { KakeiboClient } from '../../../libs/kakeiboClient';
 import { AssetCategoryCreateForm } from '../../../islands/AssetCategoryCreateForm';
+import { setCookie } from 'hono/cookie';
+import { alertCookieKey, alertCookieMaxage } from '../../../settings/kakeiboSettings';
 
 const schema = z.object({
     name: z.string().min(1),
@@ -38,6 +40,6 @@ export const POST = createRoute(
         }
         const response = await client.addData<AssetCategory>({ endpoint: 'asset_category', data: body })
             .catch((e) => { console.error(e) })
-
+        setCookie(c, alertCookieKey, '資産カテゴリ追加に成功しました', { maxAge: alertCookieMaxage })
         return c.redirect('/auth/asset_category', 303);
     })
