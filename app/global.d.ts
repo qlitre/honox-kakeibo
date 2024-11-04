@@ -10,6 +10,7 @@ declare module 'hono' {
       PROJECT_URL: string;
       API_KEY: string;
       HONO_IS_COOL: string;
+      BASE_URL: string;
       DB: D1Database;
     }
   }

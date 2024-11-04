@@ -16,8 +16,7 @@ import { MonthPager } from '../../../../../../components/MonthPager';
 
 
 export default createRoute(async (c) => {
-    const token = c.env.HONO_IS_COOL;
-    const client = new KakeiboClient(token);
+    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
     const year = parseInt(c.req.param('year'));
     const month = parseInt(c.req.param('month'));
     const ge = getBeginningOfMonth(year, month)

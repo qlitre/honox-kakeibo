@@ -15,8 +15,7 @@ const formTitle = '資産カテゴリ編集'
 const formActionUrl = (id: string) => `/auth/asset_category/${id}/update`
 
 export default createRoute(async (c) => {
-    const token = c.env.HONO_IS_COOL
-    const client = new KakeiboClient(token)
+    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
     const id = c.req.param('id')
     const assetDetail = await client.getDetail<AssetCategory>({ endpoint: 'asset_category', contentId: id })
     return c.render(
@@ -42,8 +41,7 @@ export const POST = createRoute(
     }),
     async (c) => {
         const id = c.req.param('id')
-        const token = c.env.HONO_IS_COOL
-        const client = new KakeiboClient(token)
+        const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
         const { name } = c.req.valid('form')
         const body = {
             name

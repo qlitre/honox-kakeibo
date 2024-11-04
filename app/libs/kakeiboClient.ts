@@ -1,4 +1,5 @@
 import {
+    KakeiboClientOptions,
     KakeiboQueries,
     GetListRequest,
     GetDetailRequest,
@@ -10,6 +11,8 @@ import {
 const isObject = (value: unknown): value is Record<string, unknown> => {
     return value !== null && typeof value === 'object';
 };
+
+
 
 const parseQuery = (queries: KakeiboQueries): string => {
     if (!isObject(queries)) {
@@ -30,12 +33,14 @@ const parseQuery = (queries: KakeiboQueries): string => {
     return queryString;
 };
 
+
 class KakeiboClient {
     private token: string;
     private baseUrl: string
-    constructor(token: string) {
+
+    constructor({ token, baseUrl }: KakeiboClientOptions) {
         this.token = token
-        this.baseUrl = `http://localhost:5173/api`;
+        this.baseUrl = baseUrl;
     }
     private async fetchKakeibo<T>(url: string, options?: RequestInit): Promise<T> {
         const defaultOptions = {

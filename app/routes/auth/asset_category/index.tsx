@@ -7,8 +7,7 @@ import { AlertSuccess } from '../../../islands/AlertSuccess'
 import { alertCookieKey } from '../../../settings/kakeiboSettings'
 
 export default createRoute(async (c) => {
-    const token = c.env.HONO_IS_COOL
-    const client = new KakeiboClient(token)
+    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
     const asset_categories = await client.getListResponse<AssetCategoryResponse>({
         endpoint: 'asset_category', queries: {
             orders: 'id'

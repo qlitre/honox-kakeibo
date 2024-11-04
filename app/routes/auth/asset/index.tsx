@@ -15,8 +15,7 @@ export default createRoute(async (c) => {
     const p = parseInt(page)
     const limit = 10
     const offset = limit * (p - 1)
-    const token = c.env.HONO_IS_COOL
-    const client = new KakeiboClient(token)
+    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
     const assets = await client.getListResponse<AssetWithCategoryResponse>({
         endpoint: 'asset', queries: {
             orders: '-date,asset_category_id',

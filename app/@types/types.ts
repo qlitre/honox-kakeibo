@@ -1,3 +1,8 @@
+export type KakeiboClientOptions = {
+    token: string;
+    baseUrl: string;
+}
+
 export type KakeiboQueries = {
     limit?: number;
     offset?: number;

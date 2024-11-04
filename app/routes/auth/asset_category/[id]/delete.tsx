@@ -8,8 +8,7 @@ import { alertCookieKey, alertCookieMaxage } from '../../../../settings/kakeiboS
 
 export default createRoute(async (c) => {
     const id = c.req.param('id')
-    const token = c.env.HONO_IS_COOL
-    const client = new KakeiboClient(token)
+    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
     const detail = await client.getDetail<AssetCategory>({ endpoint: 'asset_category', contentId: id })
     return c.render(
         <>
@@ -22,8 +21,7 @@ export default createRoute(async (c) => {
 export const POST = createRoute(
     async (c) => {
         const id = c.req.param('id')
-        const token = c.env.HONO_IS_COOL
-        const client = new KakeiboClient(token)
+        const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
         try {
             const r = await client.deleteData<AssetCategory>({ endpoint: 'asset_category', contentId: id })
             setCookie(c, alertCookieKey, '資産カテゴリの削除に成功しました', { maxAge: alertCookieMaxage })

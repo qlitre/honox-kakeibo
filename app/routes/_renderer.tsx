@@ -12,7 +12,7 @@ export default reactRenderer(({ children, title }) => {
           <script type='module' src='/app/client.ts'></script>
         )}
         {import.meta.env.PROD ? (
-          <link href='static/assets/style.css' rel='stylesheet' />
+          <link href='/static/assets/style.css' rel='stylesheet' />
         ) : (
           <link href='/app/style.css' rel='stylesheet' />
         )}
