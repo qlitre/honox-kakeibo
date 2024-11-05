@@ -1,19 +1,17 @@
-import { useState, FC, Children } from 'react'
+import { useState, FC } from 'react'
 import { Button } from '@/islands/Button'
-import { ReactNode } from 'react'
+import type { ExpenseWithDetails } from '@/@types/dbTypes'
 
 type Props = {
-    modalTitle: string;
     actionUrl: string
-    children: ReactNode;
+    expense: ExpenseWithDetails
 }
 
-export const DeleteModal: FC<Props> = ({ modalTitle, actionUrl, children }) => {
+export const ExpenseDeleteModal: FC<Props> = ({ actionUrl, expense }) => {
     const [open, setOpen] = useState(false)
     const handleClick = () => {
         setOpen(true)
     }
-
     return (
         <>
             <Button type='danger' onClick={handleClick}>削除</Button>
@@ -27,9 +25,22 @@ export const DeleteModal: FC<Props> = ({ modalTitle, actionUrl, children }) => {
 
                     {/* Dialog Panel */}
                     <div className="relative z-20 w-full max-w-md transform overflow-hidden rounded-lg bg-white px-6 py-4 shadow-xl transition-all sm:max-w-lg">
-                        <h1 className="text-2xl font-bold mb-4 text-gray-800">{modalTitle}</h1>
+                        <h1 className="text-2xl font-bold mb-4 text-gray-800">支出削除</h1>
                         <form action={actionUrl} method='post'>
-                            {children}
+                            <div className="mb-4">
+                                <p className="text-lg mb-2">
+                                    <strong>詳細：</strong> {expense.description || '説明なし'}
+                                </p>
+                                <p className="text-lg mb-2">
+                                    <strong>カテゴリ：</strong> {expense.category_name}
+                                </p>
+                                <p className="text-lg mb-2">
+                                    <strong>支払い方法：</strong> {expense.payment_method_name}
+                                </p>
+                                <p className="text-lg font-semibold">
+                                    <strong>金額：</strong> {expense.amount}円
+                                </p>
+                            </div>
                             <div className="mt-6 text-center">
                                 <p className="text-sm text-gray-500 mb-4">
                                     削除すると元に戻せません。本当に削除しますか？

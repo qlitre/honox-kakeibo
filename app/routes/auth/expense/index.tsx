@@ -3,13 +3,11 @@ import { ExpenseCategoryResponse, ExpenseWithDetailsResPonse, PaymentMethodRespo
 import { KakeiboClient } from '@/libs/kakeiboClient'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
-import { AlertSuccess } from '@/islands/common/AlertSuccess'
+import { AlertSuccess } from '@/islands/share/AlertSuccess'
 import { getCookie } from 'hono/cookie'
 import { alertCookieKey } from '@/settings/kakeiboSettings'
-import { CreateModal } from '@/islands/common/CreateModal'
-import { ExpenseCreateForm } from '@/islands/expense/ExpenseCreateForm'
-import { DeleteModal } from '@/islands/common/DeleteModal'
-import { ExpenseDeleteConfirm } from '@/islands/expense/ExpenseDeleteConfirm'
+import { ExpenseDeleteModal } from '@/islands/expense/ExpenseDeleteModal'
+import { ExpenseCreateModal } from '@/islands/expense/ExpenseCreateModal'
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
@@ -44,13 +42,15 @@ export default createRoute(async (c) => {
                 {message && <AlertSuccess message={message}></AlertSuccess>}
                 <div className="flex items-center justify-between">
                     <PageHeader title="支出リスト" />
-                    <CreateModal buttonType='primary' buttonTitle='支出追加' key={0}>
-                        <ExpenseCreateForm
-                            title='支出追加'
-                            actionUrl='/auth/expense/create'
-                            categories={categories}
-                            payment_methods={paymentMethods} />
-                    </CreateModal>
+                    <ExpenseCreateModal
+                        buttonType='primary'
+                        buttonTitle='支出追加'
+                        title='支出追加'
+                        actionUrl='/auth/expense/create'
+                        categories={categories}
+                        payment_methods={paymentMethods}
+                    />
+
                 </div>
                 <div className="mt-8 flow-root">
                     <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -98,24 +98,22 @@ export default createRoute(async (c) => {
                                                     {expense.description || '-'}
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 flex space-x-4 justify-center">
-                                                    <CreateModal buttonType='success' buttonTitle='編集' key={expense.id}>
-                                                        <ExpenseCreateForm key={expense.id}
-                                                            data={{
-                                                                date: expense.date,
-                                                                amount: String(expense.amount),
-                                                                expense_category_id: String(expense.expense_category_id),
-                                                                payment_method_id: String(expense.payment_method_id),
-                                                                description: expense.description || ''
-                                                            }}
-                                                            title='支出編集'
-                                                            actionUrl={`/auth/expense/${expense.id}/update`}
-                                                            categories={categories}
-                                                            payment_methods={paymentMethods}
-                                                        ></ExpenseCreateForm>
-                                                    </CreateModal>
-                                                    <DeleteModal modalTitle='支出削除' actionUrl={`/auth/expense/${expense.id}/delete`} key={expense.id}>
-                                                        <ExpenseDeleteConfirm expense={expense} key={expense.id} />
-                                                    </DeleteModal>
+                                                    <ExpenseCreateModal
+                                                        buttonType='success'
+                                                        buttonTitle='編集'
+                                                        data={{
+                                                            date: expense.date,
+                                                            amount: String(expense.amount),
+                                                            expense_category_id: String(expense.expense_category_id),
+                                                            payment_method_id: String(expense.payment_method_id),
+                                                            description: expense.description || ''
+                                                        }}
+                                                        title='支出編集'
+                                                        actionUrl={`/auth/expense/${expense.id}/update`}
+                                                        categories={categories}
+                                                        payment_methods={paymentMethods}>
+                                                    </ExpenseCreateModal>
+                                                    <ExpenseDeleteModal actionUrl={`/auth/expense/${expense.id}/delete`} expense={expense} />
 
                                                 </td>
                                             </tr>

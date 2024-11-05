@@ -3,13 +3,11 @@ import { AssetCategoryResponse, AssetWithCategoryResponse } from '@/@types/dbTyp
 import { KakeiboClient } from '@/libs/kakeiboClient'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
-import { DeleteModal } from '@/islands/common/DeleteModal'
-import { AlertSuccess } from '@/islands/common/AlertSuccess'
+import { AssetDeleteModal } from '@/islands/asset/AssetDeleteModal'
+import { AlertSuccess } from '@/islands/share/AlertSuccess'
 import { getCookie } from 'hono/cookie'
 import { alertCookieKey } from '@/settings/kakeiboSettings'
-import { CreateModal } from '@/islands/common/CreateModal'
-import { AssetCreateForm } from '@/islands/asset/AssetCreateForm'
-import { AssetDeleteConfirm } from '@/islands/asset/AssetDeleteConfirm'
+import { AssetCreateModal } from '@/islands/asset/AssetCreateModal'
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
@@ -39,9 +37,13 @@ export default createRoute(async (c) => {
                 {message && <AlertSuccess message={message}></AlertSuccess>}
                 <div className="flex items-center justify-between">
                     <PageHeader title="資産リスト" />
-                    <CreateModal buttonType='primary' buttonTitle='資産追加' key={0}>
-                        <AssetCreateForm title='資産追加' actionUrl='/auth/asset/create' categories={categories} />
-                    </CreateModal>
+                    <AssetCreateModal
+                        buttonType='primary'
+                        buttonTitle='資産追加'
+                        title='資産追加'
+                        actionUrl='/auth/asset/create'
+                        categories={categories} >
+                    </AssetCreateModal>
                 </div>
                 <div className="mt-8 flow-root">
                     <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -83,21 +85,20 @@ export default createRoute(async (c) => {
                                                     {asset.description || '-'}
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 flex space-x-4 justify-center">
-                                                    <CreateModal buttonType='success' buttonTitle='編集' key={asset.id}>
-                                                        <AssetCreateForm
-                                                            data={{
-                                                                date: asset.date,
-                                                                amount: String(asset.amount),
-                                                                asset_category_id: String(asset.asset_category_id),
-                                                                description: asset.description || ''
-                                                            }}
-                                                            title='編集'
-                                                            actionUrl={`/auth/asset/${asset.id}/update`}
-                                                            categories={categories} key={asset.id} />
-                                                    </CreateModal>
-                                                    <DeleteModal modalTitle='資産削除' actionUrl={`/auth/asset/${asset.id}/delete`} key={asset.id}>
-                                                        <AssetDeleteConfirm asset={asset} key={asset.id} />
-                                                    </DeleteModal>
+                                                    <AssetCreateModal
+                                                        buttonType='success'
+                                                        buttonTitle='編集'
+                                                        data={{
+                                                            date: asset.date,
+                                                            amount: String(asset.amount),
+                                                            asset_category_id: String(asset.asset_category_id),
+                                                            description: asset.description || ''
+                                                        }}
+                                                        title='編集'
+                                                        actionUrl={`/auth/asset/${asset.id}/update`}
+                                                        categories={categories} key={asset.id}>
+                                                    </AssetCreateModal>
+                                                    <AssetDeleteModal actionUrl={`/auth/asset/${asset.id}/delete`} asset={asset} />
                                                 </td>
                                             </tr>
                                         ))}

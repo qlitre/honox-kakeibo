@@ -8,6 +8,11 @@ import path from 'path';
 export default defineConfig(async ({ mode }) => {
   if (mode === 'client') {
     return {
+      resolve: {
+        alias: {
+          '@': path.resolve(__dirname, 'app'), // src ディレクトリを '@' で参照できるように設定
+        },
+      },
       build: {
         rollupOptions: {
           input: ['./app/client.ts', './app/style.css'],
