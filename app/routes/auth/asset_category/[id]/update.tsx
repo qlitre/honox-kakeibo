@@ -3,7 +3,7 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import type { AssetCategory, } from '@/@types/dbTypes';
 import { KakeiboClient } from '@/libs/kakeiboClient';
-import { AssetCategoryCreateForm } from '@/islands/asset/AssetCategoryCreateForm';
+import { CategoryCreateForm } from '@/components/share/CategoryCreateForm';
 import { setCookie } from 'hono/cookie';
 import { alertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
 
@@ -11,23 +11,27 @@ const schema = z.object({
     name: z.string().min(1),
 });
 
-const formTitle = '資産カテゴリ編集'
+const title = '資産カテゴリ編集'
 const formActionUrl = (id: string) => `/auth/asset_category/${id}/update`
+const endPoint = 'asset_category'
+const successMesage = '資産カテゴリの編集に成功しました'
+const redirectUrl = '/auth/asset_category'
 
 export default createRoute(async (c) => {
     const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
     const id = c.req.param('id')
-    const assetDetail = await client.getDetail<AssetCategory>({ endpoint: 'asset_category', contentId: id })
+    const detail = await client.getDetail<AssetCategory>({ endpoint: endPoint, contentId: id })
     return c.render(
         <>
-            <AssetCategoryCreateForm data={{
-                name: assetDetail.name,
-            }} title={formTitle} actionUrl={formActionUrl(id)}></AssetCategoryCreateForm>
+            <CategoryCreateForm
+                data={{ name: detail.name }}
+                title={title}
+                actionUrl={formActionUrl(id)}
+            />
         </>,
-        { title: '資産カテゴリ編集' }
+        { title: title }
     )
 })
-
 
 export const POST = createRoute(
     zValidator('form', schema, async (result, c) => {
@@ -35,8 +39,8 @@ export const POST = createRoute(
             const id = c.req.param('id')
             const { name } = result.data
             return c.render(
-                <AssetCategoryCreateForm data={{ name, error: result.error.flatten().fieldErrors }}
-                    title={formTitle} actionUrl={formActionUrl(id)} />)
+                <CategoryCreateForm data={{ name, error: result.error.flatten().fieldErrors }}
+                    title={title} actionUrl={formActionUrl(id)} />)
         }
     }),
     async (c) => {
@@ -46,8 +50,8 @@ export const POST = createRoute(
         const body = {
             name
         }
-        const response = await client.updateData<AssetCategory>({ endpoint: 'asset_category', contentId: id, data: body })
+        const response = await client.updateData<AssetCategory>({ endpoint: endPoint, contentId: id, data: body })
             .catch((e) => { console.error(e) })
-        setCookie(c, alertCookieKey, '資産カテゴリの編集に成功しました', { maxAge: alertCookieMaxage })
-        return c.redirect('/auth/asset_category', 303);
+        setCookie(c, alertCookieKey, successMesage, { maxAge: alertCookieMaxage })
+        return c.redirect(redirectUrl, 303);
     })

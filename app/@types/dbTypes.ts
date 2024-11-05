@@ -1,4 +1,4 @@
-type KakeiboBaseField = {
+export type KakeiboBaseField = {
     created_at: string;
     updated_at: string
 }

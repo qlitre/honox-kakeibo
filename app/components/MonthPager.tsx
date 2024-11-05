@@ -5,7 +5,7 @@ import {
     getPrevMonth,
     getNextMonthYear,
     getNextMonth,
-} from '../utils/dashboardUtils';
+} from '@/utils/dashboardUtils';
 
 type Props = BaseProps & {
     year: number;

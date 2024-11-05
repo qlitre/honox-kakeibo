@@ -1,5 +1,4 @@
-import type { FC, ChangeEvent } from 'react'
-import { useState } from "react"
+import type { FC } from 'react'
 import { PageHeader } from '@/components/PageHeader'
 
 type Data = {
@@ -13,20 +12,7 @@ type Props = {
     actionUrl: string;
 }
 
-export const AssetCategoryCreateForm: FC<Props> = ({ data, title, actionUrl }) => {
-    const [formData, setFormData] = useState<Data>({
-        name: data?.name || '',
-        error: data?.error,
-    });
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
+export const CategoryCreateForm: FC<Props> = ({ data, title, actionUrl }) => {
     return (
         <>
             <PageHeader title={title}></PageHeader>
@@ -41,10 +27,9 @@ export const AssetCategoryCreateForm: FC<Props> = ({ data, title, actionUrl }) =
                         name="name"
                         required
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        value={formData.name}
-                        onChange={handleChange}
+                        value={data?.name}
                     />
-                    {formData.error?.name && <p className="text-red-500 text-sm mt-1">{formData.error.name}</p>}
+                    {data?.error?.name && <p className="text-red-500 text-sm mt-1">{data.error.name}</p>}
                 </div>
                 <div>
                     <button
