@@ -34,3 +34,4 @@ lerna-debug.log*
 .DS_Store
 wrangler.toml
 wrangler_command.txt
+testdata.sql

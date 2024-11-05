@@ -51,7 +51,7 @@ export const AssetPieChart = (props: Props) => {
   };
 
   return (
-    <div className='h-64'>
+    <div>
       <Pie data={data} options={options} />
     </div>
   );

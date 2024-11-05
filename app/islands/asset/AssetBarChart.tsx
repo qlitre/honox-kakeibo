@@ -79,7 +79,7 @@ export const AssetBarChart = (props: Props) => {
     };
 
     return (
-        <div className='h-64'>
+        <div className='h-80'>
             <Bar data={data} options={options} />;
         </div>
     )

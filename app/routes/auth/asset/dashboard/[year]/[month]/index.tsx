@@ -193,8 +193,8 @@ export default createRoute(async (c) => {
                         </tbody>
                     </table>
                 </div>
-                <div className="flex-1 bg-white shadow-md rounded-lg p-4">
-                    <div className="flex items-center justify-center">
+                <div className="flex-2 bg-white shadow-md rounded-lg p-4 flex items-center justify-center">
+                    <div className="w-96">
                         <AssetPieChart assets={asset.contents}></AssetPieChart>
                     </div>
                 </div>
