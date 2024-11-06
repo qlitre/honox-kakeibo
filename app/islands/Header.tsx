@@ -31,13 +31,13 @@ export const Header: FC = () => {
                 <nav className="ml-auto hidden md:flex items-center space-x-8">
                     <FlyoutMenu items={menuItems['資産メニュー']} title="資産メニュー" />
                     <FlyoutMenu items={menuItems['支出メニュー']} title="支出メニュー" />
+                    <FlyoutMenu items={menuItems['収入メニュー']} title="収入メニュー" />
                     {navItems.map((item, i) => (
                         <a href={item.href} className="text-lg font-semibold" key={i}>
                             {item.name}
                         </a>
                     ))}
                 </nav>
-
                 {/* md以下の画面幅で表示されるメニューアイコン */}
                 <button
                     onClick={toggleMenu}

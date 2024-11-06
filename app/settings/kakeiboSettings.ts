@@ -48,6 +48,10 @@ export const kakeiboMenu = () => {
             { name: '支出カテゴリリスト', href: '/auth/expense_category' },
             { name: '支払い方法リスト', href: '/auth/payment_method' },
         ],
+        '収入メニュー': [
+            { name: '収入リスト', href: '/auth/income' },
+            { name: '収入カテゴリリスト', href: '/auth/income_category' },
+        ],
     };
 };
 
