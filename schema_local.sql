@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS expense_category (
 
 CREATE TABLE IF NOT EXISTS payment_method (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    method_name TEXT NOT NULL,
+    name TEXT NOT NULL,
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
 );
@@ -121,10 +121,10 @@ INSERT INTO expense_category (name) VALUES ('家賃');
 INSERT INTO expense_category (name) VALUES ('娯楽');
 
 -- Payment methods
-INSERT INTO payment_method (method_name) VALUES ('現金');
-INSERT INTO payment_method (method_name) VALUES ('クレジットカード');
-INSERT INTO payment_method (method_name) VALUES ('デビットカード');
-INSERT INTO payment_method (method_name) VALUES ('電子マネー');
+INSERT INTO payment_method (name) VALUES ('現金');
+INSERT INTO payment_method (name) VALUES ('クレジットカード');
+INSERT INTO payment_method (name) VALUES ('デビットカード');
+INSERT INTO payment_method (name) VALUES ('電子マネー');
 
 -- Expense data from 2024-01 to 2024-11
 INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-01-05', 1500, 1, 1, 'ランチ代');

@@ -25,7 +25,7 @@ export const schema: Schema = {
         ],
         joinFields: [
             'expense_category.name AS category_name',
-            'payment_method.method_name AS payment_method_name'
+            'payment_method.name AS payment_method_name'
         ],
         tableName: 'expense',
         joins: [
@@ -71,11 +71,11 @@ export const schema: Schema = {
         optionalFields: []
     },
     payment_method: {
-        fields: ['id', 'method_name', 'created_at', 'updated_at'],
+        fields: ['id', 'name', 'created_at', 'updated_at'],
         joinFields: [],
         tableName: 'payment_method',
         joins: [],
-        requiredFields: ['method_name'],
+        requiredFields: ['name'],
         optionalFields: []
     }
 };

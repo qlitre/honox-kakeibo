@@ -125,7 +125,7 @@ export const ExpenseCreateModal: FC<Props> = ({ buttonType, buttonTitle, data, t
                                     onChange={handleChange}
                                 >
                                     {payment_methods.contents.map((method) => (
-                                        <option value={method.id} key={method.id}>{method.method_name}</option>
+                                        <option value={method.id} key={method.id}>{method.name}</option>
                                     ))}
                                 </select>
                                 {formData.error?.asset_category_id && <p className="text-red-500 text-sm mt-1">{formData.error.asset_category_id}</p>}

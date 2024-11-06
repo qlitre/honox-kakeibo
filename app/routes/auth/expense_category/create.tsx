@@ -10,11 +10,11 @@ import { alertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
 const schema = z.object({
     name: z.string().min(1),
 });
-const actionUrl = '/auth/expense_category/create'
+const endPoint = 'expense_category'
+const actionUrl = `/auth/${endPoint}/create`
+const redirectUrl = `/auth/${endPoint}`
 const title = '支出カテゴリ追加'
 const successMesage = '支出カテゴリ追加に成功しました'
-const endPoint = 'expense_category'
-const redirectUrl = '/auth/expense_category'
 
 export default createRoute(async (c) => {
     return c.render(

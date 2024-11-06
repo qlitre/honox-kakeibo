@@ -1,7 +1,7 @@
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import type { AssetCategory } from '@/@types/dbTypes';
+import type { PaymentMethod } from '@/@types/dbTypes';
 import { KakeiboClient } from '@/libs/kakeiboClient';
 import { CategoryCreateForm } from '@/components/share/CategoryCreateForm';
 import { setCookie } from 'hono/cookie';
@@ -10,11 +10,11 @@ import { alertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
 const schema = z.object({
     name: z.string().min(1),
 });
-const endPoint = 'asset_category'
+const endPoint = 'payment_method'
 const actionUrl = `/auth/${endPoint}/create`
 const redirectUrl = `/auth/${endPoint}`
-const title = '資産カテゴリ追加'
-const successMesage = '資産カテゴリ追加に成功しました'
+const title = '支払い方法追加'
+const successMesage = '支払い方法追加に成功しました'
 
 export default createRoute(async (c) => {
     return c.render(
@@ -41,7 +41,7 @@ export const POST = createRoute(
         const body = {
             name
         }
-        const response = await client.addData<AssetCategory>({ endpoint: endPoint, data: body })
+        const response = await client.addData<PaymentMethod>({ endpoint: endPoint, data: body })
             .catch((e) => { console.error(e) })
         setCookie(c, alertCookieKey, successMesage, { maxAge: alertCookieMaxage })
         return c.redirect(redirectUrl, 303);

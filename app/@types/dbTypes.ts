@@ -37,7 +37,7 @@ export type ExpenseCategory = KakeiboBaseField & {
 
 export type PaymentMethod = KakeiboBaseField & {
     id: number;
-    method_name: string;
+    name: string;
 };
 
 export type Expense = KakeiboBaseField & {
