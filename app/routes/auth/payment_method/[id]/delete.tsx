@@ -6,8 +6,8 @@ import { setCookie } from 'hono/cookie';
 import { alertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
 
 const endPoint = 'payment_method'
-const title = '支出カテゴリ削除'
-const successMessage = '支出カテゴリの削除に成功しました'
+const title = '支払方法削除'
+const successMessage = '支払方法の削除に成功しました'
 const redirectUrl = '/auth/payment_method'
 
 export default createRoute(async (c) => {

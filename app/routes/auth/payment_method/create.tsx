@@ -13,8 +13,8 @@ const schema = z.object({
 const endPoint = 'payment_method'
 const actionUrl = `/auth/${endPoint}/create`
 const redirectUrl = `/auth/${endPoint}`
-const title = '支払い方法追加'
-const successMesage = '支払い方法追加に成功しました'
+const title = '支払方法追加'
+const successMesage = '支払方法追加に成功しました'
 
 export default createRoute(async (c) => {
     return c.render(

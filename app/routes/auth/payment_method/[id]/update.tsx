@@ -11,7 +11,7 @@ const schema = z.object({
     name: z.string().min(1),
 });
 
-const title = '支払い方法編集'
+const title = '支払方法編集'
 const formActionUrl = (id: string) => `/auth/payment_method/${id}/update`
 const endPoint = 'payment_method'
 const successMesage = '編集に成功しました'
