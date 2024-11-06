@@ -49,6 +49,23 @@ export type Expense = KakeiboBaseField & {
     description?: string;
 }
 
+export type IncomeCategory = KakeiboBaseField & {
+    id: number;
+    name: string;
+}
+
+export type Income = KakeiboBaseField & {
+    id: number;
+    date: string;
+    amount: number;
+    income_category_id: number;
+    description?: string;
+}
+
+export type IncomeWithCategory = Income & {
+    category_name: string
+}
+
 export type ExpenseWithDetails = Expense & {
     category_name: string;
     payment_method_name: string;
@@ -59,3 +76,5 @@ export type AssetCategoryResponse = KakeiboListResponse<AssetCategory>
 export type ExpenseWithDetailsResPonse = KakeiboListResponse<ExpenseWithDetails>
 export type ExpenseCategoryResponse = KakeiboListResponse<ExpenseCategory>
 export type PaymentMethodResponse = KakeiboListResponse<PaymentMethod>
+export type IncomeCategoryResponse = KakeiboListResponse<Income>
+export type IncomeWithCategoryResponse = KakeiboListResponse<IncomeWithCategory>

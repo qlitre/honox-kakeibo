@@ -18,6 +18,19 @@ type Schema = {
 };
 
 export const schema: Schema = {
+    asset: {
+        fields: ['id', 'date', 'amount', 'asset_category_id', 'description', 'created_at', 'updated_at'],
+        joinFields: ['asset_category.name AS category_name'],
+        tableName: 'asset',
+        joins: [
+            {
+                table: 'asset_category',
+                condition: 'asset.asset_category_id = asset_category.id'
+            }
+        ],
+        requiredFields: ['date', 'amount', 'asset_category_id'],
+        optionalFields: ['description']
+    },
     expense: {
         fields: [
             'id', 'date', 'amount', 'expense_category_id', 'payment_method_id',
@@ -41,17 +54,22 @@ export const schema: Schema = {
         requiredFields: ['date', 'amount', 'expense_category_id', 'payment_method_id'],
         optionalFields: ['description']
     },
-    asset: {
-        fields: ['id', 'date', 'amount', 'asset_category_id', 'description', 'created_at', 'updated_at'],
-        joinFields: ['asset_category.name AS category_name'],
-        tableName: 'asset',
+    income: {
+        fields: [
+            'id', 'date', 'amount', 'income_category_id',
+            'description', 'created_at', 'updated_at'
+        ],
+        joinFields: [
+            'income_category.name AS category_name',
+        ],
+        tableName: 'expense',
         joins: [
             {
-                table: 'asset_category',
-                condition: 'asset.asset_category_id = asset_category.id'
-            }
+                table: 'income_category',
+                condition: 'income.income_category_id = income_category.id'
+            },
         ],
-        requiredFields: ['date', 'amount', 'asset_category_id'],
+        requiredFields: ['date', 'amount', 'income_category_id',],
         optionalFields: ['description']
     },
     asset_category: {

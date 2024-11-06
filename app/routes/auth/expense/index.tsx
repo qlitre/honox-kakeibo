@@ -15,7 +15,7 @@ export default createRoute(async (c) => {
     const limit = 10
     const offset = limit * (p - 1)
     const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
-    const assets = await client.getListResponse<ExpenseWithDetailsResPonse>({
+    const expenses = await client.getListResponse<ExpenseWithDetailsResPonse>({
         endpoint: 'expense', queries: {
             orders: '-date,expense_category_id',
             limit: limit,
@@ -32,7 +32,7 @@ export default createRoute(async (c) => {
             limit: 100
         }
     })
-    const pageSize = assets.pageSize
+    const pageSize = expenses.pageSize
     const query = c.req.query()
     const message = getCookie(c, alertCookieKey)
 
@@ -80,7 +80,7 @@ export default createRoute(async (c) => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 bg-white">
-                                        {assets.contents.map((expense) => (
+                                        {expenses.contents.map((expense) => (
                                             <tr key={expense.id} className="hover:bg-gray-50">
                                                 <td className="whitespace-nowrap py-4 pl-6 text-sm text-gray-900">
                                                     {expense.date}
