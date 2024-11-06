@@ -62,7 +62,7 @@ export const schema: Schema = {
         joinFields: [
             'income_category.name AS category_name',
         ],
-        tableName: 'expense',
+        tableName: 'income',
         joins: [
             {
                 table: 'income_category',
@@ -95,7 +95,16 @@ export const schema: Schema = {
         joins: [],
         requiredFields: ['name'],
         optionalFields: []
-    }
+    },
+    income_category: {
+        fields: ['id', 'name', 'created_at', 'updated_at'],
+        joinFields: [],
+        tableName: 'income_category',
+        joins: [],
+        requiredFields: ['name'],
+        optionalFields: []
+    },
+
 };
 
 export type TableName = keyof typeof schema;

@@ -76,5 +76,5 @@ export type AssetCategoryResponse = KakeiboListResponse<AssetCategory>
 export type ExpenseWithDetailsResPonse = KakeiboListResponse<ExpenseWithDetails>
 export type ExpenseCategoryResponse = KakeiboListResponse<ExpenseCategory>
 export type PaymentMethodResponse = KakeiboListResponse<PaymentMethod>
-export type IncomeCategoryResponse = KakeiboListResponse<Income>
+export type IncomeCategoryResponse = KakeiboListResponse<IncomeCategory>
 export type IncomeWithCategoryResponse = KakeiboListResponse<IncomeWithCategory>
