@@ -1,18 +1,38 @@
-import type { FC } from 'react'
-import { PageHeader } from '@/components/PageHeader'
+import type { FC } from 'react';
+import { PageHeader } from '@/components/PageHeader';
 
 type Data = {
-    name: string
-    error?: Record<string, string[] | undefined>
-}
+    name: string;
+    is_investment?: string;
+    error?: Record<string, string[] | undefined>;
+};
 
 type Props = {
     data?: Data;
     title: string;
     actionUrl: string;
-}
+};
 
 export const CategoryCreateForm: FC<Props> = ({ data, title, actionUrl }) => {
+
+    const isInvestmentField = () => {
+        return (
+            <div className="flex items-center">
+                <input
+                    type="checkbox"
+                    id="is_investment"
+                    name="is_investment"
+                    defaultChecked={data?.is_investment === '1'}
+                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                    value="1"  // チェックされているときは 1 として送信される
+                />
+                <label htmlFor="is_investment" className="ml-2 block text-sm text-gray-700">
+                    投資用カテゴリ
+                </label>
+            </div>
+        );
+    };
+
     return (
         <>
             <PageHeader title={title}></PageHeader>
@@ -27,10 +47,13 @@ export const CategoryCreateForm: FC<Props> = ({ data, title, actionUrl }) => {
                         name="name"
                         required
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        value={data?.name}
+                        defaultValue={data?.name}  // defaultValueに変更
                     />
                     {data?.error?.name && <p className="text-red-500 text-sm mt-1">{data.error.name}</p>}
                 </div>
+                {actionUrl.includes('asset_category') && (
+                    isInvestmentField()  // 関数を直接呼び出して表示
+                )}
                 <div>
                     <button
                         type="submit"
@@ -41,5 +64,5 @@ export const CategoryCreateForm: FC<Props> = ({ data, title, actionUrl }) => {
                 </div>
             </form>
         </>
-    )
-}
+    );
+};

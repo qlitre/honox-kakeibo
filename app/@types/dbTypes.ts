@@ -1,4 +1,5 @@
 export type KakeiboBaseField = {
+    id: number
     created_at: string;
     updated_at: string
 }
@@ -13,12 +14,11 @@ export type KakeiboListResponse<T> = {
 }
 
 export type AssetCategory = KakeiboBaseField & {
-    id: number;
-    name: string
+    name: string;
+    is_investment: number; // sqliteのbool型は内部的に0か1となる
 }
 
 export type Asset = KakeiboBaseField & {
-    id: number;
     date: string;
     amount: number;
     asset_category_id: number;
@@ -27,21 +27,27 @@ export type Asset = KakeiboBaseField & {
 
 export type AssetWithCategory = Asset & {
     category_name: string;
+    is_investment: number; // sqliteのbool型は内部的に0か1となる
 }
 
 
+export type FundTransation = KakeiboBaseField & {
+    date: string;
+    amount: number;
+    description?: string;
+}
+
+
+
 export type ExpenseCategory = KakeiboBaseField & {
-    id: number;
     name: string;
 };
 
 export type PaymentMethod = KakeiboBaseField & {
-    id: number;
     name: string;
 };
 
 export type Expense = KakeiboBaseField & {
-    id: number;
     date: string;
     amount: number;
     expense_category_id: number;
@@ -50,12 +56,10 @@ export type Expense = KakeiboBaseField & {
 }
 
 export type IncomeCategory = KakeiboBaseField & {
-    id: number;
     name: string;
 }
 
 export type Income = KakeiboBaseField & {
-    id: number;
     date: string;
     amount: number;
     income_category_id: number;
@@ -73,8 +77,9 @@ export type ExpenseWithDetails = Expense & {
 
 export type AssetWithCategoryResponse = KakeiboListResponse<AssetWithCategory>
 export type AssetCategoryResponse = KakeiboListResponse<AssetCategory>
-export type ExpenseWithDetailsResPonse = KakeiboListResponse<ExpenseWithDetails>
+export type ExpenseWithDetailsResponse = KakeiboListResponse<ExpenseWithDetails>
 export type ExpenseCategoryResponse = KakeiboListResponse<ExpenseCategory>
 export type PaymentMethodResponse = KakeiboListResponse<PaymentMethod>
 export type IncomeCategoryResponse = KakeiboListResponse<IncomeCategory>
 export type IncomeWithCategoryResponse = KakeiboListResponse<IncomeWithCategory>
+export type FundTransationResponse = KakeiboListResponse<FundTransation>

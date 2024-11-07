@@ -42,6 +42,7 @@ export const kakeiboMenu = () => {
             { name: '資産リスト', href: '/auth/asset' },
             { name: '資産ダッシュボード', href: `/auth/asset/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}` },
             { name: '資産カテゴリリスト', href: '/auth/asset_category' },
+            { name: '投資用口座入金履歴', href: '/auth/fund_transaction' }
         ],
         '支出メニュー': [
             { name: '支出リスト', href: '/auth/expense' },

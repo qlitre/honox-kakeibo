@@ -1,12 +1,12 @@
 import { FC } from "react";
 import { AlertSuccess } from "@/islands/share/AlertSuccess";
 import { PageHeader } from "../PageHeader";
-import { AssetCategory, ExpenseCategory } from "@/@types/dbTypes";
+import { AssetCategory, ExpenseCategory, IncomeCategory, PaymentMethod } from "@/@types/dbTypes";
 
 
 type Props = {
     message?: string;
-    categories: AssetCategory[] | ExpenseCategory[]
+    categories: AssetCategory[] | ExpenseCategory[] | IncomeCategory[] | PaymentMethod[]
     pageTitle: string;
     endpoint: string
 }
@@ -27,12 +27,19 @@ export const CategoryList: FC<Props> = ({ message, categories, pageTitle, endpoi
                 </div>
                 <ul className="space-y-2">
                     {categories.map((category) => (
-                        <li
+                        <div
                             key={category.id}
-                            className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200 flex justify-between items-center"
+                            className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200 grid grid-cols-3 gap-4"
                         >
-                            <span className="text-gray-700 font-medium">{category.name}</span>
-                            <div className="flex space-x-4">
+                            <div>
+                                <span className="text-gray-700 font-medium">{category.name}</span>
+                            </div>
+                            <div>
+                                {endpoint === "asset_category" && (category as AssetCategory).is_investment === 1 && (
+                                    <span className="ml-2 text-green-500 font-semibold">投資用</span>
+                                )}
+                            </div>
+                            <div className="space-x-4 text-right">
                                 <a
                                     href={`/auth/${endpoint}/${category.id}/update`}
                                     className="text-blue-500 hover:underline"
@@ -46,7 +53,7 @@ export const CategoryList: FC<Props> = ({ message, categories, pageTitle, endpoi
                                     削除
                                 </a>
                             </div>
-                        </li>
+                        </div>
                     ))}
                 </ul>
             </div>

@@ -1,7 +1,7 @@
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import type { Asset } from '@/@types/dbTypes';
+import type { Expense } from '@/@types/dbTypes';
 import { KakeiboClient } from '@/libs/kakeiboClient';
 import { setCookie } from 'hono/cookie';
 import { alertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
@@ -39,7 +39,7 @@ export const POST = createRoute(
             payment_method_id: parsedPaymentMethodId,
             description: description
         }
-        const response = await client.updateData<Asset>({ endpoint: 'expense', contentId: id, data: body })
+        const response = await client.updateData<Expense>({ endpoint: 'expense', contentId: id, data: body })
             .catch((e) => { console.error(e) })
         setCookie(c, alertCookieKey, '支出編集に成功しました', { maxAge: alertCookieMaxage })
         return c.redirect('/auth/expense', 303);

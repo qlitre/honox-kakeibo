@@ -5,10 +5,12 @@ DROP TABLE IF EXISTS expense_category;
 DROP TABLE IF EXISTS payment_method;
 DROP TABLE IF EXISTS income;
 DROP TABLE IF EXISTS income_category;
+DROP TABLE IF EXISTS fund_transaction;
 
 CREATE TABLE IF NOT EXISTS asset_category (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
+    is_investment BOOLEAN DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
 );
@@ -70,13 +72,21 @@ CREATE TABLE IF NOT EXISTS income (
     FOREIGN KEY (income_category_id) REFERENCES income_category(id) ON DELETE RESTRICT
 );
 
+CREATE TABLE IF NOT EXISTS fund_transaction (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,               -- トランザクションの日付
+    amount INTEGER NOT NULL,          -- 金額（正数は入金、負数は出金）
+    description TEXT,                 -- メモや補足説明
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
 
 
 -- Asset categories
-INSERT INTO asset_category (name) VALUES ('現金');
-INSERT INTO asset_category (name) VALUES ('日本株式');
-INSERT INTO asset_category (name) VALUES ('株式投信');
-INSERT INTO asset_category (name) VALUES ('ビットコイン');
+INSERT INTO asset_category (name,is_investment) VALUES ('現金',0);
+INSERT INTO asset_category (name,is_investment) VALUES ('日本株式',1);
+INSERT INTO asset_category (name,is_investment) VALUES ('株式投信',1);
+INSERT INTO asset_category (name,is_investment) VALUES ('ビットコイン',0);
 
 -- Asset data from 2024-01 to 2024-11
 INSERT INTO asset (date, amount, asset_category_id, description) VALUES ('2024-01-01', 45000, 1, '1月の現金残高');

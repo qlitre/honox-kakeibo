@@ -1,13 +1,13 @@
 import { createRoute } from 'honox/factory'
-import { ExpenseCategoryResponse, ExpenseWithDetailsResponse, PaymentMethodResponse } from '@/@types/dbTypes'
+import { FundTransationResponse } from '@/@types/dbTypes'
 import { KakeiboClient } from '@/libs/kakeiboClient'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
 import { AlertSuccess } from '@/islands/share/AlertSuccess'
 import { getCookie } from 'hono/cookie'
 import { alertCookieKey } from '@/settings/kakeiboSettings'
-import { ExpenseDeleteModal } from '@/islands/expense/ExpenseDeleteModal'
-import { ExpenseCreateModal } from '@/islands/expense/ExpenseCreateModal'
+import { FundTransactionCreateModal } from '@/islands/fund_transation/FundTransactionCreateModal'
+import { FundTransactionDeleteModal } from '@/islands/fund_transation/FundTransactionDeleteModal'
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
@@ -15,24 +15,14 @@ export default createRoute(async (c) => {
     const limit = 10
     const offset = limit * (p - 1)
     const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
-    const expenses = await client.getListResponse<ExpenseWithDetailsResponse>({
-        endpoint: 'expense', queries: {
-            orders: '-date,expense_category_id',
+    const fundTransactions = await client.getListResponse<FundTransationResponse>({
+        endpoint: 'fund_transaction', queries: {
+            orders: '-date',
             limit: limit,
             offset: offset
         }
     })
-    const categories = await client.getListResponse<ExpenseCategoryResponse>({
-        endpoint: 'expense_category', queries: {
-            limit: 100
-        }
-    })
-    const paymentMethods = await client.getListResponse<PaymentMethodResponse>({
-        endpoint: 'payment_method', queries: {
-            limit: 100
-        }
-    })
-    const pageSize = expenses.pageSize
+    const pageSize = fundTransactions.pageSize
     const query = c.req.query()
     const message = getCookie(c, alertCookieKey)
 
@@ -41,14 +31,12 @@ export default createRoute(async (c) => {
             <div className="px-4 sm:px-6 lg:px-8">
                 {message && <AlertSuccess message={message}></AlertSuccess>}
                 <div className="flex items-center justify-between">
-                    <PageHeader title="支出リスト" />
-                    <ExpenseCreateModal
+                    <PageHeader title="投資用口座入金履歴" />
+                    <FundTransactionCreateModal
                         buttonType='primary'
-                        buttonTitle='支出追加'
-                        title='支出追加'
-                        actionUrl='/auth/expense/create'
-                        categories={categories}
-                        payment_methods={paymentMethods}
+                        buttonTitle='履歴追加'
+                        title='投資用口座入金履歴追加'
+                        actionUrl='/auth/fund_transaction/create'
                     />
 
                 </div>
@@ -62,12 +50,6 @@ export default createRoute(async (c) => {
                                             <th scope="col" className="py-4 pl-6 text-left text-sm font-semibold text-gray-900">
                                                 日付
                                             </th>
-                                            <th scope="col" className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                                                カテゴリ
-                                            </th>
-                                            <th scope="col" className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                                                支払い方法
-                                            </th>
                                             <th scope="col" className="px-6 py-4 text-right text-sm font-semibold text-gray-900">
                                                 金額
                                             </th>
@@ -80,41 +62,31 @@ export default createRoute(async (c) => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 bg-white">
-                                        {expenses.contents.map((expense) => (
-                                            <tr key={expense.id} className="hover:bg-gray-50">
+                                        {fundTransactions.contents.map((fund_transaction) => (
+                                            <tr key={fund_transaction.id} className="hover:bg-gray-50">
                                                 <td className="whitespace-nowrap py-4 pl-6 text-sm text-gray-900">
-                                                    {expense.date}
-                                                </td>
-                                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                                    {expense.category_name}
-                                                </td>
-                                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                                    {expense.payment_method_name}
+                                                    {fund_transaction.date}
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 text-right">
-                                                    {expense.amount.toLocaleString()} 円
+                                                    {fund_transaction.amount.toLocaleString()} 円
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 text-center">
-                                                    {expense.description || '-'}
+                                                    {fund_transaction.description || '-'}
                                                 </td>
                                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 flex space-x-4 justify-center">
-                                                    <ExpenseCreateModal
+                                                    <FundTransactionCreateModal
                                                         buttonType='success'
                                                         buttonTitle='編集'
                                                         data={{
-                                                            date: expense.date,
-                                                            amount: String(expense.amount),
-                                                            expense_category_id: String(expense.expense_category_id),
-                                                            payment_method_id: String(expense.payment_method_id),
-                                                            description: expense.description || ''
+                                                            date: fund_transaction.date,
+                                                            amount: String(fund_transaction.amount),
+                                                            description: fund_transaction.description || ''
                                                         }}
-                                                        title='支出編集'
-                                                        actionUrl={`/auth/expense/${expense.id}/update`}
-                                                        categories={categories}
-                                                        payment_methods={paymentMethods}>
-                                                    </ExpenseCreateModal>
-                                                    <ExpenseDeleteModal actionUrl={`/auth/expense/${expense.id}/delete`} expense={expense} />
-
+                                                        title='投資用口座入金履歴編集'
+                                                        actionUrl={`/auth/fund_transaction/${fund_transaction.id}/update`}
+                                                    >
+                                                    </FundTransactionCreateModal>
+                                                    <FundTransactionDeleteModal actionUrl={`/auth/fund_transaction/${fund_transaction.id}/delete`} fundTransaction={fund_transaction} />
                                                 </td>
                                             </tr>
                                         ))}
@@ -124,8 +96,8 @@ export default createRoute(async (c) => {
                         </div>
                     </div>
                 </div>
-                <Pagination pageSize={pageSize} currentPage={p} hrefPrefix="/auth/expense" query={query} />
+                <Pagination pageSize={pageSize} currentPage={p} hrefPrefix="/auth/fund_transaction" query={query} />
             </div >
-        </>, { title: '支出リスト' }
+        </>, { title: '投資用口座入金履歴' }
     );
 })

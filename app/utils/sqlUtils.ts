@@ -20,7 +20,7 @@ type Schema = {
 export const schema: Schema = {
     asset: {
         fields: ['id', 'date', 'amount', 'asset_category_id', 'description', 'created_at', 'updated_at'],
-        joinFields: ['asset_category.name AS category_name'],
+        joinFields: ['asset_category.name AS category_name', 'asset_category.is_investment AS is_investment'],
         tableName: 'asset',
         joins: [
             {
@@ -29,6 +29,22 @@ export const schema: Schema = {
             }
         ],
         requiredFields: ['date', 'amount', 'asset_category_id'],
+        optionalFields: ['description']
+    },
+    asset_category: {
+        fields: ['id', 'name', 'is_investment', 'created_at', 'updated_at'],
+        joinFields: [],
+        tableName: 'asset_category',
+        joins: [],
+        requiredFields: ['name'],
+        optionalFields: ['is_investment']
+    },
+    fund_transaction: {
+        fields: ['id', 'date', 'amount', 'description', 'created_at', 'updated_at'],
+        joinFields: [],
+        tableName: 'fund_transaction',
+        joins: [],
+        requiredFields: ['date', 'amount'],
         optionalFields: ['description']
     },
     expense: {
@@ -54,6 +70,22 @@ export const schema: Schema = {
         requiredFields: ['date', 'amount', 'expense_category_id', 'payment_method_id'],
         optionalFields: ['description']
     },
+    expense_category: {
+        fields: ['id', 'name', 'created_at', 'updated_at'],
+        joinFields: [],
+        tableName: 'expense_category',
+        joins: [],
+        requiredFields: ['name'],
+        optionalFields: []
+    },
+    payment_method: {
+        fields: ['id', 'name', 'created_at', 'updated_at'],
+        joinFields: [],
+        tableName: 'payment_method',
+        joins: [],
+        requiredFields: ['name'],
+        optionalFields: []
+    },
     income: {
         fields: [
             'id', 'date', 'amount', 'income_category_id',
@@ -72,30 +104,6 @@ export const schema: Schema = {
         requiredFields: ['date', 'amount', 'income_category_id',],
         optionalFields: ['description']
     },
-    asset_category: {
-        fields: ['id', 'name', 'created_at', 'updated_at'],
-        joinFields: [],
-        tableName: 'asset_category',
-        joins: [],
-        requiredFields: ['name'],
-        optionalFields: []
-    },
-    expense_category: {
-        fields: ['id', 'name', 'created_at', 'updated_at'],
-        joinFields: [],
-        tableName: 'expense_category',
-        joins: [],
-        requiredFields: ['name'],
-        optionalFields: []
-    },
-    payment_method: {
-        fields: ['id', 'name', 'created_at', 'updated_at'],
-        joinFields: [],
-        tableName: 'payment_method',
-        joins: [],
-        requiredFields: ['name'],
-        optionalFields: []
-    },
     income_category: {
         fields: ['id', 'name', 'created_at', 'updated_at'],
         joinFields: [],
@@ -104,7 +112,6 @@ export const schema: Schema = {
         requiredFields: ['name'],
         optionalFields: []
     },
-
 };
 
 export type TableName = keyof typeof schema;
