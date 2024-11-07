@@ -13,6 +13,7 @@ import {
 import { annualStartMonth } from '@/settings/kakeiboSettings';
 import { PageHeader } from '@/components/PageHeader';
 import { MonthPager } from '@/components/MonthPager';
+import { colorSchema } from '@/settings/kakeiboSettings';
 
 
 export default createRoute(async (c) => {
@@ -129,6 +130,12 @@ export default createRoute(async (c) => {
             limit: 100
         }
     })
+    const colormap: Record<number, string> = {}
+    for (let i = 0; i < categories.contents.length; i++) {
+        const categoryId = categories.contents[i].id
+        const color = colorSchema[i]
+        colormap[categoryId] = color
+    }
 
     return c.render(
         <div>
@@ -195,12 +202,12 @@ export default createRoute(async (c) => {
                 </div>
                 <div className="flex-2 bg-white shadow-md rounded-lg p-4 flex items-center justify-center">
                     <div className="w-96">
-                        <AssetPieChart assets={asset.contents}></AssetPieChart>
+                        <AssetPieChart assets={asset.contents} colorMap={colormap}></AssetPieChart>
                     </div>
                 </div>
             </div>
             <div className="bg-white shadow-md rounded-lg p-4 w-full">
-                <AssetBarChart assets={allAssets.contents} categories={categories.contents} />
+                <AssetBarChart assets={allAssets.contents} categories={categories.contents} colorMap={colormap} />
             </div>
         </div>,
         { title: '資産ダッシュボード' }

@@ -5,6 +5,7 @@ import type { AssetWithCategory } from '@/@types/dbTypes';
 
 type Props = {
   assets: AssetWithCategory[]
+  colorMap: Record<number, string>
 }
 
 export const AssetPieChart = (props: Props) => {
@@ -35,7 +36,7 @@ export const AssetPieChart = (props: Props) => {
     const amount = elm.amount
     labels.push(categoryName)
     amounts.push(amount)
-    colors.push(colorSchema[i])
+    colors.push(props.colorMap[elm.asset_category_id])
   }
 
   const data = {

@@ -2,12 +2,14 @@ import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend, ChartOptions } from 'chart.js';
 import type { AssetWithCategory, AssetCategory } from '@/@types/dbTypes';
 import { colorSchema } from '@/settings/kakeiboSettings';
+import { color } from 'chart.js/helpers';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 type Props = {
     assets: AssetWithCategory[]
     categories: AssetCategory[]
+    colorMap: Record<number, string>
 }
 
 type Dataset = {
@@ -24,7 +26,7 @@ export const AssetBarChart = (props: Props) => {
     // datasetのひな型を作る
     for (let i = 0; i < props.categories.length; i++) {
         const elm = props.categories[i]
-        const color = colorSchema[i]
+        const color = props.colorMap[elm.id]
         datasets.push({ label: elm.name, data: [], backgroundColor: color })
     }
     const obj: Record<string, Record<number, number>> = {};
