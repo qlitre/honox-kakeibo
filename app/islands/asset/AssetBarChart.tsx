@@ -1,8 +1,6 @@
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend, ChartOptions } from 'chart.js';
 import type { AssetWithCategory, AssetCategory } from '@/@types/dbTypes';
-import { colorSchema } from '@/settings/kakeiboSettings';
-import { color } from 'chart.js/helpers';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
