@@ -1,6 +1,5 @@
 import { createRoute } from 'honox/factory'
 import {
-    schema,
     generateSelectQuery,
     getAndValidateFormData,
     generateInsertQuery,
@@ -8,6 +7,7 @@ import {
     buildSqlWhereClause,
     buildSqlOrderByClause
 } from '@/utils/sqlUtils'
+import { schema } from '@/utils/sqlSchema';
 import type { TableName } from '@/utils/sqlUtils';
 
 

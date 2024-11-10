@@ -1,12 +1,12 @@
 import { createRoute } from 'honox/factory'
 import {
-    schema,
     generateSelectQuery,
     generateUpdateQuery,
     getAndValidateFormData,
     generateQueryBindValues
 } from '@/utils/sqlUtils';
 import type { TableName } from '@/utils/sqlUtils';
+import { schema } from '@/utils/sqlSchema';
 
 
 export default createRoute(async (c) => {
