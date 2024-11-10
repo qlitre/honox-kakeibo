@@ -1,11 +1,12 @@
 import { createRoute } from 'honox/factory';
 import { createMiddleware } from 'hono/factory';
-import { checkauth } from '../checkauth';
+//import { checkauth } from '../checkauth';
 import { bearerAuth } from 'hono/bearer-auth';
+import { checkauthFb } from '@/checkauthFb';
 
-
+// Firebaseでテスト
 const authMiddleware = createMiddleware(async (c, next) => {
-    const isAuthenticated = await checkauth(c);
+    const isAuthenticated = await checkauthFb(c);
     if (c.req.path.startsWith('/auth')) {
         if (isAuthenticated) {
             await next();
