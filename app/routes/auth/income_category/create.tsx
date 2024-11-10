@@ -19,7 +19,7 @@ const successMesage = '収入カテゴリ追加に成功しました'
 export default createRoute(async (c) => {
     return c.render(
         <>
-            <CategoryCreateForm title={title} actionUrl={actionUrl}></CategoryCreateForm>
+            <CategoryCreateForm title={title} actionUrl={actionUrl} backUrl={`/auth/${endPoint}`} />
         </>,
         { title: title }
     )
@@ -32,7 +32,8 @@ export const POST = createRoute(
             return c.render(
                 <CategoryCreateForm data={{ name, error: result.error.flatten().fieldErrors }}
                     title={title}
-                    actionUrl={actionUrl} />)
+                    actionUrl={actionUrl}
+                    backUrl={`/auth/${endPoint}`} />)
         }
     }),
     async (c) => {

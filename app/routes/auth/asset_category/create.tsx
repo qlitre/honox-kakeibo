@@ -20,7 +20,10 @@ const successMesage = '資産カテゴリ追加に成功しました'
 export default createRoute(async (c) => {
     return c.render(
         <>
-            <CategoryCreateForm title={title} actionUrl={actionUrl}></CategoryCreateForm>
+            <CategoryCreateForm
+                title={title}
+                actionUrl={actionUrl}
+                backUrl={`/auth/${endPoint}`} />
         </>,
         { title: title }
     )
@@ -35,6 +38,7 @@ export const POST = createRoute(
                     data={{ name, error: result.error.flatten().fieldErrors }}
                     title={title}
                     actionUrl={actionUrl}
+                    backUrl={`/auth/${endPoint}`}
                 />
             )
         }

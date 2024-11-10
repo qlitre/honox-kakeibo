@@ -1,6 +1,7 @@
 import type { FC } from 'react'
 import type { AssetCategory } from '@/@types/dbTypes'
 import { PageHeader } from '@/components/PageHeader'
+import { ButtonLink } from './ButtonLink'
 
 type Props = {
     title: string
@@ -20,7 +21,10 @@ export const CategoryDeleteForm: FC<Props> = ({ title, errorMessage, detail, end
                         <strong>カテゴリ名：</strong> {detail.name}
                     </p>
                 </div>
-                <form action={`/auth/${endPoint}/${detail.id}/delete`} method="post" className="flex justify-center">
+                <form action={`/auth/${endPoint}/${detail.id}/delete`} method="post" className="flex justify-center space-x-8">
+                    <ButtonLink type='primary' href={`/auth/${endPoint}`}>
+                        戻る
+                    </ButtonLink>
                     <button
                         type="submit"
                         className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 transition-colors"

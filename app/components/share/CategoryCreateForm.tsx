@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 import { PageHeader } from '@/components/PageHeader';
+import { ButtonLink } from '@/components/share/ButtonLink';
 
 type Data = {
     name: string;
@@ -11,9 +12,10 @@ type Props = {
     data?: Data;
     title: string;
     actionUrl: string;
+    backUrl: string
 };
 
-export const CategoryCreateForm: FC<Props> = ({ data, title, actionUrl }) => {
+export const CategoryCreateForm: FC<Props> = ({ data, title, actionUrl, backUrl }) => {
 
     const isInvestmentField = () => {
         return (
@@ -34,7 +36,7 @@ export const CategoryCreateForm: FC<Props> = ({ data, title, actionUrl }) => {
     };
 
     return (
-        <>
+        <div className='max-w-md mx-auto'>
             <PageHeader title={title}></PageHeader>
             <form action={actionUrl} method='post' className="space-y-4">
                 <div>
@@ -61,8 +63,17 @@ export const CategoryCreateForm: FC<Props> = ({ data, title, actionUrl }) => {
                     >
                         送信
                     </button>
+
                 </div>
             </form>
-        </>
+            <div className="mt-8">
+                <a
+                    href={backUrl}
+                    className="text-lg text-indigo-600 hover:underline hover:text-indigo-800"
+                >
+                    ← 戻る
+                </a>
+            </div>
+        </div>
     );
 };

@@ -27,6 +27,7 @@ export default createRoute(async (c) => {
                 data={{ name: detail.name }}
                 title={title}
                 actionUrl={formActionUrl(id)}
+                backUrl={`/auth/${endPoint}`}
             />
         </>,
         { title: title }
@@ -39,8 +40,10 @@ export const POST = createRoute(
             const id = c.req.param('id')
             const { name } = result.data
             return c.render(
-                <CategoryCreateForm data={{ name, error: result.error.flatten().fieldErrors }}
-                    title={title} actionUrl={formActionUrl(id)} />)
+                <CategoryCreateForm
+                    data={{ name, error: result.error.flatten().fieldErrors }}
+                    title={title} actionUrl={formActionUrl(id)}
+                    backUrl={`/auth/${endPoint}`} />)
         }
     }),
     async (c) => {
