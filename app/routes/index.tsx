@@ -4,7 +4,12 @@ export default createRoute(async (c) => {
   return c.render(
     <div className='c-container flex items-center justify-center'>
       <h1 className='text-xl font-bold'>
-        <a className='just' href="/login">ログイン</a>
+        <div>
+          <a className='just' href="/login">ログイン</a>
+        </div>
+        <div className='mt-4'>
+          <a className='just' href="/fb_login">ログイン(FB)</a>
+        </div>
       </h1>
     </div>,
     { title: 'top' }

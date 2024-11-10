@@ -12,6 +12,12 @@ declare module 'hono' {
       HONO_IS_COOL: string;
       BASE_URL: string;
       DB: D1Database;
+      FB_API_KEY: string;
+      FB_AUTH_DOMAIN: string;
+      FB_PROJECT_ID: string;
+      FB_STORAGE_BUCKET: string;
+      FB_MESSAGE_SENDER_ID: string;
+      FB_APP_ID: string;
     }
   }
 }

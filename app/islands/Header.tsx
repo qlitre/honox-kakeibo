@@ -6,6 +6,7 @@ import type { FC } from 'react';
 export const Header: FC = () => {
     const navItems = [
         { href: '/auth/logout', name: 'ログアウト' },
+        { href: '/auth/logout_fb', name: 'ログアウト(FB)' },
     ];
 
     const [isOpen, setIsOpen] = useState(false);
@@ -54,8 +55,7 @@ export const Header: FC = () => {
                 {isOpen && (
                     <div className="absolute top-16 right-0 bg-white shadow-md md:hidden">
                         <nav className="flex flex-col p-4 space-y-2">
-                            <FlyoutMenu items={menuItems['資産メニュー']} title="資産メニュー" />
-                            <FlyoutMenu items={menuItems['支出メニュー']} title="支出メニュー" />
+                            {menuSections}
                             {navItems.map((item, i) => (
                                 <a href={item.href} className="text-lg font-semibold" key={i}>
                                     {item.name}
