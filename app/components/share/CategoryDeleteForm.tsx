@@ -1,12 +1,12 @@
 import type { FC } from 'react'
-import type { AssetCategory } from '@/@types/dbTypes'
+import type { AssetCategory, IncomeCategory, PaymentMethod, ExpenseCategory } from '@/@types/dbTypes'
 import { PageHeader } from '@/components/PageHeader'
 import { ButtonLink } from './ButtonLink'
 
 type Props = {
     title: string
     errorMessage?: string;
-    detail: AssetCategory;
+    detail: AssetCategory | IncomeCategory | PaymentMethod | ExpenseCategory;
     endPoint: string;
 }
 

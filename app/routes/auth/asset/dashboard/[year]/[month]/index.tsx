@@ -14,6 +14,9 @@ import { annualStartMonth } from '@/settings/kakeiboSettings';
 import { PageHeader } from '@/components/PageHeader';
 import { MonthPager } from '@/components/MonthPager';
 import { colorSchema } from '@/settings/kakeiboSettings';
+import { Card } from '@/components/share/Card';
+import { AssetTable } from '@/components/AssetTable';
+import type { AssetTableItems } from '@/@types/common';
 
 
 export default createRoute(async (c) => {
@@ -46,16 +49,8 @@ export default createRoute(async (c) => {
         endpoint: 'asset',
         queries: { limit: 100, filters: `date[greater_equal]${annualStartGe}[and]date[less_equal]${annualStartLe}` }
     })
-    // テーブルを構成していく
-    type TableItem = {
-        categoryName: string;
-        now: number;
-        prevDiff: number;
-        prevDiffRatio: number;
-        annualStartDiff: number;
-        annualStartDiffRatio: number;
-    }
-    const tableItems: Record<string, TableItem> = {}
+
+    const tableItems: AssetTableItems = {}
     // 当月の記入
     for (const elm of asset.contents) {
         const categoryId = elm.asset_category_id
@@ -141,74 +136,27 @@ export default createRoute(async (c) => {
         <div>
             <PageHeader title='資産ダッシュボード'></PageHeader>
             <MonthPager year={year} month={month} hrefPrefix='/auth/asset/dashboard'></MonthPager>
-            <div className="flex flex-col lg:flex-row gap-4 mb-6">
-                <div className="flex-1 bg-white shadow-md rounded-lg p-4 overflow-auto">
-                    <h2 className="text-lg font-semibold mb-2">当月の資産カテゴリ別一覧</h2>
-                    <table className="w-full table-auto border-collapse text-sm">
-                        <thead>
-                            <tr className="bg-gray-100">
-                                <th className="px-2 py-1 text-left">カテゴリ名</th>
-                                <th className="px-2 py-1 text-left">当月の金額</th>
-                                <th className="px-2 py-1 text-left">前月比</th>
-                                <th className="px-2 py-1 text-left">年初比</th>
-                                <th className="px-2 py-1 text-left">構成割合</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {Object.values(tableItems).map((item, index) => (
-                                <tr key={index} className="border-t">
-                                    <td className="px-2 py-1">{item.categoryName}</td>
-                                    <td className="px-2 py-1">¥{item.now.toLocaleString()}</td>
-                                    <td className="px-2 py-1">
-                                        <div className="flex flex-col">
-                                            <span className="text-xs">¥{item.prevDiff.toLocaleString()}</span>
-                                            <span className="text-gray-500 text-xxs">
-                                                {(item.prevDiffRatio * 100).toFixed(2)}%
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="px-2 py-1">
-                                        <div className="flex flex-col">
-                                            <span className="text-xs">¥{item.annualStartDiff.toLocaleString()}</span>
-                                            <span className="text-gray-500 text-xxs">
-                                                {(item.annualStartDiffRatio * 100).toFixed(2)}%
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="px-2 py-1">
-                                        {((item.now / totalAmount) * 100).toFixed(2)}%
-                                    </td>
-                                </tr>
-                            ))}
-                            <tr className="border-t font-bold">
-                                <td className="px-2 py-1">トータル</td>
-                                <td className="px-2 py-1">¥{totalAmount.toLocaleString()}</td>
-                                <td className="px-2 py-1">
-                                    <div className="flex flex-col">
-                                        <span className="text-xs">¥{prevTotalDiff.toLocaleString()}</span>
-                                        <span className="text-gray-500 text-xxs">{(prevTotalDiffRatio * 100).toFixed(2)}%</span>
-                                    </div>
-                                </td>
-                                <td className="px-2 py-1">
-                                    <div className="flex flex-col">
-                                        <span className="text-xs">¥{annualTotalDiff.toLocaleString()}</span>
-                                        <span className="text-gray-500 text-xxs">{(annualTotalDiffRatio * 100).toFixed(2)}%</span>
-                                    </div>
-                                </td>
-                                <td className="px-2 py-1">100%</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div className="flex-2 bg-white shadow-md rounded-lg p-4 flex items-center justify-center">
-                    <div className="w-96">
+            <div className="grid lg:grid-cols-3 gap-4">
+                {/* テーブル部分：2 の割合 */}
+                <Card className="lg:col-span-2">
+                    <AssetTable
+                        totalAmount={totalAmount}
+                        prevTotalDiff={prevTotalDiff}
+                        annualTotalDiff={annualTotalDiff}
+                        prevTotalDiffRatio={prevTotalDiffRatio}
+                        annualTotalDiffRatio={annualTotalDiffRatio}
+                        tableItems={tableItems} />
+                </Card>
+                {/* PieChart 部分：1 の割合 */}
+                <Card>
+                    <div className="w-full">
                         <AssetPieChart assets={asset.contents} colorMap={colormap}></AssetPieChart>
                     </div>
-                </div>
+                </Card>
             </div>
-            <div className="bg-white shadow-md rounded-lg p-4 w-full">
+            <Card>
                 <AssetBarChart assets={allAssets.contents} categories={categories.contents} colorMap={colormap} />
-            </div>
+            </Card>
         </div>,
         { title: '資産ダッシュボード' }
     );

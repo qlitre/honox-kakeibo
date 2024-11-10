@@ -63,10 +63,6 @@ export const AssetBarChart = (props: Props) => {
             legend: {
                 position: 'top', // 凡例の位置
             },
-            title: {
-                display: true,
-                text: '資産のスタック棒グラフ', // タイトル
-            },
         },
         scales: {
             x: {
