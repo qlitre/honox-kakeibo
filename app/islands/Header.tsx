@@ -18,6 +18,12 @@ export const Header: FC = () => {
     // kakeiboMenu を取得
     const menuItems = kakeiboMenu();
 
+    // メニューセクションを動的に生成
+    const menuSections = Object.entries(menuItems).map(([title, items]) => (
+        <FlyoutMenu key={title} title={title} items={items} />
+    ));
+
+
     return (
         <header className="p-4 c-wrapper">
             <div className="container mx-auto flex items-center relative">
@@ -29,9 +35,7 @@ export const Header: FC = () => {
 
                 {/* md以上の画面幅で表示されるナビゲーションメニュー */}
                 <nav className="ml-auto hidden md:flex items-center space-x-8">
-                    <FlyoutMenu items={menuItems['資産メニュー']} title="資産メニュー" />
-                    <FlyoutMenu items={menuItems['支出メニュー']} title="支出メニュー" />
-                    <FlyoutMenu items={menuItems['収入メニュー']} title="収入メニュー" />
+                    {menuSections}
                     {navItems.map((item, i) => (
                         <a href={item.href} className="text-lg font-semibold" key={i}>
                             {item.name}

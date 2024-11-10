@@ -198,6 +198,41 @@ export const generateUpdateQuery = async (tableName: TableName) => {
     return query.trim();
 }
 
+export const generateSummaryQuery = (tableName: TableName): string => {
+    const schemaDefinition = schema[tableName];
+
+    if (!schemaDefinition) {
+        throw new Error(`Table ${tableName} is not defined in the schema`);
+    }
+
+    // 年月別にグループ化するためにstrftime関数を使用
+    const dateField = `${tableName}.date`;
+    const yearMonth = `strftime('%Y-%m', ${dateField}) AS year_month`;
+
+    // フィールドとJOINフィールドの取得
+    const fields = ['SUM(amount) AS total_amount', yearMonth, ...schemaDefinition.joinFields].join(', ');
+
+    // JOIN句の組み立て
+    const joins = schemaDefinition.joins
+        .map(join => `LEFT JOIN ${join.table} ON ${join.condition}`)
+        .join(' ');
+
+    // GROUP BY句の組み立て
+    const groupBy = 'year_month, category_name';
+
+    // SELECTクエリの組み立て
+    const query = `
+        SELECT ${fields}
+        FROM ${schemaDefinition.tableName}       
+        ${joins}
+    `
+    return query;
+};
+
+
+function isNumeric(value: unknown): boolean {
+    return !isNaN(Number(value));
+}
 
 export const buildSqlWhereClause = (tableName: TableName, filterString: string) => {
     const conditions: string[] = []; // SQL 条件句を格納する配列
@@ -205,9 +240,10 @@ export const buildSqlWhereClause = (tableName: TableName, filterString: string) 
         '[greater_than]': '>',
         '[less_than]': '<',
         '[greater_equal]': '>=',
-        '[less_equal]': '<='
+        '[less_equal]': '<=',
+        '[eq]': '='
     };
-
+    const baseFields = schema[tableName].fields
     if (filterString) {
         // date[greater_equal]2024-11-01[and]date[less_equal]2024-11-30
         // のようなフィルター文字列を動的に解析する
@@ -215,9 +251,19 @@ export const buildSqlWhereClause = (tableName: TableName, filterString: string) 
             for (const operatorKey in operators) {
                 if (condition.includes(operatorKey)) {
                     const [fieldName, value] = condition.split(operatorKey);
-                    const field = tableName + '.' + fieldName;
+                    // もっといいやり方がありそうだが、テーブルが持っているフィールドの場合はtablenameをprefixにつける。
+                    // そうでなければ受け取った値をそのまま条件にする。join先のフィールドが指定された場合を想定。
+                    let field = fieldName
+                    if (baseFields.includes(fieldName)) {
+                        field = tableName + '.' + field;
+                    }
                     const operator = operators[operatorKey];
-                    const conditionString = `${field} ${operator} '${value}'`;
+                    let conditionString
+                    if (isNumeric(value)) {
+                        conditionString = `${field} ${operator} ${value}`;
+                    } else {
+                        conditionString = `${field} ${operator} '${value}'`;
+                    }
                     conditions.push(conditionString);
                 }
             }
@@ -248,3 +294,4 @@ export const buildSqlOrderByClause = (tableName: TableName, orderParams: string)
     }
     return `ORDER BY ${orderClauses.join(', ')}`
 }
+

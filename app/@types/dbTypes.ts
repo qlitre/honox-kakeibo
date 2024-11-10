@@ -75,6 +75,20 @@ export type ExpenseWithDetails = Expense & {
     payment_method_name: string;
 }
 
+
+// 各サマリーデータの型定義
+export type SummaryItem = {
+    year_month: string; // "YYYY-MM"形式の年月
+    total_amount: number; // 合計金額
+    category_name: string; // カテゴリ名
+};
+
+// SummaryResponseの型定義
+export type SummaryResponse = {
+    summary: SummaryItem[];
+};
+
+
 export type AssetWithCategoryResponse = KakeiboListResponse<AssetWithCategory>
 export type AssetCategoryResponse = KakeiboListResponse<AssetCategory>
 export type ExpenseWithDetailsResponse = KakeiboListResponse<ExpenseWithDetails>

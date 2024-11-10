@@ -9,11 +9,17 @@ export type KakeiboQueries = {
     orders?: string;
     fields?: string | string[];
     filters?: string;
+    groupby?: string;
 }
 
 export type GetListRequest = {
     endpoint: string;
     queries?: KakeiboQueries;
+}
+
+export type GetSummaryRequest = {
+    endpoint: string
+    queries?: KakeiboQueries
 }
 
 export type AddRequest = {

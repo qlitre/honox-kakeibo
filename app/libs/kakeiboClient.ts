@@ -2,11 +2,13 @@ import {
     KakeiboClientOptions,
     KakeiboQueries,
     GetListRequest,
+    GetSummaryRequest,
     GetDetailRequest,
     AddRequest,
     UpdateRequest,
     DeleteRequest
 } from "@/@types/types";
+
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
     return value !== null && typeof value === 'object';
@@ -76,6 +78,16 @@ class KakeiboClient {
         }
         return this.fetchKakeibo<T>(url);
     }
+
+    public async getSummaryResponse<T>({ endpoint, queries }: GetSummaryRequest): Promise<T> {
+        let url = `${this.baseUrl}/${endpoint}/summary`;
+        if (queries) {
+            const queryString = parseQuery(queries);
+            url += '?' + queryString;
+        }
+        return this.fetchKakeibo<T>(url);
+    }
+
 
     public async getDetail<T>({ endpoint, contentId }: GetDetailRequest): Promise<T> {
         let url = `${this.baseUrl}/${endpoint}/${contentId}`;

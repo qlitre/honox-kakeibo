@@ -38,21 +38,24 @@ export const kakeiboMenu = () => {
     month = month.slice(0, month.length - 1);
 
     return {
-        '資産メニュー': [
+        '資産管理': [
             { name: '資産リスト', href: '/auth/asset' },
-            { name: '資産ダッシュボード', href: `/auth/asset/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}` },
             { name: '資産カテゴリリスト', href: '/auth/asset_category' },
             { name: '投資用口座入金履歴', href: '/auth/fund_transaction' }
         ],
-        '支出メニュー': [
+        '支出管理': [
             { name: '支出リスト', href: '/auth/expense' },
             { name: '支出カテゴリリスト', href: '/auth/expense_category' },
             { name: '支払い方法リスト', href: '/auth/payment_method' },
         ],
-        '収入メニュー': [
+        '収入管理': [
             { name: '収入リスト', href: '/auth/income' },
             { name: '収入カテゴリリスト', href: '/auth/income_category' },
         ],
+        'ダッシュボード': [
+            { name: '投資サマリ', href: '/auth/dashboard/investment_summary' },
+            { name: '資産ダッシュボード', href: `/auth/asset/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}` },
+        ]
     };
 };
 

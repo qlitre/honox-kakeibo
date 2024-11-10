@@ -33,19 +33,18 @@ const MenuSection = ({ title, items }: Props) => {
 export default createRoute(async (c) => {
   // kakeiboMenu を取得
   const menuItems = kakeiboMenu();
+
+  // メニューセクションを動的に生成
+  const menuSections = Object.entries(menuItems).map(([title, items]) => (
+    <MenuSection key={title} title={title} items={items} />
+  ));
+
   return c.render(
     <>
       <div className="min-h-screen bg-gray-100 py-10">
         <div className="container mx-auto px-4">
           <h1 className="text-2xl font-bold mb-6 text-center">家計簿アプリ</h1>
-          {/* 資産メニュー */}
-          <MenuSection title="資産メニュー" items={menuItems['資産メニュー']} />
-
-          {/* 支出メニュー */}
-          <MenuSection title="支出メニュー" items={menuItems['支出メニュー']} />
-
-          {/* 収入メニュー */}
-          <MenuSection title="収入メニュー" items={menuItems['収入メニュー']} />
+          {menuSections}
         </div>
 
       </div>
