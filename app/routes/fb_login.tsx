@@ -2,7 +2,6 @@ import { initializeApp } from "firebase/app";
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import { setCookie } from 'hono/cookie';
 import { getAuth } from "firebase/auth";
 import { signInWithEmailAndPassword } from 'firebase/auth'
 
@@ -97,10 +96,6 @@ export const POST = createRoute(
         const { email, password } = c.req.valid('form')
         const data = await signInWithEmailAndPassword(auth, email, password);
         if (data.user) {
-            // coookieにセット
-            const idToken = await data.user.getIdToken();
-            setCookie(c, 'firebase_token', idToken,
-                { httpOnly: true, sameSite: 'Strict' })
             return c.redirect('/auth', 303)
         }
         return c.redirect('/fb_login', 303)
