@@ -6,8 +6,8 @@ import { checkauthFb } from '@/checkauthFb';
 
 // Firebaseでテスト
 const authMiddleware = createMiddleware(async (c, next) => {
-    const isAuthenticated = await checkauthFb(c);
     if (c.req.path.startsWith('/auth')) {
+        const isAuthenticated = await checkauthFb(c);
         if (isAuthenticated) {
             await next();
         } else {

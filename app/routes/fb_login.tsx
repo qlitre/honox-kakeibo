@@ -4,6 +4,7 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { getAuth } from "firebase/auth";
 import { signInWithEmailAndPassword } from 'firebase/auth'
+import { setCookie } from "hono/cookie";
 
 const schema = z.object({
     email: z.string().min(3).includes('@'),
@@ -96,6 +97,11 @@ export const POST = createRoute(
         const { email, password } = c.req.valid('form')
         const data = await signInWithEmailAndPassword(auth, email, password);
         if (data.user) {
+            const idToken = await data.user.getIdToken();
+            setCookie(c, 'firebase_token', idToken, {
+                httpOnly: true,
+                sameSite: 'strict'
+            })
             return c.redirect('/auth', 303)
         }
         return c.redirect('/fb_login', 303)

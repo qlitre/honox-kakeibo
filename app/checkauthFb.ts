@@ -1,29 +1,52 @@
 import { Context } from "hono";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { initializeApp } from "firebase/app";
+import { getCookie } from "hono/cookie";
 
 export const checkauthFb = async (c: Context): Promise<boolean> => {
-    const firebaseConfig = {
-        apiKey: c.env.FB_API_KEY,
-        authDomain: c.env.FB_AUTH_DOMAIN,
-        projectId: c.env.FB_PROJECT_ID,
-        storageBucket: c.env.FB_STORAGE_BUCKET,
-        messagingSenderId: c.env.FB_MESSAGE_SENDER_ID,
-        appId: c.env.FB_APP_ID,
-    };
+    try {
+        // クッキーから `firebase_token` を取得
+        const idToken = getCookie(c, 'firebase_token');
+        if (!idToken) {
+            console.log('No token found');
+            return false;
+        }
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+        // Firebase Authentication REST API エンドポイント
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${c.env.FB_API_KEY}`;
 
-    // Promise を使用して認証状態を待機
-    return new Promise((resolve) => {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                resolve(true);
-            } else {
-                resolve(false);
-            }
+        // トークンの検証リクエストを送信
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ idToken }),
         });
-    });
+
+        // レスポンスが正常でない場合はエラー
+        if (!response.ok) {
+            console.error('Invalid token response:', await response.text());
+            return false;
+        }
+        interface FirebaseResponse {
+            users: Array<{
+                localId: string;
+                email: string;
+                emailVerified: boolean;
+                displayName?: string;
+            }>;
+        }
+        // ユーザー情報を取得
+        const data: FirebaseResponse = await response.json();
+        const user = data.users?.[0];
+        if (!user) {
+            console.log('No user data found');
+            return false;
+        }
+        return true;
+    } catch (error) {
+        console.error('Token verification failed:', error);
+    }
+
+    // トークンが無効な場合
+    return false;
 };
