@@ -34,7 +34,7 @@ export default defineConfig(async ({ mode }) => {
         },
       },
       ssr: {
-        external: ['react', 'react-dom', 'react-chartjs-2', 'chart.js', '@supabase/supabase-js'],
+        external: ['react', 'react-dom', 'react-chartjs-2', 'chart.js',],
         noExternal: [],
       },
       plugins: [

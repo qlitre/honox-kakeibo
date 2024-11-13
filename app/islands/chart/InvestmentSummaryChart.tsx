@@ -10,6 +10,8 @@ import {
     Title,
     Tooltip,
     Legend,
+    LineController,
+    BarController,
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import { ChartData, ChartOptions } from 'chart.js';
@@ -23,12 +25,14 @@ type Props = {
 ChartJS.register(
     BarElement,
     LineElement,
-    PointElement, // これを追加
+    PointElement,
     CategoryScale,
     LinearScale,
     Title,
     Tooltip,
-    Legend
+    Legend,
+    LineController,
+    BarController,
 );
 
 export const InvestmentSummaryChart: FC<Props> = ({ labels, holdingValues, investmentAmounts }) => {

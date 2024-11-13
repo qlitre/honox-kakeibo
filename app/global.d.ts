@@ -7,8 +7,6 @@ declare module 'hono' {
   interface Env {
     Variables: {}
     Bindings: {
-      PROJECT_URL: string;
-      API_KEY: string;
       HONO_IS_COOL: string;
       BASE_URL: string;
       DB: D1Database;
