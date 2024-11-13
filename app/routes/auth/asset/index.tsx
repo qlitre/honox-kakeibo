@@ -82,7 +82,7 @@ export default createRoute(async (c) => {
                                         }}
                                         title='編集'
                                         actionUrl={`/auth/asset/${asset.id}/update`}
-                                        categories={categories} key={asset.id}>
+                                        categories={categories}>
                                     </AssetCreateModal>
                                     <AssetDeleteModal actionUrl={`/auth/asset/${asset.id}/delete`} asset={asset} />
                                 </td>

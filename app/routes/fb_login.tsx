@@ -1,10 +1,9 @@
-import { initializeApp } from "firebase/app";
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import { getAuth } from "firebase/auth";
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { setCookie } from "hono/cookie";
+import { auth } from '@/firebase'
 
 const schema = z.object({
     email: z.string().min(3).includes('@'),
@@ -82,20 +81,9 @@ export const POST = createRoute(
             return c.redirect('/fb_login', 303)
         }
     }), async (c) => {
-        const firebaseConfig = {
-            apiKey: c.env.FB_API_KEY,
-            authDomain: c.env.FB_AUTH_DOMAIN,
-            projectId: c.env.FB_PROJECT_ID,
-            storageBucket: c.env.FB_STORAGE_BUCKET,
-            messagingSenderId: c.env.FB_MESSAGE_SENDER_ID,
-            appId: c.env.FB_APP_ID
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+        const _auth = auth(c);
         const { email, password } = c.req.valid('form')
-        const data = await signInWithEmailAndPassword(auth, email, password);
+        const data = await signInWithEmailAndPassword(_auth, email, password);
         if (data.user) {
             const idToken = await data.user.getIdToken();
             setCookie(c, 'firebase_token', idToken, {

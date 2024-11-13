@@ -15,9 +15,9 @@ export const Table: FC<Props> = ({ headers, children }) => {
                         <table className="min-w-full divide-y divide-gray-300">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    {headers.map((item) => {
+                                    {headers.map((item, i) => {
                                         return (
-                                            <th scope="col" className={`py-4 px-6 text-${item.textPosition} text-sm font-semibold text-gray-900`}>
+                                            <th scope="col" className={`py-4 px-6 text-${item.textPosition} text-sm font-semibold text-gray-900`} key={i}>
                                                 {item.name}
                                             </th>
                                         )
