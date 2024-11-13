@@ -7,9 +7,6 @@ export default createRoute(async (c) => {
         <div>
           <a className='just' href="/login">ログイン</a>
         </div>
-        <div className='mt-4'>
-          <a className='just' href="/fb_login">ログイン(FB)</a>
-        </div>
       </h1>
     </div>,
     { title: 'top' }

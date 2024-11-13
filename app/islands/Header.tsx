@@ -6,7 +6,6 @@ import type { FC } from 'react';
 export const Header: FC = () => {
     const navItems = [
         { href: '/auth/logout', name: 'ログアウト' },
-        { href: '/auth/logout_fb', name: 'ログアウト(FB)' },
     ];
 
     const [isOpen, setIsOpen] = useState(false);

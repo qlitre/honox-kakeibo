@@ -54,7 +54,7 @@ export const kakeiboMenu = () => {
         ],
         'ダッシュボード': [
             { name: '投資サマリ', href: '/auth/dashboard/investment_summary' },
-            { name: '資産ダッシュボード', href: `/auth/asset/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}` },
+            { name: '資産ダッシュボード', href: `/auth/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}/asset` },
         ]
     };
 };

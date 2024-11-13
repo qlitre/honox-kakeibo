@@ -1,9 +1,9 @@
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import { createClient } from "@supabase/supabase-js/dist/main/index.js";
-import { setCookie } from 'hono/cookie';
-
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { setCookie } from "hono/cookie";
+import { auth } from '@/firebase'
 
 const schema = z.object({
     email: z.string().min(3).includes('@'),
@@ -41,11 +41,6 @@ export default createRoute((c) => {
                                 <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                                     Password
                                 </label>
-                                <div className="text-sm">
-                                    <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                                        Forgot password?
-                                    </a>
-                                </div>
                             </div>
                             <div className="mt-2">
                                 <input
@@ -78,21 +73,19 @@ export default createRoute((c) => {
 export const POST = createRoute(
     zValidator('form', schema, (result, c) => {
         if (!result.success) {
-            return c.redirect('/login', 303)
+            return c.redirect('/fb_login', 303)
         }
     }), async (c) => {
-
+        const _auth = auth(c);
         const { email, password } = c.req.valid('form')
-        const supabase = createClient(c.env.PROJECT_URL, c.env.API_KEY)
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: password,
-        })
+        const data = await signInWithEmailAndPassword(_auth, email, password);
         if (data.user) {
-            // coookieにセット
-            setCookie(c, 'supabase_token', data.session.access_token)
+            const idToken = await data.user.getIdToken();
+            setCookie(c, 'firebase_token', idToken, {
+                httpOnly: true,
+                sameSite: 'strict'
+            })
             return c.redirect('/auth', 303)
         }
-        // ログイン失敗
-        return c.redirect('/login', 303)
+        return c.redirect('/fb_login', 303)
     })

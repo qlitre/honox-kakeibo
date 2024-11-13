@@ -1,6 +1,5 @@
 import { createRoute } from 'honox/factory';
 import { createMiddleware } from 'hono/factory';
-//import { checkauth } from '../checkauth';
 import { bearerAuth } from 'hono/bearer-auth';
 import { checkauthFb } from '@/checkauthFb';
 
