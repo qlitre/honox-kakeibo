@@ -1,8 +1,7 @@
 import { FC } from "react";
 import { AlertSuccess } from "@/islands/share/AlertSuccess";
-import { PageHeader } from "../PageHeader";
+import { PageHeader } from "@/components/PageHeader";
 import { AssetCategory, ExpenseCategory, IncomeCategory, PaymentMethod } from "@/@types/dbTypes";
-
 
 type Props = {
     message?: string;
@@ -25,6 +24,7 @@ export const CategoryList: FC<Props> = ({ message, categories, pageTitle, endpoi
                         カテゴリ追加
                     </a>
                 </div>
+                {/**overflow-hidden rounded-lg bg-white shadow-lg */}
                 <ul className="space-y-2">
                     {categories.map((category) => (
                         <div

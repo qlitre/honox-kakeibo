@@ -26,7 +26,7 @@ export const AssetTable: FC<Props> = ({
     };
 
     return (
-        <table className="w-full table-auto border-collapse text-lg">
+        <table className="w-full table-auto border-collapse text-sm overflow-x-auto">
             <thead>
                 <tr className="bg-gray-100">
                     <th className="px-4 py-4 text-left">カテゴリ名</th>

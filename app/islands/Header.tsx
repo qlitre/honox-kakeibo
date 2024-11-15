@@ -37,7 +37,7 @@ export const Header: FC = () => {
                 <nav className="ml-auto hidden md:flex items-center space-x-8">
                     {menuSections}
                     {navItems.map((item, i) => (
-                        <a href={item.href} className="text-lg font-semibold" key={i}>
+                        <a href={item.href} className="text-sm font-semibold" key={i}>
                             {item.name}
                         </a>
                     ))}

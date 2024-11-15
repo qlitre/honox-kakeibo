@@ -135,7 +135,7 @@ export default createRoute(async (c) => {
     return c.render(
         <div>
             <PageHeader title='資産ダッシュボード'></PageHeader>
-            <MonthPager year={year} month={month} hrefPrefix='/auth/asset/dashboard'></MonthPager>
+            <MonthPager year={year} month={month} hrefSuffix='asset'></MonthPager>
             <div className="grid lg:grid-cols-3 gap-4">
                 {/* テーブル部分：2 の割合 */}
                 <Card className="lg:col-span-2">

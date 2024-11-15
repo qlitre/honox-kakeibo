@@ -12,7 +12,7 @@ type Props = {
     title: string;
 };
 
-export const FlyoutMenu: FC<Props> =({ items, title }) => {
+export const FlyoutMenu: FC<Props> = ({ items, title }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -40,7 +40,7 @@ export const FlyoutMenu: FC<Props> =({ items, title }) => {
         <div className="relative" ref={menuRef}>
             <button
                 onClick={togglePopover}
-                className="inline-flex items-center gap-x-1 text-lg font-semibold text-gray-900"
+                className="inline-flex items-center gap-x-1 text-sm font-semibold text-gray-900"
             >
                 <span>{title}</span>
                 <ChevronDownIcon aria-hidden="true" className="h-5 w-5" />
@@ -48,28 +48,26 @@ export const FlyoutMenu: FC<Props> =({ items, title }) => {
 
             {isOpen && (
                 <div
-                    className="absolute left-1/2 z-10 mt-5 flex w-screen max-w-max -translate-x-1/2 px-4"
+                    className="absolute left-1/2 z-10 mt-5 flex w-screen max-w-min -translate-x-1/2 px-4 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
                     style={{
                         transform: 'translateX(-50%)',
                     }}
                 >
-                    <div className="w-screen max-w-md flex-auto overflow-hidden rounded-3xl bg-white text-sm shadow-lg ring-1 ring-gray-900/5">
-                        <div className="p-4">
-                            {items.map((item) => (
-                                <div
-                                    key={item.name}
-                                    className="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50"
-                                >
-                                    <div>
-                                        <a href={item.href} className="font-semibold text-gray-900">
-                                            {item.name}
-                                            <span className="absolute inset-0" />
-                                        </a>
+                    <div className="w-56 shrink rounded-xl bg-white p-4 text-sm/6 font-semibold text-gray-900 shadow-lg ring-1 ring-gray-900/5">
+                        {items.map((item) => (
+                            <div
+                                key={item.name}
+                                className="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50"
+                            >
+                                <div>
+                                    <a href={item.href} className="font-semibold text-gray-900">
+                                        {item.name}
+                                        <span className="absolute inset-0" />
+                                    </a>
 
-                                    </div>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}

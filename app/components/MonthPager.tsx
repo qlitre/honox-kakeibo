@@ -10,18 +10,18 @@ import {
 type Props = BaseProps & {
     year: number;
     month: number;
-    hrefPrefix: string
+    hrefSuffix: string
 }
 
-export const MonthPager: FC<Props> = ({ className, year, month, hrefPrefix }) => {
+export const MonthPager: FC<Props> = ({ className, year, month, hrefSuffix }) => {
     const prevMonthYear = getPrevMonthYear(year, month)
     const prevMonth = getPrevMonth(month)
     const nextMonthYear = getNextMonthYear(year, month)
     const nextMonth = getNextMonth(month)
     return (
-        <div className="flex items-center justify-center space-x-4 py-4">
+        <div className={`flex items-center justify-center space-x-4 py-4 ${className ?? ''}`}>
             <a
-                href={`${hrefPrefix}/${prevMonthYear}/${prevMonth}`}
+                href={`/auth/dashboard/${prevMonthYear}/${prevMonth}/${hrefSuffix}`}
                 className="text-gray-600 bg-gray-200 rounded-full px-3 py-1 hover:bg-gray-300 transition"
             >
                 前月
@@ -30,7 +30,7 @@ export const MonthPager: FC<Props> = ({ className, year, month, hrefPrefix }) =>
                 {year}-{String(month).padStart(2, '0')}
             </span>
             <a
-                href={`${hrefPrefix}/${nextMonthYear}/${nextMonth}`}
+                href={`/auth/dashboard/${nextMonthYear}/${nextMonth}/${hrefSuffix}`}
                 className="text-gray-600 bg-gray-200 rounded-full px-3 py-1 hover:bg-gray-300 transition"
             >
                 次月
