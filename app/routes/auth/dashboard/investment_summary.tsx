@@ -16,17 +16,16 @@ export default createRoute(async (c) => {
             orders: 'year_month'
         }
     });
-    const labels = []
-    const mySet = new Set()
+    const mySet = new Set<string>()
     const objHoldingValues: Record<string, number> = {}
     for (const elm of holdingValueData.summary) {
         const yearMonth = elm.year_month
         if (!objHoldingValues[yearMonth]) objHoldingValues[yearMonth] = 0
         objHoldingValues[yearMonth] += elm.total_amount
-        if (mySet.has(yearMonth)) continue
         mySet.add(yearMonth)
-        labels.push(yearMonth)
     }
+    const labels: string[] = Array.from(mySet);
+    labels.sort((a, b) => (a.localeCompare(b)));
     const investmentData = await client.getSummaryResponse<SummaryResponse>({
         endpoint: 'fund_transaction',
         queries: {

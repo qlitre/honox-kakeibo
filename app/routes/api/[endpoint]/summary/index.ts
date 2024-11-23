@@ -23,7 +23,6 @@ export default createRoute(async (c) => {
         if (groupBy) {
             sqlQuery += ` GROUP BY ${groupBy}`
         }
-
         const { results } = await db.prepare(sqlQuery).all()
         const response = {
             summary: results
