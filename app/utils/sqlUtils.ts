@@ -94,10 +94,14 @@ export const generateSummaryQuery = (tableName: TableName): string => {
     // 年月別にグループ化するためにstrftime関数を使用
     const dateField = `${tableName}.date`;
     const yearMonth = `strftime('%Y-%m', ${dateField}) AS year_month`;
-
+    const arr = ['SUM(amount) AS total_amount', yearMonth]
+    if (schemaDefinition.fields.indexOf(`${tableName}_category_id`) >= 0) {
+        const categoryId = `${tableName}_category_id AS category_id`
+        arr.push(categoryId)
+    }
+    arr.push(...schemaDefinition.joinFields)
     // フィールドとJOINフィールドの取得
-    const fields = ['SUM(amount) AS total_amount', yearMonth, ...schemaDefinition.joinFields].join(', ');
-
+    const fields = arr.join(', ');
     // JOIN句の組み立て
     const joins = schemaDefinition.joins
         .map(join => `LEFT JOIN ${join.table} ON ${join.condition}`)

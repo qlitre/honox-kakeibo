@@ -78,9 +78,10 @@ export type ExpenseWithDetails = Expense & {
 
 // 各サマリーデータの型定義
 export type SummaryItem = {
-    year_month: string; // "YYYY-MM"形式の年月
-    total_amount: number; // 合計金額
-    category_name: string; // カテゴリ名
+    year_month: string;
+    total_amount: number;
+    category_name: string;
+    category_id: string
 };
 
 // SummaryResponseの型定義
