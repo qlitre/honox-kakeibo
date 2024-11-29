@@ -1,5 +1,7 @@
 import { FC } from 'react';
 import type { AssetTableItems } from '@/@types/common';
+import { Table } from '@/components/share/Table';
+import { TableHeaderItem } from '@/@types/common';
 
 type Props = {
     totalAmount: number;
@@ -9,6 +11,8 @@ type Props = {
     annualTotalDiffRatio: number;
     tableItems: AssetTableItems;
 };
+
+
 
 export const AssetTable: FC<Props> = ({
     totalAmount,
@@ -25,17 +29,15 @@ export const AssetTable: FC<Props> = ({
         return { sign, color };
     };
 
+    const headers: TableHeaderItem[] = [
+        { name: 'カテゴリ名', textPosition: 'left' },
+        { name: '当月', textPosition: 'right' },
+        { name: '前月比', textPosition: 'right' },
+        { name: '年初比', textPosition: 'right' },
+        { name: '構成割合', textPosition: 'right' }
+    ]
     return (
-        <table className="w-full table-auto border-collapse text-sm overflow-x-auto">
-            <thead>
-                <tr className="bg-gray-100">
-                    <th className="px-4 py-4 text-left">カテゴリ名</th>
-                    <th className="px-4 py-4 text-left">当月の金額</th>
-                    <th className="px-4 py-4 text-left">前月比</th>
-                    <th className="px-4 py-4 text-left">年初比</th>
-                    <th className="px-4 py-4 text-left">構成割合</th>
-                </tr>
-            </thead>
+        <Table headers={headers}>
             <tbody>
                 {Object.values(tableItems).map((item, index) => {
                     const prevDiff = formatDiff(item.prevDiffRatio);
@@ -43,9 +45,9 @@ export const AssetTable: FC<Props> = ({
 
                     return (
                         <tr key={index} className="border-t">
-                            <td className="px-4 py-4">{item.categoryName}</td>
-                            <td className="px-4 py-4">{item.now.toLocaleString()}</td>
-                            <td className={`px-4 py-4 ${prevDiff.color}`}>
+                            <td className="px-4 py-4 text-left">{item.categoryName}</td>
+                            <td className="px-4 py-4 text-right">{item.now.toLocaleString()}</td>
+                            <td className={`px-4 py-4 ${prevDiff.color} text-right`}>
                                 <div className="flex flex-col">
                                     <span className="text-base">
                                         {prevDiff.sign}
@@ -57,7 +59,7 @@ export const AssetTable: FC<Props> = ({
                                     </span>
                                 </div>
                             </td>
-                            <td className={`px-4 py-4 ${annualDiff.color}`}>
+                            <td className={`px-4 py-4 ${annualDiff.color} text-right`}>
                                 <div className="flex flex-col">
                                     <span className="text-base">
                                         {annualDiff.sign}
@@ -69,7 +71,7 @@ export const AssetTable: FC<Props> = ({
                                     </span>
                                 </div>
                             </td>
-                            <td className="px-4 py-4">
+                            <td className="px-4 py-4 text-right">
                                 {((item.now / totalAmount) * 100).toFixed(2)}%
                             </td>
                         </tr>
@@ -77,8 +79,8 @@ export const AssetTable: FC<Props> = ({
                 })}
                 <tr className="border-t font-bold">
                     <td className="px-4 py-4">トータル</td>
-                    <td className="px-4 py-4">{totalAmount.toLocaleString()}</td>
-                    <td className={`px-4 py-4 ${formatDiff(prevTotalDiffRatio).color}`}>
+                    <td className="px-4 py-4 text-right">{totalAmount.toLocaleString()}</td>
+                    <td className={`px-4 py-4 ${formatDiff(prevTotalDiffRatio).color} text-right`}>
                         <div className="flex flex-col">
                             <span className="text-base">
                                 {formatDiff(prevTotalDiffRatio).sign}
@@ -90,7 +92,7 @@ export const AssetTable: FC<Props> = ({
                             </span>
                         </div>
                     </td>
-                    <td className={`px-4 py-4 ${formatDiff(annualTotalDiffRatio).color}`}>
+                    <td className={`px-4 py-4 ${formatDiff(annualTotalDiffRatio).color} text-right`}>
                         <div className="flex flex-col">
                             <span className="text-base">
                                 {formatDiff(annualTotalDiffRatio).sign}
@@ -102,9 +104,9 @@ export const AssetTable: FC<Props> = ({
                             </span>
                         </div>
                     </td>
-                    <td className="px-4 py-4">100%</td>
+                    <td className="px-4 py-4 text-right">100%</td>
                 </tr>
             </tbody>
-        </table>
+        </Table>
     );
 };
