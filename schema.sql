@@ -74,9 +74,9 @@ CREATE TABLE IF NOT EXISTS income (
 
 CREATE TABLE IF NOT EXISTS fund_transaction (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT NOT NULL,               -- トランザクションの日付
-    amount INTEGER NOT NULL,          -- 金額（正数は入金、負数は出金）
-    description TEXT,                 -- メモや補足説明
+    date TEXT NOT NULL,               
+    amount INTEGER NOT NULL,          
+    description TEXT,                 
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
 );
