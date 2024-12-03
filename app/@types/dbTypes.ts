@@ -81,7 +81,7 @@ export type SummaryItem = {
     year_month: string;
     total_amount: number;
     category_name: string;
-    category_id: string
+    category_id: number;
 };
 
 // SummaryResponseの型定義

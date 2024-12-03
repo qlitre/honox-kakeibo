@@ -58,3 +58,9 @@ export const accumulate = (items: number[]): number[] => {
     };
     return ret
 };
+
+export const formatDiff = (value: number) => {
+    const sign = value >= 0 ? '+' : '-';
+    const color = value >= 0 ? 'text-blue-500' : 'text-red-500';
+    return { sign, color };
+};

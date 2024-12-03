@@ -2,6 +2,7 @@ import { FC } from 'react';
 import type { AssetTableItems } from '@/@types/common';
 import { Table } from '@/components/share/Table';
 import { TableHeaderItem } from '@/@types/common';
+import { formatDiff } from '@/utils/dashboardUtils';
 
 type Props = {
     totalAmount: number;
@@ -12,8 +13,6 @@ type Props = {
     tableItems: AssetTableItems;
 };
 
-
-
 export const AssetTable: FC<Props> = ({
     totalAmount,
     prevTotalDiff,
@@ -22,13 +21,6 @@ export const AssetTable: FC<Props> = ({
     annualTotalDiffRatio,
     tableItems,
 }) => {
-    // 符号と色を決定する関数
-    const formatDiff = (value: number) => {
-        const sign = value >= 0 ? '+' : '-';
-        const color = value >= 0 ? 'text-blue-500' : 'text-red-500';
-        return { sign, color };
-    };
-
     const headers: TableHeaderItem[] = [
         { name: 'カテゴリ名', textPosition: 'left' },
         { name: '当月', textPosition: 'right' },
@@ -77,35 +69,37 @@ export const AssetTable: FC<Props> = ({
                         </tr>
                     );
                 })}
-                <tr className="border-t font-bold">
-                    <td className="px-4 py-4">トータル</td>
-                    <td className="px-4 py-4 text-right">{totalAmount.toLocaleString()}</td>
-                    <td className={`px-4 py-4 ${formatDiff(prevTotalDiffRatio).color} text-right`}>
-                        <div className="flex flex-col">
-                            <span className="text-base">
-                                {formatDiff(prevTotalDiffRatio).sign}
-                                {Math.abs(prevTotalDiff).toLocaleString()}
-                            </span>
-                            <span className="text-sm">
-                                {formatDiff(prevTotalDiffRatio).sign}
-                                {(Math.abs(prevTotalDiffRatio) * 100).toFixed(2)}%
-                            </span>
-                        </div>
-                    </td>
-                    <td className={`px-4 py-4 ${formatDiff(annualTotalDiffRatio).color} text-right`}>
-                        <div className="flex flex-col">
-                            <span className="text-base">
-                                {formatDiff(annualTotalDiffRatio).sign}
-                                {Math.abs(annualTotalDiff).toLocaleString()}
-                            </span>
-                            <span className="text-sm">
-                                {formatDiff(annualTotalDiffRatio).sign}
-                                {(Math.abs(annualTotalDiffRatio) * 100).toFixed(2)}%
-                            </span>
-                        </div>
-                    </td>
-                    <td className="px-4 py-4 text-right">100%</td>
-                </tr>
+                <tfoot className='bg-gray-100'>
+                    <tr className="font-semibold">
+                        <td className="px-4 py-4">トータル</td>
+                        <td className="px-4 py-4 text-right">{totalAmount.toLocaleString()}</td>
+                        <td className={`px-4 py-4 ${formatDiff(prevTotalDiffRatio).color} text-right`}>
+                            <div className="flex flex-col">
+                                <span className="text-base">
+                                    {formatDiff(prevTotalDiffRatio).sign}
+                                    {Math.abs(prevTotalDiff).toLocaleString()}
+                                </span>
+                                <span className="text-sm">
+                                    {formatDiff(prevTotalDiffRatio).sign}
+                                    {(Math.abs(prevTotalDiffRatio) * 100).toFixed(2)}%
+                                </span>
+                            </div>
+                        </td>
+                        <td className={`px-4 py-4 ${formatDiff(annualTotalDiffRatio).color} text-right`}>
+                            <div className="flex flex-col">
+                                <span className="text-base">
+                                    {formatDiff(annualTotalDiffRatio).sign}
+                                    {Math.abs(annualTotalDiff).toLocaleString()}
+                                </span>
+                                <span className="text-sm">
+                                    {formatDiff(annualTotalDiffRatio).sign}
+                                    {(Math.abs(annualTotalDiffRatio) * 100).toFixed(2)}%
+                                </span>
+                            </div>
+                        </td>
+                        <td className="px-4 py-4 text-right">100%</td>
+                    </tr>
+                </tfoot>
             </tbody>
         </Table>
     );

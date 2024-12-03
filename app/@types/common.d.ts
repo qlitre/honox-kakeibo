@@ -15,4 +15,10 @@ export type AssetTableItem = {
     annualStartDiff: number;
     annualStartDiffRatio: number;
 }
-export type AssetTableItems = Record<string, TableItem>
+export type ExpenseTableItem = {
+    categoryName: string;
+    now: number;
+    prevDiff: number;    
+}
+export type AssetTableItems = Record<string, AssetTableItem>
+export type ExpenseTableItems = Record<string, ExpenseTableItem>

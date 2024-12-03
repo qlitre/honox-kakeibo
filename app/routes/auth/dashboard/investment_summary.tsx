@@ -2,7 +2,7 @@ import { createRoute } from 'honox/factory';
 import { SummaryResponse } from '@/@types/dbTypes';
 import { KakeiboClient } from '@/libs/kakeiboClient';
 import { InvestmentSummaryChart } from '@/islands/chart/InvestmentSummaryChart';
-import { accumulate, getNextMonth, getNextMonthYear } from '@/utils/dashboardUtils';
+import { accumulate, getNextMonth, getNextMonthYear} from '@/utils/dashboardUtils';
 import { CardWithHeading } from '@/components/share/CardWithHeading';
 import { Card } from '@/components/share/Card';
 
