@@ -1,13 +1,14 @@
+import type { FC } from 'react';
+import type { SummaryItem } from '@/@types/dbTypes';
 import { ArcElement, Legend, Tooltip, Chart as chartJs, ChartOptions } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import type { SummaryItem } from '@/@types/dbTypes';
 
 type Props = {
   items: SummaryItem[]
   colorMap: Record<number, string>
 }
 
-export const ExpensePieChart = (props: Props) => {
+export const ExpensePieChart: FC<Props> = (props) => {
   chartJs.register(ArcElement, Tooltip, Legend);
 
   const options: ChartOptions<'pie'> = {

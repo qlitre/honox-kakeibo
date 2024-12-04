@@ -1,5 +1,5 @@
-import { FC, ReactNode } from 'react'
-import { TableHeaderItem } from '@/@types/common'
+import type { FC, ReactNode } from 'react'
+import type { TableHeaderItem } from '@/@types/common'
 
 type Props = {
     headers: TableHeaderItem[]

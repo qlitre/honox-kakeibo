@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { BaseProps } from '@/@types/common'
+import type { BaseProps } from '@/@types/common'
 import {
     getPrevMonthYear,
     getPrevMonth,

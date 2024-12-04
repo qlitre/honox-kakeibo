@@ -1,6 +1,6 @@
+import type { FC } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import type { FC } from 'react';
 
 type Item = {
     name: string;

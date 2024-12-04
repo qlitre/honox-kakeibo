@@ -1,6 +1,7 @@
-import { useState, FC, ChangeEvent } from 'react'
+import type { FC, ChangeEvent } from 'react'
+import type { ExpenseCategoryResponse, PaymentMethodResponse } from '@/@types/dbTypes'
+import { useState } from 'react'
 import { Button } from '@/islands/Button'
-import { ExpenseCategoryResponse, PaymentMethodResponse } from '@/@types/dbTypes'
 import { PageHeader } from '@/components/PageHeader'
 
 type Data = {

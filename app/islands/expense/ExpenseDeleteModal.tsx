@@ -1,6 +1,7 @@
-import { useState, FC } from 'react'
-import { Button } from '@/islands/Button'
+import type { FC } from 'react'
 import type { ExpenseWithDetails } from '@/@types/dbTypes'
+import { useState } from 'react'
+import { Button } from '@/islands/Button'
 
 type Props = {
     actionUrl: string

@@ -1,3 +1,4 @@
+import type { FC } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend, ChartOptions } from 'chart.js';
 import type { AssetWithCategory, AssetCategory } from '@/@types/dbTypes';
@@ -17,7 +18,7 @@ type Dataset = {
 }
 
 
-export const AssetBarChart = (props: Props) => {
+export const AssetBarChart: FC<Props> = (props) => {
     const set = new Set()
     const labels = []
     const datasets: Dataset[] = []

@@ -1,5 +1,5 @@
 
-import { FC } from 'react';
+import type { FC } from 'react';
 import {
     Chart as ChartJS,
     BarElement,

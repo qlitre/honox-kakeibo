@@ -1,6 +1,7 @@
-import { useState, FC } from 'react'
+import type { FC } from 'react'
+import type { FundTransation } from '@/@types/dbTypes'
+import { useState } from 'react'
 import { Button } from '@/islands/Button'
-import { FundTransation } from '@/@types/dbTypes'
 
 type Props = {
     actionUrl: string

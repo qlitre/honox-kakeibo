@@ -1,7 +1,6 @@
 import { FC } from 'react';
-import type { AssetTableItems } from '@/@types/common';
+import type { AssetTableItems, TableHeaderItem } from '@/@types/common';
 import { Table } from '@/components/share/Table';
-import { TableHeaderItem } from '@/@types/common';
 import { formatDiff } from '@/utils/dashboardUtils';
 
 type Props = {

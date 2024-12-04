@@ -1,5 +1,5 @@
-import { FC, ReactNode } from "react";
-import { BaseProps } from "@/@types/common";
+import type { FC, ReactNode } from "react";
+import type { BaseProps } from "@/@types/common";
 
 type Props = BaseProps & {
     heading: string

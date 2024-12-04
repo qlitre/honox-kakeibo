@@ -1,4 +1,5 @@
-import { useState, FC, ChangeEvent } from 'react'
+import type { FC, ChangeEvent } from 'react'
+import { useState } from 'react'
 import { Button } from '@/islands/Button'
 import { PageHeader } from '@/components/PageHeader'
 

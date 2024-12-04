@@ -1,5 +1,6 @@
+import type { TableHeaderItem } from '@/@types/common'
+import type { IncomeCategoryResponse, IncomeWithCategoryResponse } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
-import { IncomeCategoryResponse, IncomeWithCategoryResponse } from '@/@types/dbTypes'
 import { KakeiboClient } from '@/libs/kakeiboClient'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
@@ -9,7 +10,6 @@ import { alertCookieKey } from '@/settings/kakeiboSettings'
 import { IncomeDeleteModal } from '@/islands/income/IncomeDeleteModal'
 import { IncomeCreateModal } from '@/islands/income/IncomeCreateModal'
 import { Table } from '@/components/share/Table'
-import { TableHeaderItem } from '@/@types/common'
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'

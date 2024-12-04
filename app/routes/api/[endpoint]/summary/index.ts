@@ -1,7 +1,7 @@
+import type { TableName } from '@/utils/sqlUtils';
 import { createRoute } from 'honox/factory';
 import { generateSummaryQuery, buildSqlWhereClause } from '@/utils/sqlUtils';
 import { schema } from '@/utils/sqlSchema';
-import type { TableName } from '@/utils/sqlUtils';
 
 export default createRoute(async (c) => {
     const tableName = c.req.param('endpoint') as TableName;

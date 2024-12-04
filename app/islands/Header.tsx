@@ -25,7 +25,7 @@ export const Header: FC = () => {
 
 
     return (
-        <header className="p-4 c-wrapper">
+        <header className="p-4 mx-auto max-w-2xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
             <div className="container mx-auto flex items-center relative">
                 <h1 className="text-2xl font-bold">
                     <a href="/auth">

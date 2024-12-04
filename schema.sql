@@ -144,6 +144,18 @@ INSERT INTO asset (date, amount, asset_category_id, description) VALUES ('2024-1
 INSERT INTO asset (date, amount, asset_category_id, description) VALUES ('2024-11-01', 190000, 3, '11月の株式投信残高');
 INSERT INTO asset (date, amount, asset_category_id, description) VALUES ('2024-11-01', 72000, 4, '11月のビットコイン残高');
 
+INSERT INTO fund_transaction (date, amount) VALUES ('2023-12-25', 20000);
+INSERT INTO fund_transaction (date, amount) VALUES ('2024-01-25', 20000);
+INSERT INTO fund_transaction (date, amount) VALUES ('2024-02-25', 20000);
+INSERT INTO fund_transaction (date, amount) VALUES ('2024-03-25', 20000);
+INSERT INTO fund_transaction (date, amount) VALUES ('2024-04-25', 20000);
+INSERT INTO fund_transaction (date, amount) VALUES ('2024-05-25', 20000);
+INSERT INTO fund_transaction (date, amount) VALUES ('2024-06-25', 20000);
+INSERT INTO fund_transaction (date, amount) VALUES ('2024-07-25', 20000);
+INSERT INTO fund_transaction (date, amount) VALUES ('2024-08-25', 20000);
+INSERT INTO fund_transaction (date, amount) VALUES ('2024-09-25', 20000);
+INSERT INTO fund_transaction (date, amount) VALUES ('2024-10-25', 20000);
+
 -- Expense categories
 INSERT INTO expense_category (name) VALUES ('食費');
 INSERT INTO expense_category (name) VALUES ('交通費');

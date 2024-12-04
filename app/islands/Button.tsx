@@ -1,6 +1,5 @@
-import type { FC } from 'react'
-import { BaseProps } from '@/@types/common'
-import { ReactNode } from 'react';
+import type { FC, ReactNode } from 'react'
+import type { BaseProps } from '@/@types/common'
 
 type Props = BaseProps & {
     type: 'primary' | 'danger' | 'success' | 'secondary';

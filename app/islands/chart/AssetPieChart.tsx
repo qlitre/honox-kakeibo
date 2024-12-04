@@ -1,13 +1,14 @@
+import type { FC } from 'react';
+import type { AssetWithCategory } from '@/@types/dbTypes';
 import { ArcElement, Legend, Tooltip, Chart as chartJs, ChartOptions } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import type { AssetWithCategory } from '@/@types/dbTypes';
 
 type Props = {
   assets: AssetWithCategory[]
   colorMap: Record<number, string>
 }
 
-export const AssetPieChart = (props: Props) => {
+export const AssetPieChart: FC<Props> = (props) => {
   // 必要なコンポーネントを登録
   chartJs.register(ArcElement, Tooltip, Legend);
 

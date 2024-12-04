@@ -1,4 +1,5 @@
-import { useState, FC } from 'react'
+import type { FC } from 'react'
+import { useState } from 'react'
 import { Button } from '@/islands/Button'
 import type { AssetWithCategory } from '@/@types/dbTypes'
 

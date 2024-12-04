@@ -1,6 +1,5 @@
 import type { FC } from 'react';
 import { PageHeader } from '@/components/PageHeader';
-import { ButtonLink } from '@/components/share/ButtonLink';
 
 type Data = {
     name: string;

@@ -1,3 +1,4 @@
+import type { TableName } from '@/utils/sqlUtils';
 import { createRoute } from 'honox/factory'
 import {
     generateSelectQuery,
@@ -8,7 +9,6 @@ import {
     buildSqlOrderByClause
 } from '@/utils/sqlUtils'
 import { schema } from '@/utils/sqlSchema';
-import type { TableName } from '@/utils/sqlUtils';
 
 
 export default createRoute(async (c) => {

@@ -1,4 +1,4 @@
-import { ExpenseCategory, IncomeCategory } from '@/@types/dbTypes';
+import type { ExpenseCategory, IncomeCategory } from '@/@types/dbTypes';
 import type { FC } from 'react';
 
 type Props = {

@@ -1,6 +1,6 @@
+import type { FC } from 'react';
 import { useState } from 'react';
 import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/20/solid';
-import type { FC } from 'react';
 
 type Props = {
     message: string;
