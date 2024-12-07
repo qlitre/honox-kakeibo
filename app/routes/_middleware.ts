@@ -3,7 +3,6 @@ import { createMiddleware } from 'hono/factory';
 import { bearerAuth } from 'hono/bearer-auth';
 import { checkauthFb } from '@/checkauthFb';
 
-// Firebaseでテスト
 const authMiddleware = createMiddleware(async (c, next) => {
     if (c.req.path.startsWith('/auth')) {
         const isAuthenticated = await checkauthFb(c);

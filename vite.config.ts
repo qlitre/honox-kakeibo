@@ -10,7 +10,7 @@ export default defineConfig(async ({ mode }) => {
     return {
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, 'app'), // src ディレクトリを '@' で参照できるように設定
+          '@': path.resolve(__dirname, 'app'),
         },
       },
       build: {
@@ -30,7 +30,7 @@ export default defineConfig(async ({ mode }) => {
     return {
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, 'app'), // src ディレクトリを '@' で参照できるように設定
+          '@': path.resolve(__dirname, 'app'),
         },
       },
       ssr: {
