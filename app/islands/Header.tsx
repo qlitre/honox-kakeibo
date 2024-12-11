@@ -42,27 +42,8 @@ export const Header: FC = () => {
                         </a>
                     ))}
                 </nav>
-                {/* md以下の画面幅で表示されるメニューアイコン */}
-                <button
-                    onClick={toggleMenu}
-                    className="ml-auto md:hidden focus:outline-none"
-                >
-                    <img src="/static/icon_menu.svg" alt="メニューアイコン" />
-                </button>
-
-                {/* ドロップダウンメニュー */}
-                {isOpen && (
-                    <div className="absolute top-16 right-0 bg-white shadow-md md:hidden">
-                        <nav className="flex flex-col p-4 space-y-2">
-                            {menuSections}
-                            {navItems.map((item, i) => (
-                                <a href={item.href} className="text-lg font-semibold" key={i}>
-                                    {item.name}
-                                </a>
-                            ))}
-                        </nav>
-                    </div>
-                )}
+                {/* md以下はデザインがむずいので、とりあえずメニューなしとする。
+                トップページにメニュー一覧があるのでそこで選ぶ運用で回避する*/}
             </div>
         </header>
     );
