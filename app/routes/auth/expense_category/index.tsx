@@ -12,7 +12,8 @@ export default createRoute(async (c) => {
     const endPoint = 'expense_category'
     const categories = await client.getListResponse<ExpenseCategoryResponse>({
         endpoint: endPoint, queries: {
-            orders: 'id'
+            orders: 'id',
+            limit: 100
         }
     })
     return c.render(
