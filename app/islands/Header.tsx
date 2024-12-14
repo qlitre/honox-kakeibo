@@ -1,19 +1,8 @@
-import { useState } from "react";
+import type { FC } from 'react';
 import { FlyoutMenu } from "@/islands/FlyoutMenu";
 import { kakeiboMenu } from "@/settings/kakeiboSettings";
-import type { FC } from 'react';
 
 export const Header: FC = () => {
-    const navItems = [
-        { href: '/auth/logout', name: 'ログアウト' },
-    ];
-
-    const [isOpen, setIsOpen] = useState(false);
-
-    // メニューの開閉を制御する関数
-    const toggleMenu = () => {
-        setIsOpen(!isOpen);
-    };
 
     // kakeiboMenu を取得
     const menuItems = kakeiboMenu();
@@ -36,14 +25,10 @@ export const Header: FC = () => {
                 {/* md以上の画面幅で表示されるナビゲーションメニュー */}
                 <nav className="ml-auto hidden md:flex items-center space-x-8">
                     {menuSections}
-                    {navItems.map((item, i) => (
-                        <a href={item.href} className="text-sm font-semibold" key={i}>
-                            {item.name}
-                        </a>
-                    ))}
+                    <a href='/auth/logout' className="text-sm font-semibold">
+                        ログアウト
+                    </a>
                 </nav>
-                {/* md以下はデザインがむずいので、とりあえずメニューなしとする。
-                トップページにメニュー一覧があるのでそこで選ぶ運用で回避する*/}
             </div>
         </header>
     );
