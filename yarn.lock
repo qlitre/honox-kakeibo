@@ -1840,15 +1840,15 @@ hasown@^2.0.2:
   dependencies:
     function-bind "^1.1.2"
 
-hono@^4.6.11:
-  version "4.6.11"
-  resolved "https://registry.yarnpkg.com/hono/-/hono-4.6.11.tgz#8aa9bea754cfd6e295800652a107dd850bcf3c54"
-  integrity sha512-f0LwJQFKdUUrCUAVowxSvNCjyzI7ZLt8XWYU/EApyeq5FfOvHFarBaE5rjU9HTNFk4RI0FkdB2edb3p/7xZjzQ==
+hono@^4.6.14:
+  version "4.6.14"
+  resolved "https://registry.yarnpkg.com/hono/-/hono-4.6.14.tgz#f83f51e81b8ae5611dab459570990bf4c977d20c"
+  integrity sha512-j4VkyUp2xazGJ8eCCLN1Vm/bxdvm/j5ZuU9AIjLu9vapn2M44p9L3Ktr9Vnb2RN2QtcR/wVjZVMlT5k7GJQgPw==
 
-honox@^0.1.26:
-  version "0.1.26"
-  resolved "https://registry.yarnpkg.com/honox/-/honox-0.1.26.tgz#f122e4c689939eb4207987d0d55f78233441799c"
-  integrity sha512-UuocP0ND8MxyhQv4Qibt5TgXgH4Wn4+r9zOTkRwaQRlH3QHzrlPzQ3lxpd5wLTISpZ39ymu+0IAVv9x+BU2CgA==
+honox@^0.1.27:
+  version "0.1.27"
+  resolved "https://registry.yarnpkg.com/honox/-/honox-0.1.27.tgz#00959e66042a9c3083d5a998cc24f19e47655d26"
+  integrity sha512-lNYRMjB1N6Vr+KQUhLctxvQ4xiQxGdqYv32U2r8SASa3hBzZCHXwA5KdEQJBaEYuBZEr2kFn/jWeMz4vxgy7AQ==
   dependencies:
     "@babel/generator" "7.25.6"
     "@babel/parser" "7.25.6"
