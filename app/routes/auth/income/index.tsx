@@ -48,11 +48,10 @@ export default createRoute(async (c) => {
                     <IncomeCreateModal
                         buttonType='primary'
                         buttonTitle='収入追加'
-                        title='収入追加'
+                        title='作成'
                         actionUrl='/auth/income/create'
                         categories={categories}
                     />
-
                 </div>
                 <Table headers={headers}>
                     <tbody className="divide-y divide-gray-200 bg-white">
@@ -82,6 +81,20 @@ export default createRoute(async (c) => {
                                         }}
                                         title='収入編集'
                                         actionUrl={`/auth/income/${income.id}/update`}
+                                        categories={categories}
+                                    >
+                                    </IncomeCreateModal>
+                                    <IncomeCreateModal
+                                        buttonType='primary'
+                                        buttonTitle='複写'
+                                        data={{
+                                            date: income.date,
+                                            amount: String(income.amount),
+                                            income_category_id: String(income.income_category_id),
+                                            description: income.description || ''
+                                        }}
+                                        title='複写'
+                                        actionUrl='/auth/income/create'
                                         categories={categories}
                                     >
                                     </IncomeCreateModal>

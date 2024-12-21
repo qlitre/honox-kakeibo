@@ -56,7 +56,7 @@ export default createRoute(async (c) => {
                     <ExpenseCreateModal
                         buttonType='primary'
                         buttonTitle='支出追加'
-                        title='支出追加'
+                        title='作成'
                         actionUrl='/auth/expense/create'
                         categories={categories}
                         payment_methods={paymentMethods}
@@ -93,13 +93,27 @@ export default createRoute(async (c) => {
                                             payment_method_id: String(expense.payment_method_id),
                                             description: expense.description || ''
                                         }}
-                                        title='支出編集'
+                                        title='編集'
                                         actionUrl={`/auth/expense/${expense.id}/update`}
                                         categories={categories}
                                         payment_methods={paymentMethods}>
                                     </ExpenseCreateModal>
+                                    <ExpenseCreateModal
+                                        buttonType='primary'
+                                        buttonTitle='複写'
+                                        data={{
+                                            date: expense.date,
+                                            amount: String(expense.amount),
+                                            expense_category_id: String(expense.expense_category_id),
+                                            payment_method_id: String(expense.payment_method_id),
+                                            description: expense.description || ''
+                                        }}
+                                        title='複写'
+                                        actionUrl='/auth/expense/create'
+                                        categories={categories}
+                                        payment_methods={paymentMethods}>
+                                    </ExpenseCreateModal>
                                     <ExpenseDeleteModal actionUrl={`/auth/expense/${expense.id}/delete`} expense={expense} />
-
                                 </td>
                             </tr>
                         ))}
