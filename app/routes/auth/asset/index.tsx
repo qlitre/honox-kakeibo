@@ -49,7 +49,7 @@ export default createRoute(async (c) => {
                     <AssetCreateModal
                         buttonType='primary'
                         buttonTitle='資産追加'
-                        title='資産追加'
+                        title='作成'
                         actionUrl='/auth/asset/create'
                         categories={categories} >
                     </AssetCreateModal>
@@ -82,6 +82,19 @@ export default createRoute(async (c) => {
                                         }}
                                         title='編集'
                                         actionUrl={`/auth/asset/${asset.id}/update`}
+                                        categories={categories}>
+                                    </AssetCreateModal>
+                                    <AssetCreateModal
+                                        buttonType='primary'
+                                        buttonTitle='複写'
+                                        data={{
+                                            date: asset.date,
+                                            amount: String(asset.amount),
+                                            asset_category_id: String(asset.asset_category_id),
+                                            description: asset.description || ''
+                                        }}
+                                        title='複写'
+                                        actionUrl='/auth/asset/create'
                                         categories={categories}>
                                     </AssetCreateModal>
                                     <AssetDeleteModal actionUrl={`/auth/asset/${asset.id}/delete`} asset={asset} />

@@ -43,7 +43,7 @@ export default createRoute(async (c) => {
                     <FundTransactionCreateModal
                         buttonType='primary'
                         buttonTitle='履歴追加'
-                        title='投資用口座入金履歴追加'
+                        title='作成'
                         actionUrl='/auth/fund_transaction/create'
                     />
 
@@ -70,8 +70,20 @@ export default createRoute(async (c) => {
                                             amount: String(fund_transaction.amount),
                                             description: fund_transaction.description || ''
                                         }}
-                                        title='投資用口座入金履歴編集'
+                                        title='編集'
                                         actionUrl={`/auth/fund_transaction/${fund_transaction.id}/update`}
+                                    >
+                                    </FundTransactionCreateModal>
+                                    <FundTransactionCreateModal
+                                        buttonType='primary'
+                                        buttonTitle='複写'
+                                        data={{
+                                            date: fund_transaction.date,
+                                            amount: String(fund_transaction.amount),
+                                            description: fund_transaction.description || ''
+                                        }}
+                                        title='複写'
+                                        actionUrl='/auth/fund_transaction/create'
                                     >
                                     </FundTransactionCreateModal>
                                     <FundTransactionDeleteModal actionUrl={`/auth/fund_transaction/${fund_transaction.id}/delete`} fundTransaction={fund_transaction} />
