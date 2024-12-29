@@ -41,8 +41,8 @@ export default createRoute(async (c) => {
     const headers: TableHeaderItem[] = [
         { name: '日付', textPosition: 'left' },
         { name: 'カテゴリ', textPosition: 'left' },
-        { name: '支払い方法', textPosition: 'left' },
         { name: '金額', textPosition: 'right' },
+        { name: '支払い方法', textPosition: 'left' },
         { name: '説明', textPosition: 'center' },
         { name: '操作', textPosition: 'center' }
     ]
@@ -73,11 +73,11 @@ export default createRoute(async (c) => {
                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                                     {expense.category_name}
                                 </td>
-                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                    {expense.payment_method_name}
-                                </td>
                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 text-right">
                                     {expense.amount.toLocaleString()} 円
+                                </td>
+                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                    {expense.payment_method_name}
                                 </td>
                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 text-center">
                                     {expense.description || '-'}
