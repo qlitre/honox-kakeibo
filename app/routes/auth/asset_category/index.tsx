@@ -2,12 +2,12 @@ import type { AssetCategoryResponse } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { KakeiboClient } from '@/libs/kakeiboClient'
 import { getCookie } from 'hono/cookie'
-import { alertCookieKey } from '@/settings/kakeiboSettings'
+import { successAlertCookieKey } from '@/settings/kakeiboSettings'
 import { CategoryList } from '@/components/share/CategoryList'
 
 export default createRoute(async (c) => {
     const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
-    const message = getCookie(c, alertCookieKey)
+    const message = getCookie(c, successAlertCookieKey)
     const pageTitle = '資産カテゴリ一覧'
     const endPoint = 'asset_category'
     const categories = await client.getListResponse<AssetCategoryResponse>({

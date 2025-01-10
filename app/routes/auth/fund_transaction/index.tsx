@@ -4,9 +4,9 @@ import { createRoute } from 'honox/factory'
 import { KakeiboClient } from '@/libs/kakeiboClient'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
-import { AlertSuccess } from '@/islands/share/AlertSuccess'
+import { Alert } from '@/islands/share/AlertSuccess'
 import { getCookie } from 'hono/cookie'
-import { alertCookieKey } from '@/settings/kakeiboSettings'
+import { successAlertCookieKey } from '@/settings/kakeiboSettings'
 import { FundTransactionCreateModal } from '@/islands/fund_transation/FundTransactionCreateModal'
 import { FundTransactionDeleteModal } from '@/islands/fund_transation/FundTransactionDeleteModal'
 import { Table } from '@/components/share/Table'
@@ -26,7 +26,7 @@ export default createRoute(async (c) => {
     })
     const pageSize = fundTransactions.pageSize
     const query = c.req.query()
-    const message = getCookie(c, alertCookieKey)
+    const successMessage = getCookie(c, successAlertCookieKey)
     const headers: TableHeaderItem[] = [
         { name: '日付', textPosition: 'left' },
         { name: '金額', textPosition: 'right' },
@@ -37,7 +37,7 @@ export default createRoute(async (c) => {
     return c.render(
         <>
             <div className="px-4 sm:px-6 lg:px-8">
-                {message && <AlertSuccess message={message}></AlertSuccess>}
+                {successMessage && <Alert message={successMessage} type='success'></Alert>}
                 <div className="flex items-center justify-between">
                     <PageHeader title="投資用口座入金履歴" />
                     <FundTransactionCreateModal

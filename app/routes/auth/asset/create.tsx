@@ -1,10 +1,11 @@
-import type { Asset } from '@/@types/dbTypes';
+import type { Asset, AssetWithCategoryResponse } from '@/@types/dbTypes';
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { KakeiboClient } from '@/libs/kakeiboClient';
 import { setCookie } from 'hono/cookie';
-import { alertCookieMaxage, alertCookieKey } from '@/settings/kakeiboSettings';
+import { alertCookieMaxage, successAlertCookieKey, dangerAlertCookieKey } from '@/settings/kakeiboSettings';
+import { getBeginningOfMonth, getEndOfMonth } from '@/utils/dashboardUtils';
 
 const schema = z.object({
     date: z.string().length(10),
@@ -34,8 +35,24 @@ export const POST = createRoute(
             asset_category_id: parsedCategoryId,
             description: description
         }
+        // ハイフンで分割
+        const [yearStr, monthStr] = date.split("-");
+        // 数値に変換
+        const year = parseInt(yearStr, 10); // 年
+        const month = parseInt(monthStr, 10); // 月
+        const ge = getBeginningOfMonth(year, month)
+        const le = getEndOfMonth(year, month)
+        const r = await client.getListResponse<AssetWithCategoryResponse>({
+            endpoint: 'asset', queries: {
+                filters: `asset_category_id[eq]${parsedCategoryId}[and]date[greater_equal]${ge}[and]date[less_equal]${le}`
+            }
+        })
+        if (r.totalCount > 0) {
+            setCookie(c, dangerAlertCookieKey, '資産追加に失敗しました。同月に同カテゴリの資産が登録されています。', { maxAge: alertCookieMaxage })
+            return c.redirect('/auth/asset', 303);
+        }
         const response = await client.addData<Asset>({ endpoint: 'asset', data: body })
             .catch((e) => { console.error(e) })
-        setCookie(c, alertCookieKey, '資産追加に成功しました', { maxAge: alertCookieMaxage })
+        setCookie(c, successAlertCookieKey, '資産追加に成功しました', { maxAge: alertCookieMaxage })
         return c.redirect('/auth/asset', 303);
     })

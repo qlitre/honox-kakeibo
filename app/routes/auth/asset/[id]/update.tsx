@@ -4,7 +4,7 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { KakeiboClient } from '@/libs/kakeiboClient';
 import { setCookie } from 'hono/cookie';
-import { alertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
+import { successAlertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
 
 const schema = z.object({
     date: z.string().length(10),
@@ -37,6 +37,6 @@ export const POST = createRoute(
         }
         const response = await client.updateData<Asset>({ endpoint: 'asset', contentId: id, data: body })
             .catch((e) => { console.error(e) })
-        setCookie(c, alertCookieKey, '資産編集に成功しました', { maxAge: alertCookieMaxage })
+        setCookie(c, successAlertCookieKey, '資産編集に成功しました', { maxAge: alertCookieMaxage })
         return c.redirect('/auth/asset', 303);
     })

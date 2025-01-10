@@ -4,7 +4,7 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { KakeiboClient } from '@/libs/kakeiboClient';
 import { setCookie } from 'hono/cookie';
-import { alertCookieMaxage, alertCookieKey } from '@/settings/kakeiboSettings';
+import { alertCookieMaxage, successAlertCookieKey } from '@/settings/kakeiboSettings';
 
 const schema = z.object({
     date: z.string().length(10),
@@ -36,6 +36,6 @@ export const POST = createRoute(
         }
         const response = await client.addData<Income>({ endpoint: 'income', data: body })
             .catch((e) => { console.error(e) })
-        setCookie(c, alertCookieKey, '収入追加に成功しました', { maxAge: alertCookieMaxage })
+        setCookie(c, successAlertCookieKey, '収入追加に成功しました', { maxAge: alertCookieMaxage })
         return c.redirect('/auth/income', 303);
     })

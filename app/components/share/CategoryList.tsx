@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import type { AssetCategory, ExpenseCategory, IncomeCategory, PaymentMethod } from "@/@types/dbTypes";
-import { AlertSuccess } from "@/islands/share/AlertSuccess";
+import { Alert } from "@/islands/share/AlertSuccess";
 import { PageHeader } from "@/components/PageHeader";
 
 type Props = {
@@ -14,7 +14,7 @@ export const CategoryList: FC<Props> = ({ message, categories, pageTitle, endpoi
     return (
         <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto">
-                {message && <AlertSuccess message={message} />}
+                {message && <Alert message={message} type="success" />}
                 <div className="flex justify-between items-center mb-4">
                     <PageHeader className='mb-0 md:mb-0' title={pageTitle} />
                     <a

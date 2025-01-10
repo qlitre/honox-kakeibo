@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { KakeiboClient } from '@/libs/kakeiboClient';
 import { CategoryCreateForm } from '@/components/share/CategoryCreateForm';
 import { setCookie } from 'hono/cookie';
-import { alertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
+import { successAlertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
 
 const schema = z.object({
     name: z.string().min(1),
@@ -55,6 +55,6 @@ export const POST = createRoute(
 
         const response = await client.addData<AssetCategory>({ endpoint: endPoint, data: body })
             .catch((e) => { console.error(e) })
-        setCookie(c, alertCookieKey, successMesage, { maxAge: alertCookieMaxage })
+        setCookie(c, successAlertCookieKey, successMesage, { maxAge: alertCookieMaxage })
         return c.redirect(redirectUrl, 303);
     })

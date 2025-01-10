@@ -4,9 +4,9 @@ import { createRoute } from 'honox/factory'
 import { KakeiboClient } from '@/libs/kakeiboClient'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
-import { AlertSuccess } from '@/islands/share/AlertSuccess'
+import { Alert } from '@/islands/share/AlertSuccess'
 import { getCookie } from 'hono/cookie'
-import { alertCookieKey } from '@/settings/kakeiboSettings'
+import { successAlertCookieKey } from '@/settings/kakeiboSettings'
 import { IncomeDeleteModal } from '@/islands/income/IncomeDeleteModal'
 import { IncomeCreateModal } from '@/islands/income/IncomeCreateModal'
 import { Table } from '@/components/share/Table'
@@ -31,7 +31,7 @@ export default createRoute(async (c) => {
     })
     const pageSize = incomes.pageSize
     const query = c.req.query()
-    const message = getCookie(c, alertCookieKey)
+    const successMessage = getCookie(c, successAlertCookieKey)
     const headers: TableHeaderItem[] = [
         { name: '日付', textPosition: 'left' },
         { name: 'カテゴリ', textPosition: 'left' },
@@ -42,7 +42,7 @@ export default createRoute(async (c) => {
     return c.render(
         <>
             <div className="px-4 sm:px-6 lg:px-8">
-                {message && <AlertSuccess message={message}></AlertSuccess>}
+                {successMessage && <Alert message={successMessage} type='success'></Alert>}
                 <div className="flex items-center justify-between">
                     <PageHeader title="収入リスト" />
                     <IncomeCreateModal
