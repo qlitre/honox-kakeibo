@@ -831,10 +831,10 @@
   resolved "https://registry.yarnpkg.com/@hono/vite-build/-/vite-build-1.1.0.tgz#5828e3ca26bd712a4c01bd26e7e03e84914efa7d"
   integrity sha512-I5FZGZq1aYw+4KA4Ff4MD6xGmZAaldJNB0Gg89RTEYBz1EJdA0WMZtr9IftB93/oyWizOXX8Q9tHVXAUFxeRaQ==
 
-"@hono/vite-dev-server@0.16.0":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@hono/vite-dev-server/-/vite-dev-server-0.16.0.tgz#fe4ae73ccafe5e83bf1d556a71c969da9d90ba0e"
-  integrity sha512-zGPaYY7DyDr33id677fUuaPiV2qQJoPrxv+nrcLc7g8M9PkcvlV8kO2XRkrwZT64rUSBxyWOuGN3vEIFiH9l0w==
+"@hono/vite-dev-server@0.18.0":
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/@hono/vite-dev-server/-/vite-dev-server-0.18.0.tgz#fcc7f2c2590052e471e7d0fe83afc0e0c71c2d55"
+  integrity sha512-CVHgDYk3haRnWUI/I2tNydgIIXI2lSczseko5Qvu/n1K6I9GyXzRW4rJFUlLClz3LDLOCgRCW+kDW4YT3BVSLA==
   dependencies:
     "@hono/node-server" "^1.12.0"
     minimatch "^9.0.3"
@@ -1840,21 +1840,21 @@ hasown@^2.0.2:
   dependencies:
     function-bind "^1.1.2"
 
-hono@^4.6.14:
-  version "4.6.14"
-  resolved "https://registry.yarnpkg.com/hono/-/hono-4.6.14.tgz#f83f51e81b8ae5611dab459570990bf4c977d20c"
-  integrity sha512-j4VkyUp2xazGJ8eCCLN1Vm/bxdvm/j5ZuU9AIjLu9vapn2M44p9L3Ktr9Vnb2RN2QtcR/wVjZVMlT5k7GJQgPw==
+hono@^4.6.16:
+  version "4.6.16"
+  resolved "https://registry.yarnpkg.com/hono/-/hono-4.6.16.tgz#f31396b3aa8b66001937d5e8e69e2a7125ab0ec8"
+  integrity sha512-iE6xOPwDYlfnZFwk6BfIMMIH4WZm3pPhz6rc1uJM/OPew0pjG5K6p8WTLaMBY1/szF/T0TaEjprMpwn16BA0NQ==
 
-honox@^0.1.27:
-  version "0.1.27"
-  resolved "https://registry.yarnpkg.com/honox/-/honox-0.1.27.tgz#00959e66042a9c3083d5a998cc24f19e47655d26"
-  integrity sha512-lNYRMjB1N6Vr+KQUhLctxvQ4xiQxGdqYv32U2r8SASa3hBzZCHXwA5KdEQJBaEYuBZEr2kFn/jWeMz4vxgy7AQ==
+honox@^0.1.30:
+  version "0.1.30"
+  resolved "https://registry.yarnpkg.com/honox/-/honox-0.1.30.tgz#b486362d9be4ce50edad9d704648cfe1f15ecb6b"
+  integrity sha512-uNHGiW0li/CvIZ7f36YSjMLT9BVGChfWSzHrG6KKka3/6/z96fC/Ju7WsOaRTUratS4/dJ/yLgOmjyOEvsa54A==
   dependencies:
     "@babel/generator" "7.25.6"
     "@babel/parser" "7.25.6"
     "@babel/traverse" "7.25.6"
     "@babel/types" "7.25.6"
-    "@hono/vite-dev-server" "0.16.0"
+    "@hono/vite-dev-server" "0.18.0"
     jsonc-parser "3.3.1"
     precinct "12.1.2"
   optionalDependencies:
