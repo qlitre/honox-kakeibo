@@ -63,6 +63,7 @@ export const kakeiboMenu = () => {
 
 
 // alertメッセージのキー
-export const alertCookieKey = 'message'
+export const successAlertCookieKey = 'successMessage'
+export const dangerAlertCookieKey = 'dangerMessage'
 // alertメッセージの保持期間
 export const alertCookieMaxage = 1

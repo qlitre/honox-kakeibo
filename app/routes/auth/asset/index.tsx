@@ -5,9 +5,9 @@ import { KakeiboClient } from '@/libs/kakeiboClient'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
 import { AssetDeleteModal } from '@/islands/asset/AssetDeleteModal'
-import { AlertSuccess } from '@/islands/share/AlertSuccess'
+import { Alert } from '@/islands/share/Alert'
 import { getCookie } from 'hono/cookie'
-import { alertCookieKey } from '@/settings/kakeiboSettings'
+import { successAlertCookieKey, dangerAlertCookieKey } from '@/settings/kakeiboSettings'
 import { AssetCreateModal } from '@/islands/asset/AssetCreateModal'
 import { Table } from '@/components/share/Table'
 
@@ -31,8 +31,8 @@ export default createRoute(async (c) => {
     })
     const pageSize = assets.pageSize
     const query = c.req.query()
-    const message = getCookie(c, alertCookieKey)
-
+    const successMessage = getCookie(c, successAlertCookieKey)
+    const dangerMessage = getCookie(c, dangerAlertCookieKey)
     const headers: TableHeaderItem[] = [
         { name: '日付', textPosition: 'left' },
         { name: 'カテゴリ', textPosition: 'left' },
@@ -43,7 +43,8 @@ export default createRoute(async (c) => {
     return c.render(
         <>
             <div className="px-4 sm:px-6 lg:px-8">
-                {message && <AlertSuccess message={message}></AlertSuccess>}
+                {successMessage && <Alert message={successMessage} type='success'></Alert>}
+                {dangerMessage && <Alert message={dangerMessage} type='danger'></Alert>}
                 <div className="flex items-center justify-between">
                     <PageHeader title="資産リスト" />
                     <AssetCreateModal

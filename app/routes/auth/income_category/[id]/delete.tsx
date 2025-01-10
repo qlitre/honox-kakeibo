@@ -3,7 +3,7 @@ import { createRoute } from 'honox/factory'
 import { KakeiboClient } from '@/libs/kakeiboClient';
 import { CategoryDeleteForm } from '@/components/share/CategoryDeleteForm';
 import { setCookie } from 'hono/cookie';
-import { alertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
+import { successAlertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
 
 const endPoint = 'income_category'
 const title = '収入カテゴリ削除'
@@ -28,7 +28,7 @@ export const POST = createRoute(
         const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
         try {
             const r = await client.deleteData<IncomeCategory>({ endpoint: endPoint, contentId: id })
-            setCookie(c, alertCookieKey, successMessage, { maxAge: alertCookieMaxage })
+            setCookie(c, successAlertCookieKey, successMessage, { maxAge: alertCookieMaxage })
             return c.redirect(redirectUrl, 303)
         } catch (e: any) {
             console.error(e)
