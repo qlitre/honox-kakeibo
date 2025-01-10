@@ -35,11 +35,9 @@ export const POST = createRoute(
             asset_category_id: parsedCategoryId,
             description: description
         }
-        // ハイフンで分割
         const [yearStr, monthStr] = date.split("-");
-        // 数値に変換
-        const year = parseInt(yearStr, 10); // 年
-        const month = parseInt(monthStr, 10); // 月
+        const year = parseInt(yearStr, 10);
+        const month = parseInt(monthStr, 10); 
         const ge = getBeginningOfMonth(year, month)
         const le = getEndOfMonth(year, month)
         const r = await client.getListResponse<AssetWithCategoryResponse>({
