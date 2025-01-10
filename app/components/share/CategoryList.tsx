@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import type { AssetCategory, ExpenseCategory, IncomeCategory, PaymentMethod } from "@/@types/dbTypes";
-import { Alert } from "@/islands/share/AlertSuccess";
+import { Alert } from "@/islands/share/Alert";
 import { PageHeader } from "@/components/PageHeader";
 
 type Props = {
