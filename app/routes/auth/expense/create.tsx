@@ -39,6 +39,8 @@ export const POST = createRoute(
         }
         const response = await client.addData<Expense>({ endpoint: 'expense', data: body })
             .catch((e) => { console.error(e) })
-        setCookie(c, successAlertCookieKey, '支出追加に成功しました', { maxAge: alertCookieMaxage })
-        return c.redirect('/auth/expense', 303);
+        if (response) {
+            setCookie(c, successAlertCookieKey, '支出追加に成功しました', { maxAge: alertCookieMaxage })
+            return c.redirect(`/auth/expense?lastUpdate=${response.id}`, 303);
+        }
     })
