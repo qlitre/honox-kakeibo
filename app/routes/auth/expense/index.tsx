@@ -95,7 +95,7 @@ export default createRoute(async (c) => {
                                             description: expense.description || ''
                                         }}
                                         title='編集'
-                                        actionUrl={`/auth/expense/${expense.id}/update`}
+                                        actionUrl={`/auth/expense/${expense.id}/update?redirectPage=${page}`}
                                         categories={categories}
                                         payment_methods={paymentMethods}>
                                     </ExpenseCreateModal>

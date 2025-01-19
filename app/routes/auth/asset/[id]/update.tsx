@@ -23,6 +23,7 @@ export const POST = createRoute(
     }),
     async (c) => {
         const id = c.req.param('id')
+        const redirectPage = c.req.query('redirectPage')
         const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
         const { date, amount, asset_category_id, description } = c.req.valid('form')
         const parsedAmount = Number(amount);
@@ -57,5 +58,5 @@ export const POST = createRoute(
         const response = await client.updateData<Asset>({ endpoint: 'asset', contentId: id, data: body })
             .catch((e) => { console.error(e) })
         setCookie(c, successAlertCookieKey, '資産編集に成功しました', { maxAge: alertCookieMaxage })
-        return c.redirect('/auth/asset', 303);
+        return c.redirect(`/auth/asset?page=${redirectPage}`, 303);
     })

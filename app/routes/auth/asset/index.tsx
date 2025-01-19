@@ -83,7 +83,7 @@ export default createRoute(async (c) => {
                                             description: asset.description || ''
                                         }}
                                         title='編集'
-                                        actionUrl={`/auth/asset/${asset.id}/update`}
+                                        actionUrl={`/auth/asset/${asset.id}/update?redirectPage=${page}`}
                                         categories={categories}>
                                     </AssetCreateModal>
                                     <AssetCreateModal

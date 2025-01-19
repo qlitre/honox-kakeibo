@@ -81,7 +81,7 @@ export default createRoute(async (c) => {
                                             description: income.description || ''
                                         }}
                                         title='収入編集'
-                                        actionUrl={`/auth/income/${income.id}/update`}
+                                        actionUrl={`/auth/income/${income.id}/update?redirectPage=${page}`}
                                         categories={categories}
                                     >
                                     </IncomeCreateModal>
