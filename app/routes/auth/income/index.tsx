@@ -40,6 +40,8 @@ export default createRoute(async (c) => {
         { name: '説明', textPosition: 'center' },
         { name: '操作', textPosition: 'center' }
     ]
+    const lastUpdate = c.req.query('lastUpdate') ?? '0'
+    const lastUpdateId = parseInt(lastUpdate)
     return c.render(
         <>
             <div className="px-4 sm:px-6 lg:px-8">
@@ -57,7 +59,8 @@ export default createRoute(async (c) => {
                 <Table headers={headers}>
                     <tbody className="divide-y divide-gray-200 bg-white">
                         {incomes.contents.map((income) => (
-                            <tr key={income.id} className="hover:bg-gray-50">
+                            <tr key={income.id}
+                                className={`hover:bg-gray-50 ${income.id === lastUpdateId ? 'bg-green-100' : ''}`}>
                                 <td className="whitespace-nowrap py-4 pl-6 text-sm text-gray-900">
                                     {income.date}
                                 </td>

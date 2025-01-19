@@ -37,7 +37,7 @@ export const POST = createRoute(
         }
         const [yearStr, monthStr] = date.split("-");
         const year = parseInt(yearStr, 10);
-        const month = parseInt(monthStr, 10); 
+        const month = parseInt(monthStr, 10);
         const ge = getBeginningOfMonth(year, month)
         const le = getEndOfMonth(year, month)
         const r = await client.getListResponse<AssetWithCategoryResponse>({
@@ -51,6 +51,8 @@ export const POST = createRoute(
         }
         const response = await client.addData<Asset>({ endpoint: 'asset', data: body })
             .catch((e) => { console.error(e) })
-        setCookie(c, successAlertCookieKey, '資産追加に成功しました', { maxAge: alertCookieMaxage })
-        return c.redirect('/auth/asset', 303);
+        if (response) {
+            setCookie(c, successAlertCookieKey, '資産追加に成功しました', { maxAge: alertCookieMaxage })
+            return c.redirect(`/auth/asset?lastUpdate=${response.id}`, 303);
+        }
     })

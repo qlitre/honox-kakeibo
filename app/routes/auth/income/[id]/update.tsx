@@ -40,5 +40,5 @@ export const POST = createRoute(
         const response = await client.updateData<Income>({ endpoint: 'income', contentId: id, data: body })
             .catch((e) => { console.error(e) })
         setCookie(c, successAlertCookieKey, '収入編集に成功しました', { maxAge: alertCookieMaxage })
-        return c.redirect(`/auth/income?page=${redirectPage}`, 303);
+        return c.redirect(`/auth/income?page=${redirectPage}&lastUpdate=${id}`, 303);
     })

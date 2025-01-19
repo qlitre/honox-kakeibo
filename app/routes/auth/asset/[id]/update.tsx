@@ -58,5 +58,5 @@ export const POST = createRoute(
         const response = await client.updateData<Asset>({ endpoint: 'asset', contentId: id, data: body })
             .catch((e) => { console.error(e) })
         setCookie(c, successAlertCookieKey, '資産編集に成功しました', { maxAge: alertCookieMaxage })
-        return c.redirect(`/auth/asset?page=${redirectPage}`, 303);
+        return c.redirect(`/auth/asset?page=${redirectPage}&lastUpdate=${id}`, 303);
     })

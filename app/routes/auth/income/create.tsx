@@ -36,6 +36,8 @@ export const POST = createRoute(
         }
         const response = await client.addData<Income>({ endpoint: 'income', data: body })
             .catch((e) => { console.error(e) })
-        setCookie(c, successAlertCookieKey, '収入追加に成功しました', { maxAge: alertCookieMaxage })
-        return c.redirect('/auth/income', 303);
+        if (response) {
+            setCookie(c, successAlertCookieKey, '収入追加に成功しました', { maxAge: alertCookieMaxage })
+            return c.redirect(`/auth/income?lastUpdate=${response.id}`, 303);
+        }
     })
