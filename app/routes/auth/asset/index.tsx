@@ -10,11 +10,12 @@ import { getCookie } from 'hono/cookie'
 import { successAlertCookieKey, dangerAlertCookieKey } from '@/settings/kakeiboSettings'
 import { AssetCreateModal } from '@/islands/asset/AssetCreateModal'
 import { Table } from '@/components/share/Table'
+import { kakeiboPerPage } from '@/settings/kakeiboSettings'
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
     const p = parseInt(page)
-    const limit = 10
+    const limit = kakeiboPerPage
     const offset = limit * (p - 1)
     const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
     const assets = await client.getListResponse<AssetWithCategoryResponse>({

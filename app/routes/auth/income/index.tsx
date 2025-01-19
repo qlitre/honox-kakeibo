@@ -10,11 +10,12 @@ import { successAlertCookieKey } from '@/settings/kakeiboSettings'
 import { IncomeDeleteModal } from '@/islands/income/IncomeDeleteModal'
 import { IncomeCreateModal } from '@/islands/income/IncomeCreateModal'
 import { Table } from '@/components/share/Table'
+import { kakeiboPerPage } from '@/settings/kakeiboSettings'
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
     const p = parseInt(page)
-    const limit = 10
+    const limit = kakeiboPerPage
     const offset = limit * (p - 1)
     const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
     const incomes = await client.getListResponse<IncomeWithCategoryResponse>({

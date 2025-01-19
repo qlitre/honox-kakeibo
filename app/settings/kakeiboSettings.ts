@@ -1,4 +1,3 @@
-
 // グラフのカラーチャート。python seabornより sns paired
 export const colorSchema = ['rgba(166.65098039215687,206.8078431372549,227.89019607843136,0.6)',
     'rgba(31.12156862745098,120.47058823529412,180.7058823529412,0.6)',
@@ -67,3 +66,5 @@ export const successAlertCookieKey = 'successMessage'
 export const dangerAlertCookieKey = 'dangerMessage'
 // alertメッセージの保持期間
 export const alertCookieMaxage = 1
+// リスト系ページの表示件数
+export const kakeiboPerPage = 30
