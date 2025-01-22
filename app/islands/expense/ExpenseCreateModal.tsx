@@ -26,6 +26,17 @@ type Props = CreateFormProps & {
     buttonType: 'primary' | 'success'
     buttonTitle: string
 }
+const getTodayDate = () => {
+    const now = new Date();
+    // UTC+9（日本時間）を適用
+    const jstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    // 年、月、日を取得
+    const year = jstDate.getUTCFullYear();
+    const month = String(jstDate.getUTCMonth() + 1).padStart(2, '0'); // 月は0始まりのため+1
+    const day = String(jstDate.getUTCDate()).padStart(2, '0');
+    // yyyy-mm-dd形式で返す
+    return `${year}-${month}-${day}`;
+};
 
 export const ExpenseCreateModal: FC<Props> = ({ buttonType, buttonTitle, data, title, actionUrl, categories, payment_methods }) => {
     const [open, setOpen] = useState(false)
@@ -33,7 +44,7 @@ export const ExpenseCreateModal: FC<Props> = ({ buttonType, buttonTitle, data, t
         setOpen(true)
     }
     const [formData, setFormData] = useState<Data>({
-        date: data?.date || '',
+        date: data?.date || getTodayDate(),
         amount: data?.amount || '',
         expense_category_id: data?.expense_category_id || '',
         payment_method_id: data?.payment_method_id || '',
