@@ -70,7 +70,7 @@ export default createRoute(async (c) => {
                     <tbody className="divide-y divide-gray-200 bg-white">
                         {expenses.contents.map((expense) => (
                             <tr key={expense.id}
-                                className={`hover:bg-gray-50 ${expense.id === lastUpdateId ? 'bg-green-100' : ''}`}>
+                                className={`${expense.id === lastUpdateId ? 'bg-green-100' : 'hover:bg-gray-50'}`}>
                                 <td className="whitespace-nowrap py-4 pl-6 text-sm text-gray-900">
                                     {expense.date}
                                 </td>
