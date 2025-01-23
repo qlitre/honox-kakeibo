@@ -73,6 +73,7 @@ export const generateUpdateQuery = async (tableName: TableName) => {
     for (const field of tableConfig.optionalFields) {
         updateFields.push(field)
     }
+    updateFields.push('updated_at')
     const setClause = updateFields.map(field => `${field} = ?`).join(', ');
 
     const query = `

@@ -27,7 +27,8 @@ export default createRoute(async (c) => {
     })
     const categories = await client.getListResponse<IncomeCategoryResponse>({
         endpoint: 'income_category', queries: {
-            limit: 100
+            limit: 100,
+            orders: 'updated_at'
         }
     })
     const pageSize = incomes.pageSize

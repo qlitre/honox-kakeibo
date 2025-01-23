@@ -27,12 +27,14 @@ export default createRoute(async (c) => {
     })
     const categories = await client.getListResponse<ExpenseCategoryResponse>({
         endpoint: 'expense_category', queries: {
-            limit: 100
+            limit: 100,
+            orders: 'updated_at'
         }
     })
     const paymentMethods = await client.getListResponse<PaymentMethodResponse>({
         endpoint: 'payment_method', queries: {
-            limit: 100
+            limit: 100,
+            orders: 'updated_at'
         }
     })
     const pageSize = expenses.pageSize

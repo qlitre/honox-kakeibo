@@ -12,7 +12,7 @@ export default createRoute(async (c) => {
     const endPoint = 'asset_category'
     const categories = await client.getListResponse<AssetCategoryResponse>({
         endpoint: endPoint, queries: {
-            orders: 'id',
+            orders: 'updated_at',
             limit: 100
         }
     })

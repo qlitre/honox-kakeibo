@@ -44,6 +44,8 @@ export const PUT = createRoute(async (c) => {
         const updateQuery = await generateUpdateQuery(tableName)
         if (!data) return
         const values = await generateQueryBindValues(tableName, data)
+        const currentDateTime = new Date().toISOString().replace('T', ' ').split('.')[0];
+        values.push(currentDateTime)
         values.push(id)
         const updateResult = await db.prepare(updateQuery)
             .bind(...values)

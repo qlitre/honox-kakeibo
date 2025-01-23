@@ -12,7 +12,7 @@ export default createRoute(async (c) => {
     const endPoint = 'payment_method'
     const categories = await client.getListResponse<PaymentMethodResponse>({
         endpoint: endPoint, queries: {
-            orders: 'id',
+            orders: 'updated_at',
             limit: 100
         }
     })

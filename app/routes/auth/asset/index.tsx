@@ -27,7 +27,8 @@ export default createRoute(async (c) => {
     })
     const categories = await client.getListResponse<AssetCategoryResponse>({
         endpoint: 'asset_category', queries: {
-            limit: 100
+            limit: 100,
+            orders: 'updated_at'
         }
     })
     const pageSize = assets.pageSize
