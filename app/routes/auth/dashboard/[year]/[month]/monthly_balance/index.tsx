@@ -24,24 +24,30 @@ const getTotal = (items: SummaryItem[]) => {
     return ret
 }
 
+const getYearMonth = (year: number, month: number) => {
+    return `${year}-${month.toString().padStart(2, '0')}`
+}
+
 export default createRoute(async (c) => {
     const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
     const year = parseInt(c.req.param('year'));
     const month = parseInt(c.req.param('month'));
     const prevMonth = getPrevMonth(month)
     const prevYear = getPrevMonthYear(year, month)
+    const yearMonth = getYearMonth(year, month)
+    const prevYearMonth = getYearMonth(prevYear, prevMonth)
     const expenseValueData = await client.getSummaryResponse<SummaryResponse>({
         endpoint: 'expense', queries: {
             groupby: 'year_month, category_name',
             orders: 'year_month',
-            filters: `year_month[eq]${year}-${month.toString().padStart(2, '0')}`
+            filters: `year_month[eq]${yearMonth}`
         }
     });
     const prevExpenseValueData = await client.getSummaryResponse<SummaryResponse>({
         endpoint: 'expense', queries: {
             groupby: 'year_month, category_name',
             orders: 'year_month',
-            filters: `year_month[eq]${prevYear}-${prevMonth.toString().padStart(2, '0')}`
+            filters: `year_month[eq]${prevYear}-${prevYearMonth}`
         }
     });
     const categories = await client.getListResponse<ExpenseCategoryResponse>({
@@ -75,7 +81,7 @@ export default createRoute(async (c) => {
         endpoint: 'income', queries: {
             groupby: 'year_month, category_name',
             orders: 'year_month',
-            filters: `year_month[eq]${year}-${month}`
+            filters: `year_month[eq]${yearMonth}`
         }
     });
 
