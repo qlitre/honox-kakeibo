@@ -47,7 +47,7 @@ export default createRoute(async (c) => {
         endpoint: 'expense', queries: {
             groupby: 'year_month, category_name',
             orders: 'year_month',
-            filters: `year_month[eq]${prevYear}-${prevYearMonth}`
+            filters: `year_month[eq]${prevYearMonth}`
         }
     });
     const categories = await client.getListResponse<ExpenseCategoryResponse>({
