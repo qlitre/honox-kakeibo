@@ -9,8 +9,11 @@ import { getCookie } from 'hono/cookie'
 import { successAlertCookieKey } from '@/settings/kakeiboSettings'
 import { ExpenseDeleteModal } from '@/islands/expense/ExpenseDeleteModal'
 import { ExpenseCreateModal } from '@/islands/expense/ExpenseCreateModal'
+import { ExpenseSearchForm } from '@/islands/expense/ExpenseSearchForm'
 import { Table } from '@/components/share/Table'
 import { kakeiboPerPage } from '@/settings/kakeiboSettings'
+import { getBeginningOfMonth, getEndOfMonth } from '@/utils/dashboardUtils'
+
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
@@ -18,11 +21,55 @@ export default createRoute(async (c) => {
     const limit = kakeiboPerPage
     const offset = limit * (p - 1)
     const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
+    const month = c.req.query('month')
+    const categoryId = c.req.query('categoryId')
+    const paymentMethodId = c.req.query('paymentMethodId')
+    const keyword = c.req.query('keyword')
+    let filterString = ''
+    if (month) {
+        const year = Number(month.slice(0, 4))
+        const _month = Number(month.slice(5, 7))
+        const ge = getBeginningOfMonth(year, _month)
+        const le = getEndOfMonth(year, _month)
+        filterString += `date[greater_equal]${ge}[and]date[less_equal]${le}`
+    }
+    if (categoryId) {
+        const s = `expense_category_id[eq]${categoryId}`
+        if (filterString) {
+            filterString += `[and]${s}`
+        } else {
+            filterString += s
+        }
+    }
+    if (paymentMethodId) {
+        const s = `payment_method_id[eq]${paymentMethodId}`
+        if (filterString) {
+            filterString += `[and]${s}`
+        } else {
+            filterString += s
+        }
+    }
+    if (keyword) {
+        const s = `description[contain]${keyword}`
+        if (filterString) {
+            filterString += `[and]${s}`
+        } else {
+            filterString += s
+        }
+    }
+    const data = {
+        month: month,
+        category_id: categoryId,
+        payment_method_id: paymentMethodId,
+        keyword: keyword
+    }
+
     const expenses = await client.getListResponse<ExpenseWithDetailsResponse>({
         endpoint: 'expense', queries: {
             orders: '-date,expense_category_id',
             limit: limit,
-            offset: offset
+            offset: offset,
+            filters: filterString,
         }
     })
     const categories = await client.getListResponse<ExpenseCategoryResponse>({
@@ -68,6 +115,7 @@ export default createRoute(async (c) => {
                     />
 
                 </div>
+                <ExpenseSearchForm data={data} categories={categories} paymentMethods={paymentMethods} />
                 <Table headers={headers}>
                     <tbody className="divide-y divide-gray-200 bg-white">
                         {expenses.contents.map((expense) => (

@@ -37,7 +37,6 @@ export default createRoute(async (c) => {
         const orderByClause = buildSqlOrderByClause(tableName, orderParams);
         query += ` ${orderByClause}`;
     }
-
     query += ` LIMIT ? OFFSET ?`;
     try {
         const { results } = await db.prepare(query).bind(limit, offset).all();
