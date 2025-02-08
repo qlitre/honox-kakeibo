@@ -130,7 +130,8 @@ export const buildSqlWhereClause = (tableName: TableName, filterString: string) 
         '[less_than]': '<',
         '[greater_equal]': '>=',
         '[less_equal]': '<=',
-        '[eq]': '='
+        '[eq]': '=',
+        '[contain]': 'LIKE'
     };
     const baseFields = schema[tableName].fields
     if (filterString) {
@@ -148,7 +149,10 @@ export const buildSqlWhereClause = (tableName: TableName, filterString: string) 
                     }
                     const operator = operators[operatorKey];
                     let conditionString
-                    if (isNumeric(value)) {
+                    if (operatorKey === '[contain]') {
+                        // LIKE演算子の場合は、値の前後にワイルドカードを付与する
+                        conditionString = `${field} ${operator} '%${value}%'`;
+                    } else if (isNumeric(value)) {
                         conditionString = `${field} ${operator} ${value}`;
                     } else {
                         conditionString = `${field} ${operator} '${value}'`;
