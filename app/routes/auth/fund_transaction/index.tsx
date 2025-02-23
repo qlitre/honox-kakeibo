@@ -10,13 +10,15 @@ import { successAlertCookieKey } from '@/settings/kakeiboSettings'
 import { FundTransactionCreateModal } from '@/islands/fund_transation/FundTransactionCreateModal'
 import { FundTransactionDeleteModal } from '@/islands/fund_transation/FundTransactionDeleteModal'
 import { Table } from '@/components/share/Table'
+import { getQueryString } from '@/utils/getQueryString'
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
     const p = parseInt(page)
     const limit = 10
     const offset = limit * (p - 1)
-    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
+    const baseUrl = c.env.BASE_URL
+    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: baseUrl })
     const fundTransactions = await client.getListResponse<FundTransationResponse>({
         endpoint: 'fund_transaction', queries: {
             orders: '-date',
@@ -33,7 +35,9 @@ export default createRoute(async (c) => {
         { name: '説明', textPosition: 'center' },
         { name: '操作', textPosition: 'center' }
     ]
-
+    const lastUpdate = c.req.query('lastUpdate') ?? '0'
+    const lastUpdateId = parseInt(lastUpdate)
+    const queryString = getQueryString(c.req.url, baseUrl)
     return c.render(
         <>
             <div className="px-4 sm:px-6 lg:px-8">
@@ -51,7 +55,7 @@ export default createRoute(async (c) => {
                 <Table headers={headers}>
                     <tbody className="divide-y divide-gray-200 bg-white">
                         {fundTransactions.contents.map((fund_transaction) => (
-                            <tr key={fund_transaction.id} className="hover:bg-gray-50">
+                            <tr key={fund_transaction.id} className={`${fund_transaction.id === lastUpdateId ? 'bg-green-100' : 'hover:bg-gray-50'}`}>
                                 <td className="whitespace-nowrap py-4 pl-6 text-sm text-gray-900">
                                     {fund_transaction.date}
                                 </td>
@@ -71,7 +75,7 @@ export default createRoute(async (c) => {
                                             description: fund_transaction.description || ''
                                         }}
                                         title='編集'
-                                        actionUrl={`/auth/fund_transaction/${fund_transaction.id}/update`}
+                                        actionUrl={`/auth/fund_transaction/${fund_transaction.id}/update?${queryString}`}
                                     >
                                     </FundTransactionCreateModal>
                                     <FundTransactionCreateModal
@@ -86,7 +90,7 @@ export default createRoute(async (c) => {
                                         actionUrl='/auth/fund_transaction/create'
                                     >
                                     </FundTransactionCreateModal>
-                                    <FundTransactionDeleteModal actionUrl={`/auth/fund_transaction/${fund_transaction.id}/delete`} fundTransaction={fund_transaction} />
+                                    <FundTransactionDeleteModal actionUrl={`/auth/fund_transaction/${fund_transaction.id}/delete?${queryString}`} fundTransaction={fund_transaction} />
                                 </td>
                             </tr>
                         ))}

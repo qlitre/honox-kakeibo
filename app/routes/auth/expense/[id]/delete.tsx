@@ -12,6 +12,7 @@ export const POST = createRoute(
                 console.error(e)
                 return
             })
+        const queryString = c.req.url.split('?')[1] || '';
         setCookie(c, successAlertCookieKey, '支出削除に成功しました', { maxAge: alertCookieMaxage })
-        return c.redirect('/auth/expense', 303);
+        return c.redirect(`/auth/expense?${queryString}`, 303);
     })

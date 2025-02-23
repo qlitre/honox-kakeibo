@@ -40,7 +40,7 @@ class KakeiboClient {
 
     constructor({ token, baseUrl }: KakeiboClientOptions) {
         this.token = token;
-        this.baseUrl = baseUrl;
+        this.baseUrl = baseUrl + '/api';
     }
     private async fetchKakeibo<T>(url: string, options?: RequestInit): Promise<T> {
         const defaultOptions = {

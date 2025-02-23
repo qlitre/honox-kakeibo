@@ -11,13 +11,16 @@ import { successAlertCookieKey, dangerAlertCookieKey } from '@/settings/kakeiboS
 import { AssetCreateModal } from '@/islands/asset/AssetCreateModal'
 import { Table } from '@/components/share/Table'
 import { kakeiboPerPage } from '@/settings/kakeiboSettings'
+import { getQueryString } from '@/utils/getQueryString'
+
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
     const p = parseInt(page)
     const limit = kakeiboPerPage
     const offset = limit * (p - 1)
-    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
+    const baseUrl = c.env.BASE_URL
+    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: baseUrl })
     const assets = await client.getListResponse<AssetWithCategoryResponse>({
         endpoint: 'asset', queries: {
             orders: '-date,asset_category_id',
@@ -44,7 +47,7 @@ export default createRoute(async (c) => {
     ]
     const lastUpdate = c.req.query('lastUpdate') ?? '0'
     const lastUpdateId = parseInt(lastUpdate)
-
+    const queryString = getQueryString(c.req.url, baseUrl)
     return c.render(
         <>
             <div className="px-4 sm:px-6 lg:px-8">
@@ -88,7 +91,7 @@ export default createRoute(async (c) => {
                                             description: asset.description || ''
                                         }}
                                         title='編集'
-                                        actionUrl={`/auth/asset/${asset.id}/update?redirectPage=${page}`}
+                                        actionUrl={`/auth/asset/${asset.id}/update?${queryString}`}
                                         categories={categories}>
                                     </AssetCreateModal>
                                     <AssetCreateModal
@@ -104,7 +107,7 @@ export default createRoute(async (c) => {
                                         actionUrl='/auth/asset/create'
                                         categories={categories}>
                                     </AssetCreateModal>
-                                    <AssetDeleteModal actionUrl={`/auth/asset/${asset.id}/delete`} asset={asset} />
+                                    <AssetDeleteModal actionUrl={`/auth/asset/${asset.id}/delete?${queryString}`} asset={asset} />
                                 </td>
                             </tr>
                         ))}

@@ -36,5 +36,6 @@ export const POST = createRoute(
         const response = await client.updateData<FundTransation>({ endpoint: 'fund_transaction', contentId: id, data: body })
             .catch((e) => { console.error(e) })
         setCookie(c, successAlertCookieKey, '投資用口座入金履歴編集に成功しました', { maxAge: alertCookieMaxage })
-        return c.redirect('/auth/fund_transaction', 303);
+        const queryString = c.req.url.split('?')[1] || '';
+        return c.redirect(`/auth/fund_transaction?lastUpdate=${id}&${queryString}`, 303);
     })
