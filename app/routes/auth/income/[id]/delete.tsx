@@ -13,5 +13,6 @@ export const POST = createRoute(
                 return
             })
         setCookie(c, successAlertCookieKey, '収入削除に成功しました', { maxAge: alertCookieMaxage })
-        return c.redirect('/auth/income', 303);
+        const queryString = c.req.url.split('?')[1] || '';
+        return c.redirect(`/auth/income?${queryString}`, 303);
     })

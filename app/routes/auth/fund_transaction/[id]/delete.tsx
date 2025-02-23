@@ -13,5 +13,6 @@ export const POST = createRoute(
                 return
             })
         setCookie(c, successAlertCookieKey, '投資用口座入金履歴削除に成功しました。', { maxAge: alertCookieMaxage })
-        return c.redirect('/auth/fund_transaction', 303);
+        const queryString = c.req.url.split('?')[1] || '';
+        return c.redirect(`/auth/fund_transaction?${queryString}`, 303);
     })

@@ -11,13 +11,15 @@ import { IncomeDeleteModal } from '@/islands/income/IncomeDeleteModal'
 import { IncomeCreateModal } from '@/islands/income/IncomeCreateModal'
 import { Table } from '@/components/share/Table'
 import { kakeiboPerPage } from '@/settings/kakeiboSettings'
+import { getQueryString } from '@/utils/getQueryString'
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
     const p = parseInt(page)
     const limit = kakeiboPerPage
     const offset = limit * (p - 1)
-    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
+    const baseUrl = c.env.BASE_URL
+    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: baseUrl })
     const incomes = await client.getListResponse<IncomeWithCategoryResponse>({
         endpoint: 'income', queries: {
             orders: '-date,income_category_id',
@@ -43,6 +45,7 @@ export default createRoute(async (c) => {
     ]
     const lastUpdate = c.req.query('lastUpdate') ?? '0'
     const lastUpdateId = parseInt(lastUpdate)
+    const queryString = getQueryString(c.req.url, baseUrl)
     return c.render(
         <>
             <div className="px-4 sm:px-6 lg:px-8">
@@ -85,7 +88,7 @@ export default createRoute(async (c) => {
                                             description: income.description || ''
                                         }}
                                         title='収入編集'
-                                        actionUrl={`/auth/income/${income.id}/update?redirectPage=${page}`}
+                                        actionUrl={`/auth/income/${income.id}/update?${queryString}`}
                                         categories={categories}
                                     >
                                     </IncomeCreateModal>
@@ -103,7 +106,7 @@ export default createRoute(async (c) => {
                                         categories={categories}
                                     >
                                     </IncomeCreateModal>
-                                    <IncomeDeleteModal actionUrl={`/auth/income/${income.id}/delete`} income={income} />
+                                    <IncomeDeleteModal actionUrl={`/auth/income/${income.id}/delete?${queryString}`} income={income} />
                                 </td>
                             </tr>
                         ))}

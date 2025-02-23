@@ -40,8 +40,9 @@ export const POST = createRoute(
             payment_method_id: parsedPaymentMethodId,
             description: description
         }
+        const queryString = c.req.url.split('?')[1] || '';
         const response = await client.updateData<Expense>({ endpoint: 'expense', contentId: id, data: body })
             .catch((e) => { console.error(e) })
         setCookie(c, successAlertCookieKey, '支出編集に成功しました', { maxAge: alertCookieMaxage })
-        return c.redirect(`/auth/expense?page=${redirectPage}&lastUpdate=${id}`, 303);
+        return c.redirect(`/auth/expense?lastUpdate=${id}&${queryString}`, 303);
     })

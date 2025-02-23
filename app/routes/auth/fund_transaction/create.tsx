@@ -33,6 +33,8 @@ export const POST = createRoute(
         }
         const response = await client.addData<FundTransation>({ endpoint: 'fund_transaction', data: body })
             .catch((e) => { console.error(e) })
-        setCookie(c, successAlertCookieKey, '投資用口座入金履歴追加に成功しました', { maxAge: alertCookieMaxage })
-        return c.redirect('/auth/fund_transaction', 303);
+        if (response) {
+            setCookie(c, successAlertCookieKey, '投資用口座入金履歴追加に成功しました', { maxAge: alertCookieMaxage })
+            return c.redirect(`/auth/fund_transaction??lastUpdate=${response.id}`, 303);
+        }
     })

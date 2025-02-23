@@ -13,14 +13,15 @@ import { ExpenseSearchForm } from '@/islands/expense/ExpenseSearchForm'
 import { Table } from '@/components/share/Table'
 import { kakeiboPerPage } from '@/settings/kakeiboSettings'
 import { getBeginningOfMonth, getEndOfMonth } from '@/utils/dashboardUtils'
-
+import { getQueryString } from '@/utils/getQueryString'
 
 export default createRoute(async (c) => {
     let page = c.req.query('page') ?? '1'
     const p = parseInt(page)
     const limit = kakeiboPerPage
     const offset = limit * (p - 1)
-    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
+    const baseUrl = c.env.BASE_URL
+    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: baseUrl })
     const month = c.req.query('month')
     const categoryId = c.req.query('categoryId')
     const paymentMethodId = c.req.query('paymentMethodId')
@@ -85,7 +86,6 @@ export default createRoute(async (c) => {
         }
     })
     const pageSize = expenses.pageSize
-    const query = c.req.query()
     const successMessage = getCookie(c, successAlertCookieKey)
 
     const headers: TableHeaderItem[] = [
@@ -98,6 +98,8 @@ export default createRoute(async (c) => {
     ]
     const lastUpdate = c.req.query('lastUpdate') ?? '0'
     const lastUpdateId = parseInt(lastUpdate)
+    const query = c.req.query()
+    const queryString = getQueryString(c.req.url, baseUrl)
 
     return c.render(
         <>
@@ -148,7 +150,7 @@ export default createRoute(async (c) => {
                                             description: expense.description || ''
                                         }}
                                         title='編集'
-                                        actionUrl={`/auth/expense/${expense.id}/update?redirectPage=${page}`}
+                                        actionUrl={`/auth/expense/${expense.id}/update?${queryString}`}
                                         categories={categories}
                                         payment_methods={paymentMethods}>
                                     </ExpenseCreateModal>
@@ -167,7 +169,7 @@ export default createRoute(async (c) => {
                                         categories={categories}
                                         payment_methods={paymentMethods}>
                                     </ExpenseCreateModal>
-                                    <ExpenseDeleteModal actionUrl={`/auth/expense/${expense.id}/delete`} expense={expense} />
+                                    <ExpenseDeleteModal actionUrl={`/auth/expense/${expense.id}/delete?${queryString}`} expense={expense} />
                                 </td>
                             </tr>
                         ))}
