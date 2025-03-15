@@ -41,13 +41,6 @@ export default defineConfig(async ({ mode }) => {
         honox({ devServer: { env } }),
         build(),
       ],
-      server: {
-        watch: {
-          ignored: ['**/C:/DumpStack.log.tmp', '**/C:\\DumpStack.log.tmp'],
-          usePolling: true, // ポーリングベースの監視に切り替え
-          interval: 1000    // ポーリングの間隔を調整
-        }
-      },
     }
   }
 })
