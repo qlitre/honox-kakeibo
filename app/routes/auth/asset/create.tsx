@@ -79,7 +79,7 @@ ${response.date}
 カテゴリ:${response.category_name}
 金額：${response.amount}
             `;
-      sendSlackNotification(message, c.env.SLACK_WEBHOOK_URL);
+      await sendSlackNotification(message, c.env.SLACK_WEBHOOK_URL);
       return c.redirect(`/auth/asset?lastUpdate=${response.id}`, 303);
     }
   }
