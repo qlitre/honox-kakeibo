@@ -1,11 +1,9 @@
-import '@hono/react-renderer'
-import { } from 'hono'
+import "@hono/react-renderer";
+import {} from "hono";
 
-
-
-declare module 'hono' {
+declare module "hono" {
   interface Env {
-    Variables: {}
+    Variables: {};
     Bindings: {
       HONO_IS_COOL: string;
       BASE_URL: string;
@@ -16,12 +14,13 @@ declare module 'hono' {
       FB_STORAGE_BUCKET: string;
       FB_MESSAGE_SENDER_ID: string;
       FB_APP_ID: string;
-    }
+      SLACK_WEBHOOK_URL: string;
+    };
   }
 }
 
-declare module '@hono/react-renderer' {
+declare module "@hono/react-renderer" {
   interface Props {
-    title?: string
+    title?: string;
   }
 }
