@@ -69,6 +69,7 @@ ${response.date}
 カテゴリ:${response.category_name}
 支払い方法：${response.payment_method_name}
 金額：${response.amount}
+詳細：${response.description}
             `;
       await sendSlackNotification(message, c.env.SLACK_WEBHOOK_URL);
       return c.redirect(`/auth/expense?lastUpdate=${response.id}`, 303);

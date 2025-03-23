@@ -56,6 +56,7 @@ export const POST = createRoute(
 ${response.date}
 カテゴリ:${response.category_name}
 金額：${response.amount}
+詳細：${response.description}
             `;
       await sendSlackNotification(message, c.env.SLACK_WEBHOOK_URL);
       return c.redirect(`/auth/income?lastUpdate=${response.id}`, 303);
