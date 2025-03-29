@@ -37,7 +37,16 @@ export default defineConfig(async ({ mode }) => {
         external: ["react", "react-dom", "react-chartjs-2", "chart.js"],
         noExternal: [],
       },
-      plugins: [honox({ devServer: { env } }), build()],
+      plugins: [
+        honox({ devServer: { env } }),
+        build(),
+        {
+          name: "dispose-wrangler-proxy",
+          closeBundle: async () => {
+            await dispose(); // プロキシの後始末
+          },
+        },
+      ],
     };
   }
 });

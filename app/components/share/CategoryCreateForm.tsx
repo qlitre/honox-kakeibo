@@ -64,8 +64,8 @@ export const CategoryCreateForm: FC<Props> = ({
             <p className="text-red-500 text-sm mt-1">{data.error.name}</p>
           )}
         </div>
-        {actionUrl.includes("asset_category") &&
-          isInvestmentField() // 関数を直接呼び出して表示
+        {
+          actionUrl.includes("asset_category") && isInvestmentField() // 関数を直接呼び出して表示
         }
         <div>
           <button
