@@ -1,46 +1,43 @@
 // vite.config.ts
-import build from '@hono/vite-build/cloudflare-pages'
-import honox from 'honox/vite'
-import { defineConfig } from 'vite'
-import { getPlatformProxy } from 'wrangler'
-import path from 'path';
+import build from "@hono/vite-build/cloudflare-pages";
+import honox from "honox/vite";
+import { defineConfig } from "vite";
+import { getPlatformProxy } from "wrangler";
+import path from "path";
 
 export default defineConfig(async ({ mode }) => {
-  if (mode === 'client') {
+  if (mode === "client") {
     return {
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, 'app'),
+          "@": path.resolve(__dirname, "app"),
         },
       },
       build: {
         rollupOptions: {
-          input: ['./app/client.ts', './app/style.css'],
+          input: ["./app/client.ts", "./app/style.css"],
           output: {
-            entryFileNames: 'static/client.js',
-            chunkFileNames: 'static/assets/[name]-[hash].js',
-            assetFileNames: 'static/assets/[name].[ext]',
+            entryFileNames: "static/client.js",
+            chunkFileNames: "static/assets/[name]-[hash].js",
+            assetFileNames: "static/assets/[name].[ext]",
           },
         },
         emptyOutDir: false,
       },
-    }
+    };
   } else {
     const { env, dispose } = await getPlatformProxy();
     return {
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, 'app'),
+          "@": path.resolve(__dirname, "app"),
         },
       },
       ssr: {
-        external: ['react', 'react-dom', 'react-chartjs-2', 'chart.js',],
+        external: ["react", "react-dom", "react-chartjs-2", "chart.js"],
         noExternal: [],
       },
-      plugins: [
-        honox({ devServer: { env } }),
-        build(),
-      ],
-    }
+      plugins: [honox({ devServer: { env } }), build()],
+    };
   }
-})
+});

@@ -1,15 +1,15 @@
-import { createRoute } from 'honox/factory';
-import { kakeiboMenu } from '@/settings/kakeiboSettings';
+import { createRoute } from "honox/factory";
+import { kakeiboMenu } from "@/settings/kakeiboSettings";
 
 type MenuItem = {
   name: string;
   href: string;
-}
+};
 
 type Props = {
-  title: string
-  items: MenuItem[]
-}
+  title: string;
+  items: MenuItem[];
+};
 
 const MenuSection = ({ title, items }: Props) => {
   return (
@@ -27,8 +27,8 @@ const MenuSection = ({ title, items }: Props) => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default createRoute(async (c) => {
   // kakeiboMenu を取得
@@ -42,12 +42,9 @@ export default createRoute(async (c) => {
   return c.render(
     <>
       <div className="min-h-screen bg-gray-100 py-10">
-        <div className="container mx-auto px-4">
-          {menuSections}
-        </div>
-
+        <div className="container mx-auto px-4">{menuSections}</div>
       </div>
     </>,
-    { title: 'top' }
+    { title: "top" },
   );
 });

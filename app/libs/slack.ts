@@ -1,6 +1,6 @@
 export const sendSlackNotification = async (
   message: string,
-  webhookUrl: string
+  webhookUrl: string,
 ) => {
   try {
     const res = await fetch(webhookUrl, {

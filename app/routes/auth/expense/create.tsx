@@ -74,5 +74,5 @@ ${response.date}
       await sendSlackNotification(message, c.env.SLACK_WEBHOOK_URL);
       return c.redirect(`/auth/expense?lastUpdate=${response.id}`, 303);
     }
-  }
+  },
 );

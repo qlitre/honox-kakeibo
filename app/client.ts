@@ -1,14 +1,14 @@
-import { createClient } from 'honox/client'
+import { createClient } from "honox/client";
 
 createClient({
   hydrate: async (elem, root) => {
-    const { hydrateRoot } = await import('react-dom/client')
+    const { hydrateRoot } = await import("react-dom/client");
     /*@ts-ignore*/
-    hydrateRoot(root, elem)
+    hydrateRoot(root, elem);
   },
   /*@ts-ignore*/
   createElement: async (type: any, props: any) => {
-    const { createElement } = await import('react')
-    return createElement(type, props)
+    const { createElement } = await import("react");
+    return createElement(type, props);
   },
-})
+});

@@ -1,61 +1,85 @@
-import type { ExpenseCategory, } from '@/@types/dbTypes';
-import { createRoute } from 'honox/factory'
-import { zValidator } from '@hono/zod-validator'
-import { z } from 'zod'
-import { KakeiboClient } from '@/libs/kakeiboClient';
-import { CategoryCreateForm } from '@/components/share/CategoryCreateForm';
-import { setCookie } from 'hono/cookie';
-import { successAlertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings';
+import type { ExpenseCategory } from "@/@types/dbTypes";
+import { createRoute } from "honox/factory";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
+import { KakeiboClient } from "@/libs/kakeiboClient";
+import { CategoryCreateForm } from "@/components/share/CategoryCreateForm";
+import { setCookie } from "hono/cookie";
+import {
+  successAlertCookieKey,
+  alertCookieMaxage,
+} from "@/settings/kakeiboSettings";
 
 const schema = z.object({
-    name: z.string().min(1),
+  name: z.string().min(1),
 });
 
-const title = '支出カテゴリ編集'
-const formActionUrl = (id: string) => `/auth/expense_category/${id}/update`
-const endPoint = 'expense_category'
-const successMesage = '支出カテゴリの編集に成功しました'
-const redirectUrl = '/auth/expense_category'
+const title = "支出カテゴリ編集";
+const formActionUrl = (id: string) => `/auth/expense_category/${id}/update`;
+const endPoint = "expense_category";
+const successMesage = "支出カテゴリの編集に成功しました";
+const redirectUrl = "/auth/expense_category";
 
 export default createRoute(async (c) => {
-    const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
-    const id = c.req.param('id')
-    const detail = await client.getDetail<ExpenseCategory>({ endpoint: endPoint, contentId: id })
-    return c.render(
-        <>
-            <CategoryCreateForm
-                data={{ name: detail.name }}
-                title={title}
-                actionUrl={formActionUrl(id)}
-                backUrl={`/auth/${endPoint}`}
-            />
-        </>,
-        { title: title }
-    )
-})
+  const client = new KakeiboClient({
+    token: c.env.HONO_IS_COOL,
+    baseUrl: c.env.BASE_URL,
+  });
+  const id = c.req.param("id");
+  const detail = await client.getDetail<ExpenseCategory>({
+    endpoint: endPoint,
+    contentId: id,
+  });
+  return c.render(
+    <>
+      <CategoryCreateForm
+        data={{ name: detail.name }}
+        title={title}
+        actionUrl={formActionUrl(id)}
+        backUrl={`/auth/${endPoint}`}
+      />
+    </>,
+    { title: title },
+  );
+});
 
 export const POST = createRoute(
-    zValidator('form', schema, async (result, c) => {
-        if (!result.success) {
-            const id = c.req.param('id')
-            const { name } = result.data
-            return c.render(
-                <CategoryCreateForm
-                    data={{ name, error: result.error.flatten().fieldErrors }}
-                    title={title}
-                    actionUrl={formActionUrl(id)}
-                    backUrl={`/auth/${endPoint}`} />)
-        }
-    }),
-    async (c) => {
-        const id = c.req.param('id')
-        const client = new KakeiboClient({ token: c.env.HONO_IS_COOL, baseUrl: c.env.BASE_URL })
-        const { name } = c.req.valid('form')
-        const body = {
-            name
-        }
-        const response = await client.updateData<ExpenseCategory>({ endpoint: endPoint, contentId: id, data: body })
-            .catch((e) => { console.error(e) })
-        setCookie(c, successAlertCookieKey, successMesage, { maxAge: alertCookieMaxage })
-        return c.redirect(redirectUrl, 303);
-    })
+  zValidator("form", schema, async (result, c) => {
+    if (!result.success) {
+      const id = c.req.param("id");
+      const { name } = result.data;
+      return c.render(
+        <CategoryCreateForm
+          data={{ name, error: result.error.flatten().fieldErrors }}
+          title={title}
+          actionUrl={formActionUrl(id)}
+          backUrl={`/auth/${endPoint}`}
+        />,
+      );
+    }
+  }),
+  async (c) => {
+    const id = c.req.param("id");
+    const client = new KakeiboClient({
+      token: c.env.HONO_IS_COOL,
+      baseUrl: c.env.BASE_URL,
+    });
+    const { name } = c.req.valid("form");
+    const body = {
+      name,
+    };
+    const response = await client
+      .updateData<ExpenseCategory>({
+        endpoint: endPoint,
+        contentId: id,
+        data: body,
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+    setCookie(c, successAlertCookieKey, successMesage, {
+      maxAge: alertCookieMaxage,
+    });
+    return c.redirect(redirectUrl, 303);
+  },
+);

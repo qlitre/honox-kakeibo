@@ -60,7 +60,7 @@ export const POST = createRoute(
         c,
         dangerAlertCookieKey,
         "資産追加に失敗しました。同月に同カテゴリの資産が登録されています。",
-        { maxAge: alertCookieMaxage }
+        { maxAge: alertCookieMaxage },
       );
       return c.redirect("/auth/asset", 303);
     }
@@ -83,5 +83,5 @@ ${response.date}
       await sendSlackNotification(message, c.env.SLACK_WEBHOOK_URL);
       return c.redirect(`/auth/asset?lastUpdate=${response.id}`, 303);
     }
-  }
+  },
 );
