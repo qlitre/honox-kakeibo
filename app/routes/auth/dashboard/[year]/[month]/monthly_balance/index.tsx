@@ -69,24 +69,29 @@ export default createRoute(async (c) => {
   });
 
   const tableItems: ExpenseTableItems = {};
-  for (const elm of expenseValueData.summary) {
-    tableItems[elm.category_id] = {
-      categoryName: elm.category_name,
-      now: elm.total_amount,
+  // 一回ゼロで初期化
+  for (const elm of categories.contents) {
+    tableItems[elm.id] = {
+      categoryName: elm.name,
+      now: 0,
       prevDiff: 0,
     };
   }
+  // 今月の金額を記録
+  for (const elm of expenseValueData.summary) {
+    tableItems[elm.category_id] = {
+      ...tableItems[elm.category_id],
+      now: elm.total_amount,
+      prevDiff: elm.total_amount,
+    };
+  }
+  // 前月の金額と差分を記録
   for (const elm of prevExpenseValueData.summary) {
-    if (elm.category_id in tableItems) {
-      const now = tableItems[elm.category_id].now;
-      tableItems[elm.category_id].prevDiff = now - elm.total_amount;
-    } else {
-      tableItems[elm.category_id] = {
-        categoryName: elm.category_name,
-        now: 0,
-        prevDiff: -1 * elm.total_amount,
-      };
-    }
+    const item = tableItems[elm.category_id];
+    tableItems[elm.category_id] = {
+      ...tableItems[elm.category_id],
+      prevDiff: item.now - elm.total_amount,
+    };
   }
 
   const incomeValueData = await client.getSummaryResponse<SummaryResponse>({
