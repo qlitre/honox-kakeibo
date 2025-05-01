@@ -50,7 +50,7 @@ export const POST = createRoute(
   async (c) => {
     const client = new KakeiboClient({
       token: c.env.HONO_IS_COOL,
-      baseUrl: c.env.BASE_URL,
+      baseUrl: new URL(c.req.url).origin,
     });
     const { name, is_investment } = c.req.valid("form");
     let _is_investment = 0;

@@ -13,7 +13,7 @@ import { Card } from "@/components/share/Card";
 export default createRoute(async (c) => {
   const client = new KakeiboClient({
     token: c.env.HONO_IS_COOL,
-    baseUrl: c.env.BASE_URL,
+    baseUrl: new URL(c.req.url).origin,
   });
 
   const holdingValueData = await client.getSummaryResponse<SummaryResponse>({

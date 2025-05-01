@@ -21,7 +21,7 @@ export default createRoute(async (c) => {
   const p = parseInt(page);
   const limit = kakeiboPerPage;
   const offset = limit * (p - 1);
-  const baseUrl = c.env.BASE_URL;
+  const baseUrl = new URL(c.req.url).origin;
   const client = new KakeiboClient({
     token: c.env.HONO_IS_COOL,
     baseUrl: baseUrl,

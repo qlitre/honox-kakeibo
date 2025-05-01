@@ -26,7 +26,7 @@ export const POST = createRoute(
     const id = c.req.param("id");
     const client = new KakeiboClient({
       token: c.env.HONO_IS_COOL,
-      baseUrl: c.env.BASE_URL,
+      baseUrl: new URL(c.req.url).origin,
     });
     const { date, amount, description } = c.req.valid("form");
     const parsedAmount = Number(amount);

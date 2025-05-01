@@ -12,7 +12,7 @@ import { BalanceTransitionForm } from "@/islands/BalanceTransitionForm";
 export default createRoute(async (c) => {
   const client = new KakeiboClient({
     token: c.env.HONO_IS_COOL,
-    baseUrl: c.env.BASE_URL,
+    baseUrl: new URL(c.req.url).origin,
   });
   const incomeData = await client.getSummaryResponse<SummaryResponse>({
     endpoint: "income",
