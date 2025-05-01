@@ -30,7 +30,7 @@ export const POST = createRoute(
     const redirectPage = c.req.query("redirectPage");
     const client = new KakeiboClient({
       token: c.env.HONO_IS_COOL,
-      baseUrl: c.env.BASE_URL,
+      baseUrl: new URL(c.req.url).origin,
     });
     const { date, amount, asset_category_id, description } =
       c.req.valid("form");

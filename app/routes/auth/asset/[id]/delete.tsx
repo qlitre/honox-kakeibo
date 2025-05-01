@@ -10,7 +10,7 @@ export const POST = createRoute(async (c) => {
   const id = c.req.param("id");
   const client = new KakeiboClient({
     token: c.env.HONO_IS_COOL,
-    baseUrl: c.env.BASE_URL,
+    baseUrl: new URL(c.req.url).origin,
   });
   const response = await client
     .deleteData({ endpoint: "asset", contentId: id })

@@ -24,7 +24,7 @@ const redirectUrl = "/auth/asset_category";
 export default createRoute(async (c) => {
   const client = new KakeiboClient({
     token: c.env.HONO_IS_COOL,
-    baseUrl: c.env.BASE_URL,
+    baseUrl: new URL(c.req.url).origin,
   });
   const id = c.req.param("id");
   const detail = await client.getDetail<AssetCategory>({
@@ -64,7 +64,7 @@ export const POST = createRoute(
     const id = c.req.param("id");
     const client = new KakeiboClient({
       token: c.env.HONO_IS_COOL,
-      baseUrl: c.env.BASE_URL,
+      baseUrl: new URL(c.req.url).origin,
     });
     const { name, is_investment } = c.req.valid("form");
     let _is_investment = 0;

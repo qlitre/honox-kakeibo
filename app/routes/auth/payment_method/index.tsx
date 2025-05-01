@@ -8,7 +8,7 @@ import { CategoryList } from "@/components/share/CategoryList";
 export default createRoute(async (c) => {
   const client = new KakeiboClient({
     token: c.env.HONO_IS_COOL,
-    baseUrl: c.env.BASE_URL,
+    baseUrl: new URL(c.req.url).origin,
   });
   const message = getCookie(c, successAlertCookieKey);
   const pageTitle = "支払方法一覧";

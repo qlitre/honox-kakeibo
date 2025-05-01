@@ -6,7 +6,6 @@ declare module "hono" {
     Variables: {};
     Bindings: {
       HONO_IS_COOL: string;
-      BASE_URL: string;
       DB: D1Database;
       FB_API_KEY: string;
       FB_AUTH_DOMAIN: string;

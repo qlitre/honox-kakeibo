@@ -17,7 +17,7 @@ export default createRoute(async (c) => {
   const id = c.req.param("id");
   const client = new KakeiboClient({
     token: c.env.HONO_IS_COOL,
-    baseUrl: c.env.BASE_URL,
+    baseUrl: new URL(c.req.url).origin,
   });
   const detail = await client.getDetail<IncomeCategory>({
     endpoint: endPoint,
@@ -35,7 +35,7 @@ export const POST = createRoute(async (c) => {
   const id = c.req.param("id");
   const client = new KakeiboClient({
     token: c.env.HONO_IS_COOL,
-    baseUrl: c.env.BASE_URL,
+    baseUrl: new URL(c.req.url).origin,
   });
   try {
     const r = await client.deleteData<IncomeCategory>({

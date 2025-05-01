@@ -24,7 +24,7 @@ import { AssetTable } from "@/components/AssetTable";
 export default createRoute(async (c) => {
   const client = new KakeiboClient({
     token: c.env.HONO_IS_COOL,
-    baseUrl: c.env.BASE_URL,
+    baseUrl: new URL(c.req.url).origin,
   });
   const year = parseInt(c.req.param("year"));
   const month = parseInt(c.req.param("month"));
