@@ -2,10 +2,10 @@
   "name": "basic",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "wrangler dev",
     "build": "vite build --mode client && vite build",
     "preview": "wrangler pages dev",
-    "deploy": "yarn build&&wrangler pages deploy"
+    "deploy": "yarn build&&wrangler deploy"
   },
   "private": true,
   "dependencies": {

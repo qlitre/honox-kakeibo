@@ -20,6 +20,9 @@ import { getBeginningOfMonth, getEndOfMonth } from "@/utils/dashboardUtils";
 import { getQueryString } from "@/utils/getQueryString";
 
 export default createRoute(async (c) => {
+  const result = await c.env.DB.prepare("SELECT * FROM expense LIMIT 5").all();
+  return c.json(result);
+
   let page = c.req.query("page") ?? "1";
   const p = parseInt(page);
   const limit = kakeiboPerPage;

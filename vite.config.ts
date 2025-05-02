@@ -1,8 +1,7 @@
 // vite.config.ts
-import build from "@hono/vite-build/cloudflare-pages";
+import build from "@hono/vite-build/cloudflare-workers";
 import honox from "honox/vite";
 import { defineConfig } from "vite";
-import { getPlatformProxy } from "wrangler";
 import path from "path";
 
 export default defineConfig(async ({ mode }) => {
@@ -26,7 +25,6 @@ export default defineConfig(async ({ mode }) => {
       },
     };
   } else {
-    const { env, dispose } = await getPlatformProxy();
     return {
       resolve: {
         alias: {
@@ -38,14 +36,8 @@ export default defineConfig(async ({ mode }) => {
         noExternal: [],
       },
       plugins: [
-        honox({ devServer: { env } }),
+        honox(),
         build(),
-        {
-          name: "dispose-wrangler-proxy",
-          closeBundle: async () => {
-            await dispose(); // プロキシの後始末
-          },
-        },
       ],
     };
   }
