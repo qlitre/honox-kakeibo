@@ -2,7 +2,7 @@ import type { AssetCategory } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { createItem } from "@/libs/dbService"; 
+import { createItem } from "@/libs/dbService";
 import { CategoryCreateForm } from "@/components/share/CategoryCreateForm";
 import { setCookie } from "hono/cookie";
 import {
@@ -56,7 +56,11 @@ export const POST = createRoute(
       is_investment: _is_investment,
     };
 
-    const response = await createItem<AssetCategory>({db:c.env.DB,table:endPoint,data:body})
+    const response = await createItem<AssetCategory>({
+      db: c.env.DB,
+      table: endPoint,
+      data: body,
+    });
     setCookie(c, successAlertCookieKey, successMesage, {
       maxAge: alertCookieMaxage,
     });

@@ -1,4 +1,4 @@
-import type { PaymentMethod} from "@/@types/dbTypes";
+import type { PaymentMethod } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
@@ -13,7 +13,6 @@ import {
 const schema = z.object({
   name: z.string().min(1),
 });
-
 
 const title = "支払方法編集";
 const formActionUrl = (id: string) => `/auth/payment_method/${id}/update`;
@@ -39,7 +38,7 @@ export default createRoute(async (c) => {
         backUrl={`/auth/${endPoint}`}
       />
     </>,
-    { title: title }
+    { title: title },
   );
 });
 
@@ -54,7 +53,7 @@ export const POST = createRoute(
           title={title}
           actionUrl={formActionUrl(id)}
           backUrl={`/auth/${endPoint}`}
-        />
+        />,
       );
     }
   }),
@@ -74,5 +73,5 @@ export const POST = createRoute(
       maxAge: alertCookieMaxage,
     });
     return c.redirect(redirectUrl, 303);
-  }
+  },
 );

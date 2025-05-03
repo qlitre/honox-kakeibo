@@ -112,17 +112,17 @@ export default createRoute(async (c) => {
   // 合計金額の計算
   const totalAmount = asset.contents.reduce(
     (sum, item) => sum + item.amount,
-    0
+    0,
   );
   const prevTotalAmount = prevAsset.contents.reduce(
     (sum, item) => sum + item.amount,
-    0
+    0,
   );
   const prevTotalDiff = totalAmount - prevTotalAmount;
   const prevTotalDiffRatio = prevTotalDiff / prevTotalAmount;
   const annualTotalAmount = annualStartAsset.contents.reduce(
     (sum, item) => sum + item.amount,
-    0
+    0,
   );
   const annualTotalDiff = totalAmount - annualTotalAmount;
   const annualTotalDiffRatio = annualTotalDiff / annualTotalAmount;
@@ -190,6 +190,6 @@ export default createRoute(async (c) => {
         />
       </Card>
     </div>,
-    { title: "資産ダッシュボード" }
+    { title: "資産ダッシュボード" },
   );
 });

@@ -85,6 +85,6 @@ export default createRoute(async (c) => {
           investmentAmounts={acc}
         ></InvestmentSummaryChart>
       </Card>
-    </>
+    </>,
   );
 });

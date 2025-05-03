@@ -10,14 +10,13 @@ import {
 import { updateItem } from "@/libs/dbService";
 
 /* ---------- ルート固有設定 ---------- */
-const endPoint        = "expense";
-const successMessage  = "支出編集に成功しました";
+const endPoint = "expense";
+const successMessage = "支出編集に成功しました";
 
 /* ---------- バリデーション ---------- */
 const schema = z.object({
   date: z.string().length(10),
   amount: z.string().regex(/^\d+$/),
-  // ====変更点==== //
   expense_category_id: z.string().regex(/^\d+$/),
   payment_method_id: z.string().regex(/^\d+$/),
   description: z.string(),
@@ -32,14 +31,13 @@ export const POST = createRoute(
   }),
   async (c) => {
     /* 1. パラメータ */
-    const recordId    = Number(c.req.param("id"));
+    const recordId = Number(c.req.param("id"));
     const queryString = c.req.url.split("?")[1] ?? "";
 
     /* 2. フォーム値を取得＆型変換 */
     const {
       date,
       amount,
-        // ====変更点==== //
       expense_category_id,
       payment_method_id,
       description,
@@ -48,9 +46,8 @@ export const POST = createRoute(
     const data = {
       date,
       amount: Number(amount),
-        // ====変更点==== //
       expense_category_id: Number(expense_category_id),
-      payment_method_id:   Number(payment_method_id),
+      payment_method_id: Number(payment_method_id),
       description,
     };
 

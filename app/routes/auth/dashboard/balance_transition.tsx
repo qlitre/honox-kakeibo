@@ -86,6 +86,6 @@ export default createRoute(async (c) => {
           expenseAmounts={expenseAmounts}
         />
       </Card>
-    </>
+    </>,
   );
 });

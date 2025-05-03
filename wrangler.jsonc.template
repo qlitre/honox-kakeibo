@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "your-app-name",
+  "main": "./dist/index.js",
+  "compatibility_date": "2025-05-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist/client",
+  },
+  "vars": {
+    "HONO_IS_COOL": "supersecret",
+    "FB_API_KEY": "",
+    "FB_AUTH_DOMAIN": "",
+    "FB_PROJECT_ID": "",
+    "FB_STORAGE_BUCKET": "",
+    "FB_MESSAGE_SENDER_ID": "",
+    "FB_APP_ID": "",
+    "SLACK_WEBHOOK_URL": "",
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "",
+      "database_id": "",
+    },
+  ],
+}

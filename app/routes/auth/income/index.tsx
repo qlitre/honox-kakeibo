@@ -1,9 +1,6 @@
 // app/routes/auth/income/index.tsx
 import type { TableHeaderItem } from "@/@types/common";
-import type {
-  IncomeCategory,
-  IncomeWithCategory,
-} from "@/@types/dbTypes";
+import type { IncomeCategory, IncomeWithCategory } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
 import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
@@ -18,19 +15,19 @@ import { fetchListWithFilter, fetchSimpleList } from "@/libs/dbService";
 import { kakeiboPerPage } from "@/settings/kakeiboSettings";
 
 export default createRoute(async (c) => {
-  const db     = c.env.DB;
-  const page   = parseInt(c.req.query("page") ?? "1");
-  const limit  = kakeiboPerPage;
+  const db = c.env.DB;
+  const page = parseInt(c.req.query("page") ?? "1");
+  const limit = kakeiboPerPage;
   const offset = limit * (page - 1);
 
-  const query       = c.req.query();
-  const baseUrl     = new URL(c.req.url).origin;
+  const query = c.req.query();
+  const baseUrl = new URL(c.req.url).origin;
   const queryString = getQueryString(c.req.url, baseUrl);
 
   // 収入一覧取得
   const incomes = await fetchListWithFilter<IncomeWithCategory>({
     db,
-    table:  "income",
+    table: "income",
     orders: "-date,income_category_id",
     limit,
     offset,
@@ -39,17 +36,17 @@ export default createRoute(async (c) => {
   // カテゴリ一覧取得
   const categories = await fetchSimpleList<IncomeCategory>({
     db,
-    table:  "income_category",
+    table: "income_category",
     orders: "updated_at",
   });
 
   const successMessage = getCookie(c, successAlertCookieKey);
   const headers: TableHeaderItem[] = [
-    { name: "日付",        textPosition: "left"   },
-    { name: "カテゴリ",    textPosition: "left"   },
-    { name: "金額",        textPosition: "right"  },
-    { name: "説明",        textPosition: "center" },
-    { name: "操作",        textPosition: "center" },
+    { name: "日付", textPosition: "left" },
+    { name: "カテゴリ", textPosition: "left" },
+    { name: "金額", textPosition: "right" },
+    { name: "説明", textPosition: "center" },
+    { name: "操作", textPosition: "center" },
   ];
   const lastUpdateId = parseInt(c.req.query("lastUpdate") ?? "0");
 
@@ -73,7 +70,9 @@ export default createRoute(async (c) => {
               <tr
                 key={income.id}
                 className={
-                  income.id === lastUpdateId ? "bg-green-100" : "hover:bg-gray-50"
+                  income.id === lastUpdateId
+                    ? "bg-green-100"
+                    : "hover:bg-gray-50"
                 }
               >
                 <td className="whitespace-nowrap py-4 pl-6 text-sm text-gray-900">
@@ -93,10 +92,10 @@ export default createRoute(async (c) => {
                     buttonType="success"
                     buttonTitle="編集"
                     data={{
-                      date:               income.date,
-                      amount:             String(income.amount),
+                      date: income.date,
+                      amount: String(income.amount),
                       income_category_id: String(income.income_category_id),
-                      description:        income.description || "",
+                      description: income.description || "",
                     }}
                     title="収入編集"
                     actionUrl={`/auth/income/${income.id}/update?${queryString}`}
@@ -106,10 +105,10 @@ export default createRoute(async (c) => {
                     buttonType="primary"
                     buttonTitle="複写"
                     data={{
-                      date:               income.date,
-                      amount:             String(income.amount),
+                      date: income.date,
+                      amount: String(income.amount),
                       income_category_id: String(income.income_category_id),
-                      description:        income.description || "",
+                      description: income.description || "",
                     }}
                     title="複写"
                     actionUrl="/auth/income/create"

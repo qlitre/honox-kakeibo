@@ -4,14 +4,14 @@ import {
   successAlertCookieKey,
   alertCookieMaxage,
 } from "@/settings/kakeiboSettings";
-import { deleteItem } from "@/libs/dbService"; 
+import { deleteItem } from "@/libs/dbService";
 
-const endPoint="income"
-const successMessage="収入削除に成功しました"
+const endPoint = "income";
+const successMessage = "収入削除に成功しました";
 
 export const POST = createRoute(async (c) => {
   const id = c.req.param("id");
-  const response = await deleteItem({db:c.env.DB,table:endPoint,id:id})
+  const response = await deleteItem({ db: c.env.DB, table: endPoint, id: id });
   const queryString = c.req.url.split("?")[1] || "";
   setCookie(c, successAlertCookieKey, successMessage, {
     maxAge: alertCookieMaxage,

@@ -28,7 +28,6 @@ export default createRoute(async (c) => {
   const categoryId = c.req.query("categoryId");
   const paymentMethodId = c.req.query("paymentMethodId");
   const keyword = c.req.query("keyword");
-
   let filterString = "";
   if (month) {
     const year = Number(month.slice(0, 4));
@@ -190,6 +189,6 @@ export default createRoute(async (c) => {
         />
       </div>
     </>,
-    { title: "支出リスト" }
+    { title: "支出リスト" },
   );
 });

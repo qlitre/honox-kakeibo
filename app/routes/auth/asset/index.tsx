@@ -1,8 +1,5 @@
 import type { TableHeaderItem } from "@/@types/common";
-import type {
-  AssetCategory,
-  AssetWithCategory,
-} from "@/@types/dbTypes";
+import type { AssetCategory, AssetWithCategory } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
 import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
@@ -16,21 +13,17 @@ import {
   dangerAlertCookieKey,
 } from "@/settings/kakeiboSettings";
 import { getQueryString } from "@/utils/getQueryString";
-import {
-  fetchListWithFilter,
-  fetchSimpleList,
-} from "@/libs/dbService";
+import { fetchListWithFilter, fetchSimpleList } from "@/libs/dbService";
 import { kakeiboPerPage } from "@/settings/kakeiboSettings";
 
 export default createRoute(async (c) => {
-  const db    = c.env.DB;
-  const page  = parseInt(c.req.query("page") ?? "1");
+  const db = c.env.DB;
+  const page = parseInt(c.req.query("page") ?? "1");
   const limit = Number(kakeiboPerPage || 10);
   const offset = limit * (page - 1);
-
-  const query      = c.req.query();
-  const baseUrl    = new URL(c.req.url).origin;
-  const queryString= getQueryString(c.req.url, baseUrl);
+  const query = c.req.query();
+  const baseUrl = new URL(c.req.url).origin;
+  const queryString = getQueryString(c.req.url, baseUrl);
 
   // 資産一覧取得
   const assets = await fetchListWithFilter<AssetWithCategory>({
@@ -49,8 +42,7 @@ export default createRoute(async (c) => {
   });
 
   const successMessage = getCookie(c, successAlertCookieKey);
-  const dangerMessage  = getCookie(c, dangerAlertCookieKey);
-
+  const dangerMessage = getCookie(c, dangerAlertCookieKey);
   const headers: TableHeaderItem[] = [
     { name: "日付", textPosition: "left" },
     { name: "カテゴリ", textPosition: "left" },
@@ -65,7 +57,7 @@ export default createRoute(async (c) => {
     <>
       <div className="px-4 sm:px-6 lg:px-8">
         {successMessage && <Alert message={successMessage} type="success" />}
-        {dangerMessage  && <Alert message={dangerMessage}  type="danger"  />}
+        {dangerMessage && <Alert message={dangerMessage} type="danger" />}
         <div className="flex items-center justify-between">
           <PageHeader title="資産リスト" />
           <AssetCreateModal

@@ -1,4 +1,3 @@
-// libs/dbService.ts
 import type { TableName } from "@/utils/sqlUtils";
 import {
   generateSelectQuery,
@@ -196,7 +195,7 @@ export async function fetchSummary<T>(params: {
   filters?: string;
   groupBy?: string;
   orders?: string;
-  orderRaw?: string;          // ⭐ 追加
+  orderRaw?: string; // ⭐ 追加
 }): Promise<SummaryResponse<T>> {
   const { db, table, filters, groupBy, orders, orderRaw } = params;
 
@@ -211,7 +210,7 @@ export async function fetchSummary<T>(params: {
 
   // ── 並べ替え ─────────────────────────────
   if (orderRaw) {
-    sql += ` ORDER BY ${orderRaw}`;          // alias をそのまま使用
+    sql += ` ORDER BY ${orderRaw}`; // alias をそのまま使用
   } else if (orders) {
     sql += ` ${buildSqlOrderByClause(table, orders)}`; // 既存ロジック
   }

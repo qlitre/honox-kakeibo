@@ -8,17 +8,16 @@ import {
   successAlertCookieKey,
 } from "@/settings/kakeiboSettings";
 import { sendSlackNotification } from "@/libs/slack";
-import { createItem } from "@/libs/dbService"; 
+import { createItem } from "@/libs/dbService";
 
-const endPoint="asset"
-const successMessage="資産追加に成功しました"
-const slackSuccessMessage="資産が追加されました。"
+const endPoint = "asset";
+const successMessage = "資産追加に成功しました";
+const slackSuccessMessage = "資産が追加されました。";
 
 /* --------------------- バリデーション --------------------- */
 const schema = z.object({
   date: z.string().length(10),
   amount: z.string().regex(/^\d+$/), // 数値文字列のみ許可
-  // ====変更点==== //
   asset_category_id: z.string().regex(/^\d+$/),
   description: z.string(),
 });
@@ -32,18 +31,12 @@ export const POST = createRoute(
   }),
   async (c) => {
     /* フォーム値を取得＆型変換 */
-    const {
-      date,
-      amount,
-      // ====変更点==== //
-      asset_category_id,
-      description,
-    } = c.req.valid("form");
+    const { date, amount, asset_category_id, description } =
+      c.req.valid("form");
 
     const data = {
       date,
       amount: Number(amount),
-      // ====変更点==== //
       asset_category_id: Number(asset_category_id),
       description,
     };
@@ -68,11 +61,10 @@ ${newItem.date}
 詳細: ${newItem.description}
       `.trim();
       await sendSlackNotification(message, c.env.SLACK_WEBHOOK_URL);
-
       return c.redirect(`/auth/${endPoint}?lastUpdate=${newItem.id}`, 303);
     } catch (err) {
       console.error(`${endPoint} create error:`, err);
       return c.json({ error: `Failed to add ${endPoint}` }, 500);
     }
-  }
+  },
 );

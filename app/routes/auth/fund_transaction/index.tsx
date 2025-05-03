@@ -113,6 +113,6 @@ export default createRoute(async (c) => {
         />
       </div>
     </>,
-    { title: "投資用口座入金履歴" }
+    { title: "投資用口座入金履歴" },
   );
 });

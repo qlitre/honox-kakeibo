@@ -27,15 +27,15 @@ export default createRoute(async (c) => {
     <>
       <CategoryDeleteForm title={title} detail={detail} endPoint={endPoint} />
     </>,
-    { title: title }
+    { title: title },
   );
 });
 
 export const POST = createRoute(async (c) => {
   const id = c.req.param("id");
-    const r = await deleteItem({db:c.env.DB,table:endPoint,id:id})
-    setCookie(c, successAlertCookieKey, successMessage, {
-      maxAge: alertCookieMaxage,
-    });
-    return c.redirect(redirectUrl, 303);
-  })
+  const r = await deleteItem({ db: c.env.DB, table: endPoint, id: id });
+  setCookie(c, successAlertCookieKey, successMessage, {
+    maxAge: alertCookieMaxage,
+  });
+  return c.redirect(redirectUrl, 303);
+});

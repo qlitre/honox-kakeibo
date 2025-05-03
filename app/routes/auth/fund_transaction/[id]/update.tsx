@@ -33,12 +33,7 @@ export const POST = createRoute(
     const queryString = c.req.url.split("?")[1] ?? "";
 
     /* 2. フォーム値を取得＆型変換 */
-    const {
-      date,
-      amount,
-      description,
-    } = c.req.valid("form");
-
+    const { date, amount, description } = c.req.valid("form");
     const data = {
       date,
       amount: Number(amount),
@@ -61,11 +56,11 @@ export const POST = createRoute(
 
       return c.redirect(
         `/auth/${endPoint}?lastUpdate=${recordId}&${queryString}`,
-        303
+        303,
       );
     } catch (err) {
       console.error(`${endPoint} update error:`, err);
       return c.json({ error: `Failed to update ${endPoint}` }, 500);
     }
-  }
+  },
 );

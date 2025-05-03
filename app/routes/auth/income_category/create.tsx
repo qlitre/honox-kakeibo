@@ -29,7 +29,7 @@ export default createRoute(async (c) => {
         backUrl={`/auth/${endPoint}`}
       />
     </>,
-    { title: title }
+    { title: title },
   );
 });
 
@@ -43,7 +43,7 @@ export const POST = createRoute(
           title={title}
           actionUrl={actionUrl}
           backUrl={`/auth/${endPoint}`}
-        />
+        />,
       );
     }
   }),
@@ -62,5 +62,5 @@ export const POST = createRoute(
       maxAge: alertCookieMaxage,
     });
     return c.redirect(redirectUrl, 303);
-  }
+  },
 );

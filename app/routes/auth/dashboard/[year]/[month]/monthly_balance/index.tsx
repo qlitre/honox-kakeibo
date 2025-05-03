@@ -181,6 +181,6 @@ export default createRoute(async (c) => {
         </Card>
       </div>
     </div>,
-    { title: "月間収支" }
+    { title: "月間収支" },
   );
 });

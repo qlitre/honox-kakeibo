@@ -27,7 +27,7 @@ export default createRoute(async (c) => {
     <>
       <CategoryDeleteForm title={title} detail={detail} endPoint={endPoint} />
     </>,
-    { title: title }
+    { title: title },
   );
 });
 

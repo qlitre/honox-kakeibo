@@ -22,6 +22,6 @@ export default createRoute(async (c) => {
         endpoint={endPoint}
       ></CategoryList>
     </>,
-    { title: pageTitle }
+    { title: pageTitle },
   );
 });

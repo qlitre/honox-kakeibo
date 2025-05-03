@@ -5,6 +5,7 @@
     "dev": "vite",
     "build": "vite build --mode client && vite build",
     "preview": "wrangler pages dev",
+    "format":"npx prettier --write .",
     "deploy": "yarn build&&wrangler deploy"
   },
   "private": true,

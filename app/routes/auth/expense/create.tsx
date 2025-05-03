@@ -8,17 +8,16 @@ import {
   successAlertCookieKey,
 } from "@/settings/kakeiboSettings";
 import { sendSlackNotification } from "@/libs/slack";
-import { createItem } from "@/libs/dbService"; 
+import { createItem } from "@/libs/dbService";
 
-const endPoint="expense"
-const successMessage="支出追加に成功しました"
-const slackSuccessMessage="支出が追加されました。"
+const endPoint = "expense";
+const successMessage = "支出追加に成功しました";
+const slackSuccessMessage = "支出が追加されました。";
 
 /* --------------------- バリデーション --------------------- */
 const schema = z.object({
   date: z.string().length(10),
   amount: z.string().regex(/^\d+$/), // 数値文字列のみ許可
-  // ====変更点==== //
   expense_category_id: z.string().regex(/^\d+$/),
   payment_method_id: z.string().regex(/^\d+$/),
   description: z.string(),
@@ -36,7 +35,6 @@ export const POST = createRoute(
     const {
       date,
       amount,
-      // ====変更点==== //
       expense_category_id,
       payment_method_id,
       description,
@@ -45,7 +43,6 @@ export const POST = createRoute(
     const data = {
       date,
       amount: Number(amount),
-      // ====変更点==== //
       expense_category_id: Number(expense_category_id),
       payment_method_id: Number(payment_method_id),
       description,
@@ -78,5 +75,5 @@ ${newItem.date}
       console.error(`${endPoint} create error:`, err);
       return c.json({ error: `Failed to add ${endPoint}` }, 500);
     }
-  }
+  },
 );

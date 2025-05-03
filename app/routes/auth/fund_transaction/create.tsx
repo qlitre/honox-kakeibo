@@ -31,7 +31,6 @@ export const POST = createRoute(
   async (c) => {
     /* フォーム値を取得＆型変換 */
     const { date, amount, description } = c.req.valid("form");
-
     const data = {
       date,
       amount: Number(amount),
@@ -63,5 +62,5 @@ ${newItem.date}
       console.error(`${endPoint} create error:`, err);
       return c.json({ error: `Failed to add ${endPoint}` }, 500);
     }
-  }
+  },
 );
