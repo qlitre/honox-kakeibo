@@ -2,7 +2,7 @@ import type { AssetCategory } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { KakeiboClient } from "@/libs/kakeiboClient";
+import { createItem } from "@/libs/dbService"; 
 import { CategoryCreateForm } from "@/components/share/CategoryCreateForm";
 import { setCookie } from "hono/cookie";
 import {
@@ -48,10 +48,6 @@ export const POST = createRoute(
     }
   }),
   async (c) => {
-    const client = new KakeiboClient({
-      token: c.env.HONO_IS_COOL,
-      baseUrl: new URL(c.req.url).origin,
-    });
     const { name, is_investment } = c.req.valid("form");
     let _is_investment = 0;
     if (is_investment === "1") _is_investment = 1;
@@ -60,11 +56,7 @@ export const POST = createRoute(
       is_investment: _is_investment,
     };
 
-    const response = await client
-      .addData<AssetCategory>({ endpoint: endPoint, data: body })
-      .catch((e) => {
-        console.error(e);
-      });
+    const response = await createItem<AssetCategory>({db:c.env.DB,table:endPoint,data:body})
     setCookie(c, successAlertCookieKey, successMesage, {
       maxAge: alertCookieMaxage,
     });

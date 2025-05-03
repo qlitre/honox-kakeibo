@@ -1,6 +1,6 @@
 import type { AssetCategory } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
-import { KakeiboClient } from "@/libs/kakeiboClient";
+import { deleteItem, fetchDetail } from "@/libs/dbService";
 import { CategoryDeleteForm } from "@/components/share/CategoryDeleteForm";
 import { setCookie } from "hono/cookie";
 import {
@@ -15,55 +15,27 @@ const redirectUrl = "/auth/asset_category";
 
 export default createRoute(async (c) => {
   const id = c.req.param("id");
-  const client = new KakeiboClient({
-    token: c.env.HONO_IS_COOL,
-    baseUrl: new URL(c.req.url).origin,
+  const detail = await fetchDetail<AssetCategory>({
+    db: c.env.DB,
+    table: endPoint,
+    id: id,
   });
-  const detail = await client.getDetail<AssetCategory>({
-    endpoint: endPoint,
-    contentId: id,
-  });
+  if (!detail) {
+    return c.redirect(redirectUrl, 303);
+  }
   return c.render(
     <>
       <CategoryDeleteForm title={title} detail={detail} endPoint={endPoint} />
     </>,
-    { title: title },
+    { title: title }
   );
 });
 
 export const POST = createRoute(async (c) => {
   const id = c.req.param("id");
-  const client = new KakeiboClient({
-    token: c.env.HONO_IS_COOL,
-    baseUrl: new URL(c.req.url).origin,
-  });
-  try {
-    const r = await client.deleteData<AssetCategory>({
-      endpoint: endPoint,
-      contentId: id,
-    });
+    const r = await deleteItem({db:c.env.DB,table:endPoint,id:id})
     setCookie(c, successAlertCookieKey, successMessage, {
       maxAge: alertCookieMaxage,
     });
     return c.redirect(redirectUrl, 303);
-  } catch (e: any) {
-    console.error(e);
-    const detail = await client.getDetail<AssetCategory>({
-      endpoint: endPoint,
-      contentId: id,
-    });
-    const errorMessage =
-      e.message || "カテゴリの削除中にエラーが発生しました。";
-    return c.render(
-      <>
-        <CategoryDeleteForm
-          errorMessage={errorMessage}
-          title={title}
-          detail={detail}
-          endPoint={endPoint}
-        />
-      </>,
-      { title: title },
-    );
-  }
-});
+  })

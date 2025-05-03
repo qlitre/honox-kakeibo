@@ -1,25 +1,15 @@
-import type { ExpenseCategoryResponse } from "@/@types/dbTypes";
+import type { ExpenseCategory } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
-import { KakeiboClient } from "@/libs/kakeiboClient";
+import { fetchSimpleList } from "@/libs/dbService";
 import { getCookie } from "hono/cookie";
 import { successAlertCookieKey } from "@/settings/kakeiboSettings";
 import { CategoryList } from "@/components/share/CategoryList";
 
-export default createRoute(async (c) => {
-  const client = new KakeiboClient({
-    token: c.env.HONO_IS_COOL,
-    baseUrl: new URL(c.req.url).origin,
-  });
+export default createRoute(async (c) => {  
   const message = getCookie(c, successAlertCookieKey);
   const pageTitle = "支出カテゴリ一覧";
   const endPoint = "expense_category";
-  const categories = await client.getListResponse<ExpenseCategoryResponse>({
-    endpoint: endPoint,
-    queries: {
-      orders: "updated_at",
-      limit: 100,
-    },
-  });
+  const categories = await fetchSimpleList<ExpenseCategory>({db:c.env.DB,table:endPoint})
   return c.render(
     <>
       <CategoryList
@@ -32,3 +22,4 @@ export default createRoute(async (c) => {
     { title: pageTitle },
   );
 });
+
