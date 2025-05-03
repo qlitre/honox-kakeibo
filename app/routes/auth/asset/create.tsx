@@ -1,87 +1,70 @@
-import type { Asset, AssetWithCategoryResponse } from "@/@types/dbTypes";
+import type { Asset } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { KakeiboClient } from "@/libs/kakeiboClient";
 import { setCookie } from "hono/cookie";
 import {
   alertCookieMaxage,
   successAlertCookieKey,
-  dangerAlertCookieKey,
 } from "@/settings/kakeiboSettings";
-import { getBeginningOfMonth, getEndOfMonth } from "@/utils/dashboardUtils";
 import { sendSlackNotification } from "@/libs/slack";
+import { createItem } from "@/libs/dbService";
 
+const endPoint = "asset";
+const successMessage = "資産追加に成功しました";
+const slackSuccessMessage = "資産が追加されました。";
+
+/* --------------------- バリデーション --------------------- */
 const schema = z.object({
   date: z.string().length(10),
-  amount: z.string(),
-  asset_category_id: z.string(),
+  amount: z.string().regex(/^\d+$/), // 数値文字列のみ許可
+  asset_category_id: z.string().regex(/^\d+$/),
   description: z.string(),
 });
 
+/* --------------------- ルート --------------------- */
 export const POST = createRoute(
-  zValidator("form", schema, async (result, c) => {
-    // 万が一失敗した時の考慮をどうするか。
+  zValidator("form", schema, (result, c) => {
     if (!result.success) {
-      c.redirect("/auth/asset", 303);
+      return c.redirect(`/auth/${endPoint}`, 303); // バリデーションエラー
     }
   }),
   async (c) => {
-    const client = new KakeiboClient({
-      token: c.env.HONO_IS_COOL,
-      baseUrl: new URL(c.req.url).origin,
-    });
+    /* フォーム値を取得＆型変換 */
     const { date, amount, asset_category_id, description } =
       c.req.valid("form");
-    const parsedAmount = Number(amount);
-    const parsedCategoryId = Number(asset_category_id);
-    if (isNaN(parsedAmount) || isNaN(parsedCategoryId)) {
-      return c.json({ error: "Invalid number format" }, 400);
-    }
-    const body = {
-      date: date,
-      amount: parsedAmount,
-      asset_category_id: parsedCategoryId,
-      description: description,
+
+    const data = {
+      date,
+      amount: Number(amount),
+      asset_category_id: Number(asset_category_id),
+      description,
     };
-    const [yearStr, monthStr] = date.split("-");
-    const year = parseInt(yearStr, 10);
-    const month = parseInt(monthStr, 10);
-    const ge = getBeginningOfMonth(year, month);
-    const le = getEndOfMonth(year, month);
-    const r = await client.getListResponse<AssetWithCategoryResponse>({
-      endpoint: "asset",
-      queries: {
-        filters: `asset_category_id[eq]${parsedCategoryId}[and]date[greater_equal]${ge}[and]date[less_equal]${le}`,
-      },
-    });
-    if (r.totalCount > 0) {
-      setCookie(
-        c,
-        dangerAlertCookieKey,
-        "資産追加に失敗しました。同月に同カテゴリの資産が登録されています。",
-        { maxAge: alertCookieMaxage },
-      );
-      return c.redirect("/auth/asset", 303);
-    }
-    const response = await client
-      .addData<Asset>({ endpoint: "asset", data: body })
-      .catch((e) => {
-        console.error(e);
+
+    try {
+      const newItem = await createItem<Asset>({
+        db: c.env.DB,
+        table: endPoint,
+        data,
       });
-    if (response) {
-      setCookie(c, successAlertCookieKey, "資産追加に成功しました", {
+
+      /* ---------- 成功後の処理 ---------- */
+      setCookie(c, successAlertCookieKey, successMessage, {
         maxAge: alertCookieMaxage,
       });
+
       const message = `
-資産が追加されました。
-${response.date}
-カテゴリ:${response.category_name}
-金額：${response.amount}
-詳細：${response.description}
-            `;
+${slackSuccessMessage}
+${newItem.date}
+カテゴリ: ${newItem.category_name}
+金額: ${newItem.amount}
+詳細: ${newItem.description}
+      `.trim();
       await sendSlackNotification(message, c.env.SLACK_WEBHOOK_URL);
-      return c.redirect(`/auth/asset?lastUpdate=${response.id}`, 303);
+      return c.redirect(`/auth/${endPoint}?lastUpdate=${newItem.id}`, 303);
+    } catch (err) {
+      console.error(`${endPoint} create error:`, err);
+      return c.json({ error: `Failed to add ${endPoint}` }, 500);
     }
   },
 );

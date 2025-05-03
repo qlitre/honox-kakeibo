@@ -1,10 +1,7 @@
-import type {
-  AssetCategoryResponse,
-  AssetWithCategoryResponse,
-} from "@/@types/dbTypes";
+import type { AssetWithCategory, AssetCategory } from "@/@types/dbTypes";
 import type { AssetTableItems } from "@/@types/common";
 import { createRoute } from "honox/factory";
-import { KakeiboClient } from "@/libs/kakeiboClient";
+import { fetchListWithFilter, fetchSimpleList } from "@/libs/dbService";
 import { AssetPieChart } from "@/islands/chart/AssetPieChart";
 import { AssetBarChart } from "@/islands/chart/AssetBarChart";
 import {
@@ -22,22 +19,18 @@ import { Card } from "@/components/share/Card";
 import { AssetTable } from "@/components/AssetTable";
 
 export default createRoute(async (c) => {
-  const client = new KakeiboClient({
-    token: c.env.HONO_IS_COOL,
-    baseUrl: new URL(c.req.url).origin,
-  });
+  const db = c.env.DB;
   const year = parseInt(c.req.param("year"));
   const month = parseInt(c.req.param("month"));
   const ge = getBeginningOfMonth(year, month);
   const le = getEndOfMonth(year, month);
 
-  // APIからデータを取得
-  const asset = await client.getListResponse<AssetWithCategoryResponse>({
-    endpoint: "asset",
-    queries: {
-      limit: 100,
-      filters: `date[greater_equal]${ge}[and]date[less_equal]${le}`,
-    },
+  const asset = await fetchListWithFilter<AssetWithCategory>({
+    db: db,
+    table: "asset",
+    filters: `date[greater_equal]${ge}[and]date[less_equal]${le}`,
+    limit: 100,
+    offset: 0,
   });
 
   // 前月
@@ -45,25 +38,24 @@ export default createRoute(async (c) => {
   const prevMonth = getPrevMonth(month);
   const prevGe = getBeginningOfMonth(prevYear, prevMonth);
   const prevLe = getEndOfMonth(prevYear, prevMonth);
-  const prevAsset = await client.getListResponse<AssetWithCategoryResponse>({
-    endpoint: "asset",
-    queries: {
-      limit: 100,
-      filters: `date[greater_equal]${prevGe}[and]date[less_equal]${prevLe}`,
-    },
+  const prevAsset = await fetchListWithFilter<AssetWithCategory>({
+    db: db,
+    table: "asset",
+    filters: `date[greater_equal]${prevGe}[and]date[less_equal]${prevLe}`,
+    limit: 100,
+    offset: 0,
   });
   // 年初
   const annualStartYear = getAnnualStartYear(year, month);
   const annualStartGe = getBeginningOfMonth(annualStartYear, annualStartMonth);
   const annualStartLe = getEndOfMonth(annualStartYear, annualStartMonth);
-  const annualStartAsset =
-    await client.getListResponse<AssetWithCategoryResponse>({
-      endpoint: "asset",
-      queries: {
-        limit: 100,
-        filters: `date[greater_equal]${annualStartGe}[and]date[less_equal]${annualStartLe}`,
-      },
-    });
+  const annualStartAsset = await fetchListWithFilter<AssetWithCategory>({
+    db: db,
+    table: "asset",
+    filters: `date[greater_equal]${annualStartGe}[and]date[less_equal]${annualStartLe}`,
+    limit: 100,
+    offset: 0,
+  });
 
   const tableItems: AssetTableItems = {};
   // 当月の記入
@@ -136,23 +128,27 @@ export default createRoute(async (c) => {
   const annualTotalDiffRatio = annualTotalDiff / annualTotalAmount;
 
   // BarChart用のデータの取得
-  const preReq = await client.getListResponse<AssetWithCategoryResponse>({
-    endpoint: "asset",
+  const preReq = await fetchListWithFilter<AssetWithCategory>({
+    db: db,
+    table: "asset",
+    limit: 1,
+    offset: 0,
   });
   const totalCount = preReq.totalCount;
-  const allAssets = await client.getListResponse<AssetWithCategoryResponse>({
-    endpoint: "asset",
-    queries: {
-      limit: totalCount,
-      orders: "date,asset_category_id",
-    },
+  const allAssets = await fetchListWithFilter<AssetWithCategory>({
+    db: db,
+    table: "asset",
+    limit: totalCount,
+    offset: 0,
   });
-  const categories = await client.getListResponse<AssetCategoryResponse>({
-    endpoint: "asset_category",
-    queries: {
-      limit: 100,
-    },
+
+  // カテゴリ一覧取得
+  const categories = await fetchSimpleList<AssetCategory>({
+    db,
+    table: "asset_category",
+    orders: "updated_at",
   });
+
   const colormap: Record<number, string> = {};
   for (let i = 0; i < categories.contents.length; i++) {
     const categoryId = categories.contents[i].id;

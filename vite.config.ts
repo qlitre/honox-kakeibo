@@ -1,10 +1,9 @@
 // vite.config.ts
-import build from "@hono/vite-build/cloudflare-pages";
+import build from "@hono/vite-build/cloudflare-workers";
 import honox from "honox/vite";
 import { defineConfig } from "vite";
-import { getPlatformProxy } from "wrangler";
 import path from "path";
-
+import { getPlatformProxy } from "wrangler";
 export default defineConfig(async ({ mode }) => {
   if (mode === "client") {
     return {

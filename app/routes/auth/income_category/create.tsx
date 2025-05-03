@@ -2,7 +2,7 @@ import type { IncomeCategory } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { KakeiboClient } from "@/libs/kakeiboClient";
+import { createItem } from "@/libs/dbService";
 import { CategoryCreateForm } from "@/components/share/CategoryCreateForm";
 import { setCookie } from "hono/cookie";
 import {
@@ -13,6 +13,7 @@ import {
 const schema = z.object({
   name: z.string().min(1),
 });
+
 const endPoint = "income_category";
 const actionUrl = `/auth/${endPoint}/create`;
 const redirectUrl = `/auth/${endPoint}`;
@@ -47,19 +48,16 @@ export const POST = createRoute(
     }
   }),
   async (c) => {
-    const client = new KakeiboClient({
-      token: c.env.HONO_IS_COOL,
-      baseUrl: new URL(c.req.url).origin,
-    });
     const { name } = c.req.valid("form");
     const body = {
-      name,
+      name: name,
     };
-    const response = await client
-      .addData<IncomeCategory>({ endpoint: endPoint, data: body })
-      .catch((e) => {
-        console.error(e);
-      });
+
+    const response = await createItem<IncomeCategory>({
+      db: c.env.DB,
+      table: endPoint,
+      data: body,
+    });
     setCookie(c, successAlertCookieKey, successMesage, {
       maxAge: alertCookieMaxage,
     });

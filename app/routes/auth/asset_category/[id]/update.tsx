@@ -2,7 +2,7 @@ import type { AssetCategory } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { KakeiboClient } from "@/libs/kakeiboClient";
+import { updateItem, fetchDetail } from "@/libs/dbService";
 import { CategoryCreateForm } from "@/components/share/CategoryCreateForm";
 import { setCookie } from "hono/cookie";
 import {
@@ -22,15 +22,15 @@ const successMesage = "資産カテゴリの編集に成功しました";
 const redirectUrl = "/auth/asset_category";
 
 export default createRoute(async (c) => {
-  const client = new KakeiboClient({
-    token: c.env.HONO_IS_COOL,
-    baseUrl: new URL(c.req.url).origin,
-  });
   const id = c.req.param("id");
-  const detail = await client.getDetail<AssetCategory>({
-    endpoint: endPoint,
-    contentId: id,
+  const detail = await fetchDetail<AssetCategory>({
+    db: c.env.DB,
+    table: endPoint,
+    id: id,
   });
+  if (!detail) {
+    return c.redirect(redirectUrl, 303);
+  }
   const is_investment = detail.is_investment === 1 ? "1" : "0";
   return c.render(
     <>
@@ -62,10 +62,6 @@ export const POST = createRoute(
   }),
   async (c) => {
     const id = c.req.param("id");
-    const client = new KakeiboClient({
-      token: c.env.HONO_IS_COOL,
-      baseUrl: new URL(c.req.url).origin,
-    });
     const { name, is_investment } = c.req.valid("form");
     let _is_investment = 0;
     if (is_investment === "1") _is_investment = 1;
@@ -73,15 +69,12 @@ export const POST = createRoute(
       name: name,
       is_investment: _is_investment,
     };
-    const response = await client
-      .updateData<AssetCategory>({
-        endpoint: endPoint,
-        contentId: id,
-        data: body,
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+    const response = await updateItem<AssetCategory>({
+      db: c.env.DB,
+      table: endPoint,
+      id: id,
+      data: body,
+    });
     setCookie(c, successAlertCookieKey, successMesage, {
       maxAge: alertCookieMaxage,
     });

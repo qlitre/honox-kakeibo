@@ -1,12 +1,3 @@
-DROP TABLE IF EXISTS asset;
-DROP TABLE IF EXISTS asset_category;
-DROP TABLE IF EXISTS expense;
-DROP TABLE IF EXISTS expense_category;
-DROP TABLE IF EXISTS payment_method;
-DROP TABLE IF EXISTS income;
-DROP TABLE IF EXISTS income_category;
-DROP TABLE IF EXISTS fund_transaction;
-
 CREATE TABLE IF NOT EXISTS asset_category (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,

@@ -20,13 +20,16 @@ npm install
 npx wrangler d1 create kakeibo
 ```
 
-wrangler.toml.templateのファイル名をwrangler.tomlに変更し、出力されたデータベース情報を編集します。
+wrangler.jsonc.templateのファイル名をwrangler.tomlに変更し、出力されたデータベース情報を編集します。
 
 ```
-[[d1_databases]]
-binding = "DB"
-database_name = "kakeibo"
-database_id = "8ad8c765-ea17-492f-b511-7cb76af6e96e"
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "kakeibo",
+      "database_id": "8ad8c765-ea17-492f-b511-7cb76af6e96e",
+    },
+  ],
 ```
 
 以下のコマンドを実行してテーブルとテストデータを作成します。
@@ -88,8 +91,7 @@ const firebaseConfig = {
 };
 ```
 
-こちらの値を`dev.vars`に対応するようにコピペします。
-ダブルクオテーションの中の文字列だけコピペするのに注意してください。
+こちらの値を`wrangler.jsonc`に対応するようにコピペします。
 
 続いてコンソールに戻りユーザーを作成します。
 
@@ -115,5 +117,3 @@ Authenticationをクリックします。
 
 先ほど登録したemailアドレスとパスワードでログインができたらオッケーです。
 ※上の認証なしパターンで`app/checkauthFb.ts`を編集された方は元に戻すのに注意
-
-![image](https://github.com/user-attachments/assets/73b8d8a2-21e0-421d-a886-1be598123335)

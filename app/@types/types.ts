@@ -1,6 +1,7 @@
 export type KakeiboClientOptions = {
   token: string;
   baseUrl: string;
+  selfOrigin: string;
 };
 
 export type KakeiboQueries = {

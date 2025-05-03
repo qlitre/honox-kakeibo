@@ -1,90 +1,84 @@
+// app/routes/auth/balance/transition.tsx
 import type {
-  SummaryResponse,
-  IncomeCategoryResponse,
-  ExpenseCategoryResponse,
+  SummaryItem,
+  IncomeCategory,
+  ExpenseCategory,
 } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
-import { KakeiboClient } from "@/libs/kakeiboClient";
 import { BalanceTransitionChart } from "@/islands/chart/BalanceTransitionChart";
 import { Card } from "@/components/share/Card";
 import { BalanceTransitionForm } from "@/islands/BalanceTransitionForm";
+import { fetchSummary, fetchSimpleList } from "@/libs/dbService";
 
 export default createRoute(async (c) => {
-  const client = new KakeiboClient({
-    token: c.env.HONO_IS_COOL,
-    baseUrl: new URL(c.req.url).origin,
-  });
-  const incomeData = await client.getSummaryResponse<SummaryResponse>({
-    endpoint: "income",
-    queries: {
-      groupby: "year_month, category_name",
-      orders: "year_month",
-    },
-  });
+  const db = c.env.DB;
 
+  /* ---------- クエリパラメータ ---------- */
   const incomeCategoryId = c.req.query("income_category") ?? "";
   const expenseCategoryId = c.req.query("expense_category") ?? "";
 
-  const expenseData = await client.getSummaryResponse<SummaryResponse>({
-    endpoint: "expense",
-    queries: {
-      groupby: "year_month, category_name",
-      orders: "year_month",
-    },
+  /* ---------- サマリー取得 ---------- */
+  const incomeData = await fetchSummary<SummaryItem>({
+    db,
+    table: "income",
+    groupBy: "year_month, category_name",
   });
-  const mySet = new Set<string>();
-  const objIncomeAmounts: Record<string, number> = {};
-  for (const elm of incomeData.summary) {
-    const yearMonth = elm.year_month;
-    mySet.add(yearMonth);
-    if (!objIncomeAmounts[yearMonth]) objIncomeAmounts[yearMonth] = 0;
-    if (incomeCategoryId.length > 0) {
-      if (String(elm.category_id) == incomeCategoryId) {
-        objIncomeAmounts[yearMonth] += elm.total_amount;
-      }
-    } else {
-      objIncomeAmounts[yearMonth] += elm.total_amount;
+
+  const expenseData = await fetchSummary<SummaryItem>({
+    db,
+    table: "expense",
+    groupBy: "year_month, category_name",
+  });
+
+  /* ---------- 月別集計を組み立て ---------- */
+  const months = new Set<string>();
+  const incMap: Record<string, number> = {};
+  const expMap: Record<string, number> = {};
+
+  for (const row of incomeData.summary) {
+    const ym = row.year_month;
+    months.add(ym);
+    if (!incMap[ym]) incMap[ym] = 0;
+    if (!incomeCategoryId || String(row.category_id) === incomeCategoryId) {
+      incMap[ym] += row.total_amount;
     }
   }
-  const objExpenseAmounts: Record<string, number> = {};
-  for (const elm of expenseData.summary) {
-    const yearMonth = elm.year_month;
-    mySet.add(yearMonth);
-    if (!objExpenseAmounts[yearMonth]) objExpenseAmounts[yearMonth] = 0;
-    if (expenseCategoryId.length > 0) {
-      if (String(elm.category_id) == expenseCategoryId) {
-        objExpenseAmounts[yearMonth] += elm.total_amount;
-      }
-    } else {
-      objExpenseAmounts[yearMonth] += elm.total_amount;
+
+  for (const row of expenseData.summary) {
+    const ym = row.year_month;
+    months.add(ym);
+    if (!expMap[ym]) expMap[ym] = 0;
+    if (!expenseCategoryId || String(row.category_id) === expenseCategoryId) {
+      expMap[ym] += row.total_amount;
     }
   }
-  const labels: string[] = Array.from(mySet);
-  labels.sort((a, b) => a.localeCompare(b));
-  const incomeAmounts = [];
-  const expenseAmounts = [];
-  for (const yearMonth of labels) {
-    const income = objIncomeAmounts[yearMonth] ?? 0;
-    const expense = objExpenseAmounts[yearMonth] ?? 0;
-    incomeAmounts.push(income);
-    expenseAmounts.push(expense);
-  }
-  const incomeCategoryResponse =
-    await client.getListResponse<IncomeCategoryResponse>({
-      endpoint: "income_category",
-    });
-  const expenseCategoryResponse =
-    await client.getListResponse<ExpenseCategoryResponse>({
-      endpoint: "expense_category",
-    });
+
+  const labels = Array.from(months).sort((a, b) => a.localeCompare(b));
+  const incomeAmounts = labels.map((m) => incMap[m] ?? 0);
+  const expenseAmounts = labels.map((m) => expMap[m] ?? 0);
+
+  /* ---------- カテゴリリスト ---------- */
+  const incomeCats = await fetchSimpleList<IncomeCategory>({
+    db,
+    table: "income_category",
+    orders: "updated_at",
+  });
+
+  const expenseCats = await fetchSimpleList<ExpenseCategory>({
+    db,
+    table: "expense_category",
+    orders: "updated_at",
+  });
+
+  /* ---------- レンダリング ---------- */
   return c.render(
     <>
       <BalanceTransitionForm
         incomeDefaultValue={incomeCategoryId}
-        incomeCategories={incomeCategoryResponse.contents}
+        incomeCategories={incomeCats.contents}
         expenseDefaultValue={expenseCategoryId}
-        expenseCategories={expenseCategoryResponse.contents}
-      ></BalanceTransitionForm>
+        expenseCategories={expenseCats.contents}
+      />
       <Card>
         <BalanceTransitionChart
           labels={labels}

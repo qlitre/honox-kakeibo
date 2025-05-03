@@ -2,35 +2,36 @@ import type { Expense } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { KakeiboClient } from "@/libs/kakeiboClient";
 import { setCookie } from "hono/cookie";
 import {
   alertCookieMaxage,
   successAlertCookieKey,
 } from "@/settings/kakeiboSettings";
 import { sendSlackNotification } from "@/libs/slack";
+import { createItem } from "@/libs/dbService";
 
+const endPoint = "expense";
+const successMessage = "支出追加に成功しました";
+const slackSuccessMessage = "支出が追加されました。";
+
+/* --------------------- バリデーション --------------------- */
 const schema = z.object({
   date: z.string().length(10),
-  amount: z.string(),
-  expense_category_id: z.string(),
-  payment_method_id: z.string(),
+  amount: z.string().regex(/^\d+$/), // 数値文字列のみ許可
+  expense_category_id: z.string().regex(/^\d+$/),
+  payment_method_id: z.string().regex(/^\d+$/),
   description: z.string(),
 });
 
+/* --------------------- ルート --------------------- */
 export const POST = createRoute(
-  zValidator("form", schema, async (result, c) => {
-    // 万が一失敗した時の考慮をどうするか。
+  zValidator("form", schema, (result, c) => {
     if (!result.success) {
-      c.redirect("/auth/expense", 303);
+      return c.redirect(`/auth/${endPoint}`, 303); // バリデーションエラー
     }
   }),
   async (c) => {
-    const client = new KakeiboClient({
-      token: c.env.HONO_IS_COOL,
-      baseUrl: new URL(c.req.url).origin
-      ,
-    });
+    /* フォーム値を取得＆型変換 */
     const {
       date,
       amount,
@@ -38,42 +39,41 @@ export const POST = createRoute(
       payment_method_id,
       description,
     } = c.req.valid("form");
-    const parsedAmount = Number(amount);
-    const parsedCategoryId = Number(expense_category_id);
-    const parsedPaymentMethodId = Number(payment_method_id);
-    if (
-      isNaN(parsedAmount) ||
-      isNaN(parsedCategoryId) ||
-      isNaN(parsedPaymentMethodId)
-    ) {
-      return c.json({ error: "Invalid number format" }, 400);
-    }
-    const body = {
-      date: date,
-      amount: parsedAmount,
-      expense_category_id: parsedCategoryId,
-      payment_method_id: parsedPaymentMethodId,
-      description: description,
+
+    const data = {
+      date,
+      amount: Number(amount),
+      expense_category_id: Number(expense_category_id),
+      payment_method_id: Number(payment_method_id),
+      description,
     };
-    const response = await client
-      .addData<Expense>({ endpoint: "expense", data: body })
-      .catch((e) => {
-        console.error(e);
+
+    try {
+      const newItem = await createItem<Expense>({
+        db: c.env.DB,
+        table: endPoint,
+        data,
       });
-    if (response) {
-      setCookie(c, successAlertCookieKey, "支出追加に成功しました", {
+
+      /* ---------- 成功後の処理 ---------- */
+      setCookie(c, successAlertCookieKey, successMessage, {
         maxAge: alertCookieMaxage,
       });
+
       const message = `
-支出が追加されました。
-${response.date}
-カテゴリ:${response.category_name}
-支払い方法：${response.payment_method_name}
-金額：${response.amount}
-詳細：${response.description}
-            `;
+${slackSuccessMessage}
+${newItem.date}
+カテゴリ: ${newItem.category_name}
+支払い方法: ${newItem.payment_method_name}
+金額: ${newItem.amount}
+詳細: ${newItem.description}
+      `.trim();
       await sendSlackNotification(message, c.env.SLACK_WEBHOOK_URL);
-      return c.redirect(`/auth/expense?lastUpdate=${response.id}`, 303);
+
+      return c.redirect(`/auth/${endPoint}?lastUpdate=${newItem.id}`, 303);
+    } catch (err) {
+      console.error(`${endPoint} create error:`, err);
+      return c.json({ error: `Failed to add ${endPoint}` }, 500);
     }
   },
 );
