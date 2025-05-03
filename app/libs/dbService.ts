@@ -1,0 +1,171 @@
+// libs/dbService.ts
+import type { TableName } from "@/utils/sqlUtils";
+import {
+  generateSelectQuery,
+  buildSqlOrderByClause,
+  buildSqlWhereClause,
+  generateInsertQuery,
+  generateUpdateQuery,
+  generateQueryBindValues,
+} from "@/utils/sqlUtils";
+
+/* ---------- 共通レスポンス型 ---------- */
+export interface ListResponse<T> {
+  contents: T[];
+  totalCount: number;
+  limit: number;
+  offset: number;
+  pageSize: number;
+}
+
+/* ---------- 一覧取得 (フィルタ／ソート有) ---------- */
+export async function fetchListWithFilter<T>(params: {
+  db: D1Database;
+  table: TableName;
+  filters?: string;
+  orders?: string;
+  limit: number;
+  offset: number;
+}): Promise<ListResponse<T>> {
+  const { db, table, filters, orders, limit, offset } = params;
+
+  let sql = generateSelectQuery(table);
+  let countSql = `SELECT COUNT(*) AS total FROM ${table}`;
+
+  if (filters) {
+    const where = buildSqlWhereClause(table, filters);
+    sql += ` ${where}`;
+    countSql += ` ${where}`;
+  }
+
+  if (orders) {
+    sql += ` ${buildSqlOrderByClause(table, orders)}`;
+  }
+
+  sql += ` LIMIT ? OFFSET ?`;
+
+  const { results } = await db.prepare(sql).bind(limit, offset).all();
+  const total =
+    (await db.prepare(countSql).first<{ total: number }>())?.total ?? 0;
+
+  return {
+    contents: results as T[],
+    totalCount: total,
+    limit,
+    offset,
+    pageSize: Math.ceil(total / limit),
+  };
+}
+
+/* ---------- 一覧取得 (フィルタなし) ---------- */
+export async function fetchSimpleList<T>(params: {
+  db: D1Database;
+  table: TableName;
+  orders?: string;
+  limit?: number;
+}): Promise<ListResponse<T>> {
+  const { db, table, orders, limit = 100 } = params;
+
+  let sql = generateSelectQuery(table);
+  if (orders) {
+    sql += ` ${buildSqlOrderByClause(table, orders)}`;
+  }
+  sql += ` LIMIT ${limit}`;
+
+  const { results } = await db.prepare(sql).all();
+
+  return {
+    contents: results as T[],
+    totalCount: results.length,
+    limit,
+    offset: 0,
+    pageSize: 1,
+  };
+}
+
+/* ---------- 単一詳細取得 ---------- */
+export async function fetchDetail<T>(params: {
+  db: D1Database;
+  table: TableName;
+  id: number | string;
+}): Promise<T | null> {
+  const { db, table, id } = params;
+
+  const sql = `${generateSelectQuery(table)} WHERE ${table}.id = ?`;
+  const record = await db.prepare(sql).bind(id).first<T>();
+
+  return record ?? null;
+}
+
+/* ---------- レコード追加 (CREATE) ---------- */
+export async function createItem<T>(params: {
+  db: D1Database;
+  table: TableName;
+  data: Record<string, unknown>;
+}): Promise<T> {
+  const { db, table, data } = params;
+
+  const insertSql = await generateInsertQuery(table);
+  const values = await generateQueryBindValues(table, data);
+
+  const insertResult = await db.prepare(insertSql).bind(...values).run();
+  if (!insertResult.success) {
+    throw new Error(`Failed to insert into ${table}`);
+  }
+
+  // 直前に入れた行を取得
+  const lastId =
+    (insertResult.meta as { last_row_id?: number }).last_row_id ?? undefined;
+
+  if (lastId === undefined) {
+    throw new Error(`Cannot fetch last_row_id for ${table}`);
+  }
+
+  const detail = await fetchDetail<T>({ db, table, id: lastId });
+  if (!detail) throw new Error(`Inserted ${table} not found`);
+
+  return detail;
+}
+
+/* ---------- レコード更新 (UPDATE) ---------- */
+export async function updateItem<T>(params: {
+  db: D1Database;
+  table: TableName;
+  id: number | string;
+  data: Record<string, unknown>;
+}): Promise<T> {
+  const { db, table, id, data } = params;
+
+  const updateSql = await generateUpdateQuery(table);
+  const values = await generateQueryBindValues(table, data);
+
+  // updated_at を自動更新するカラムがある場合は utilities 内で生成済み
+  values.push(new Date().toISOString().replace("T", " ").split(".")[0]);
+  values.push(id);
+
+  const updateResult = await db.prepare(updateSql).bind(...values).run();
+  if (!updateResult.success) {
+    throw new Error(`Failed to update ${table}`);
+  }
+
+  const detail = await fetchDetail<T>({ db, table, id });
+  if (!detail) throw new Error(`Updated ${table} not found`);
+
+  return detail;
+}
+
+/* ---------- レコード削除 (DELETE) ---------- */
+export async function deleteItem(params: {
+  db: D1Database;
+  table: TableName;
+  id: number | string;
+}): Promise<void> {
+  const { db, table, id } = params;
+
+  const deleteSql = `DELETE FROM ${table} WHERE id = ?`;
+  const del = await db.prepare(deleteSql).bind(id).run();
+
+  if (!del.success) {
+    throw new Error(`Failed to delete from ${table}`);
+  }
+}

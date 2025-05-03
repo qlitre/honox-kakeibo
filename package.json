@@ -2,7 +2,7 @@
   "name": "basic",
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "vite",
     "build": "vite build --mode client && vite build",
     "preview": "wrangler pages dev",
     "deploy": "yarn build&&wrangler deploy"

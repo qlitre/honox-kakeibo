@@ -1,26 +1,20 @@
 import { createRoute } from "honox/factory";
-import { KakeiboClient } from "@/libs/kakeiboClient";
 import { setCookie } from "hono/cookie";
 import {
   successAlertCookieKey,
   alertCookieMaxage,
 } from "@/settings/kakeiboSettings";
+import { deleteItem } from "@/libs/dbService"; 
+
+const endPoint="income"
+const successMessage="収入削除に成功しました"
 
 export const POST = createRoute(async (c) => {
   const id = c.req.param("id");
-  const client = new KakeiboClient({
-    token: c.env.HONO_IS_COOL,
-    baseUrl: new URL(c.req.url).origin,
-  });
-  const response = await client
-    .deleteData({ endpoint: "income", contentId: id })
-    .catch((e) => {
-      console.error(e);
-      return;
-    });
-  setCookie(c, successAlertCookieKey, "収入削除に成功しました", {
+  const response = await deleteItem({db:c.env.DB,table:endPoint,id:id})
+  const queryString = c.req.url.split("?")[1] || "";
+  setCookie(c, successAlertCookieKey, successMessage, {
     maxAge: alertCookieMaxage,
   });
-  const queryString = c.req.url.split("?")[1] || "";
-  return c.redirect(`/auth/income?${queryString}`, 303);
+  return c.redirect(`/auth/${endPoint}?${queryString}`, 303);
 });

@@ -39,6 +39,8 @@ class KakeiboClient {
   constructor({ token, baseUrl }: KakeiboClientOptions) {
     this.token = token;
     this.baseUrl = baseUrl + "/api";
+    this.selfOrigin = new URL(baseUrl).origin;   // 追加
+
   }
   private async fetchKakeibo<T>(
     url: string,
@@ -50,6 +52,9 @@ class KakeiboClient {
         Authorization: `Bearer ${this.token}`,
       },
     };
+    if (typeof navigator === "undefined" && new URL(url).origin === this.selfOrigin) {
+      throw new Error("KakeiboClient must not be called from within the Worker (would recurse).");
+    }
     const finalOptions = { ...defaultOptions, ...options };
     return fetch(url, finalOptions)
       .then(async (response) => {

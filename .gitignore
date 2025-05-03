@@ -33,6 +33,7 @@ lerna-debug.log*
 # misc
 .DS_Store
 wrangler.toml
+__wrangler.toml
 wrangler_command.txt
 testdata.sql
 wrangler.jsonc

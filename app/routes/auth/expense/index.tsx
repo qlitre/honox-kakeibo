@@ -1,11 +1,10 @@
 import type { TableHeaderItem } from "@/@types/common";
 import type {
-  ExpenseCategoryResponse,
-  ExpenseWithDetailsResponse,
-  PaymentMethodResponse,
+  ExpenseCategory,
+  PaymentMethod,
+  ExpenseWithDetails,
 } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
-import { KakeiboClient } from "@/libs/kakeiboClient";
 import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
 import { Alert } from "@/islands/share/Alert";
@@ -18,24 +17,18 @@ import { Table } from "@/components/share/Table";
 import { kakeiboPerPage } from "@/settings/kakeiboSettings";
 import { getBeginningOfMonth, getEndOfMonth } from "@/utils/dashboardUtils";
 import { getQueryString } from "@/utils/getQueryString";
+import { fetchListWithFilter, fetchSimpleList } from "@/libs/dbService";
 
 export default createRoute(async (c) => {
-  const result = await c.env.DB.prepare("SELECT * FROM expense LIMIT 5").all();
-  return c.json(result);
-
-  let page = c.req.query("page") ?? "1";
-  const p = parseInt(page);
+  const db = c.env.DB;
+  const page = parseInt(c.req.query("page") ?? "1");
   const limit = kakeiboPerPage;
-  const offset = limit * (p - 1);
-  const baseUrl = new URL(c.req.url).origin;
-  const client = new KakeiboClient({
-    token: c.env.HONO_IS_COOL,
-    baseUrl: baseUrl,
-  });
+  const offset = limit * (page - 1);
   const month = c.req.query("month");
   const categoryId = c.req.query("categoryId");
   const paymentMethodId = c.req.query("paymentMethodId");
   const keyword = c.req.query("keyword");
+
   let filterString = "";
   if (month) {
     const year = Number(month.slice(0, 4));
@@ -46,59 +39,44 @@ export default createRoute(async (c) => {
   }
   if (categoryId) {
     const s = `expense_category_id[eq]${categoryId}`;
-    if (filterString) {
-      filterString += `[and]${s}`;
-    } else {
-      filterString += s;
-    }
+    filterString += filterString ? `[and]${s}` : s;
   }
   if (paymentMethodId) {
     const s = `payment_method_id[eq]${paymentMethodId}`;
-    if (filterString) {
-      filterString += `[and]${s}`;
-    } else {
-      filterString += s;
-    }
+    filterString += filterString ? `[and]${s}` : s;
   }
   if (keyword) {
     const s = `description[contain]${keyword}`;
-    if (filterString) {
-      filterString += `[and]${s}`;
-    } else {
-      filterString += s;
-    }
+    filterString += filterString ? `[and]${s}` : s;
   }
-  const data = {
-    month: month,
-    category_id: categoryId,
-    payment_method_id: paymentMethodId,
-    keyword: keyword,
-  };
 
-  const expenses = await client.getListResponse<ExpenseWithDetailsResponse>({
-    endpoint: "expense",
-    queries: {
-      orders: "-date,expense_category_id",
-      limit: limit,
-      offset: offset,
-      filters: filterString,
-    },
+  const query = c.req.query();
+  const baseUrl = new URL(c.req.url).origin;
+  const queryString = getQueryString(c.req.url, baseUrl);
+
+  // 支出一覧の取得
+  const expenses = await fetchListWithFilter<ExpenseWithDetails>({
+    db,
+    table: "expense",
+    filters: filterString,
+    orders: "-date,expense_category_id",
+    limit,
+    offset,
   });
-  const categories = await client.getListResponse<ExpenseCategoryResponse>({
-    endpoint: "expense_category",
-    queries: {
-      limit: 100,
-      orders: "updated_at",
-    },
+
+  // カテゴリ・支払い方法
+  const categories = await fetchSimpleList<ExpenseCategory>({
+    db,
+    table: "expense_category",
+    orders: "updated_at",
   });
-  const paymentMethods = await client.getListResponse<PaymentMethodResponse>({
-    endpoint: "payment_method",
-    queries: {
-      limit: 100,
-      orders: "updated_at",
-    },
+
+  const paymentMethods = await fetchSimpleList<PaymentMethod>({
+    db,
+    table: "payment_method",
+    orders: "updated_at",
   });
-  const pageSize = expenses.pageSize;
+
   const successMessage = getCookie(c, successAlertCookieKey);
 
   const headers: TableHeaderItem[] = [
@@ -109,17 +87,14 @@ export default createRoute(async (c) => {
     { name: "説明", textPosition: "center" },
     { name: "操作", textPosition: "center" },
   ];
+
   const lastUpdate = c.req.query("lastUpdate") ?? "0";
   const lastUpdateId = parseInt(lastUpdate);
-  const query = c.req.query();
-  const queryString = getQueryString(c.req.url, baseUrl);
 
   return c.render(
     <>
       <div className="px-4 sm:px-6 lg:px-8">
-        {successMessage && (
-          <Alert message={successMessage} type="success"></Alert>
-        )}
+        {successMessage && <Alert message={successMessage} type="success" />}
         <div className="flex items-center justify-between">
           <PageHeader title="支出リスト" />
           <ExpenseCreateModal
@@ -132,7 +107,12 @@ export default createRoute(async (c) => {
           />
         </div>
         <ExpenseSearchForm
-          data={data}
+          data={{
+            month,
+            category_id: categoryId,
+            payment_method_id: paymentMethodId,
+            keyword,
+          }}
           categories={categories}
           paymentMethods={paymentMethods}
         />
@@ -141,7 +121,11 @@ export default createRoute(async (c) => {
             {expenses.contents.map((expense) => (
               <tr
                 key={expense.id}
-                className={`${expense.id === lastUpdateId ? "bg-green-100" : "hover:bg-gray-50"}`}
+                className={
+                  expense.id === lastUpdateId
+                    ? "bg-green-100"
+                    : "hover:bg-gray-50"
+                }
               >
                 <td className="whitespace-nowrap py-4 pl-6 text-sm text-gray-900">
                   {expense.date}
@@ -173,7 +157,7 @@ export default createRoute(async (c) => {
                     actionUrl={`/auth/expense/${expense.id}/update?${queryString}`}
                     categories={categories}
                     payment_methods={paymentMethods}
-                  ></ExpenseCreateModal>
+                  />
                   <ExpenseCreateModal
                     buttonType="primary"
                     buttonTitle="複写"
@@ -188,7 +172,7 @@ export default createRoute(async (c) => {
                     actionUrl="/auth/expense/create"
                     categories={categories}
                     payment_methods={paymentMethods}
-                  ></ExpenseCreateModal>
+                  />
                   <ExpenseDeleteModal
                     actionUrl={`/auth/expense/${expense.id}/delete?${queryString}`}
                     expense={expense}
@@ -199,13 +183,13 @@ export default createRoute(async (c) => {
           </tbody>
         </Table>
         <Pagination
-          pageSize={pageSize}
-          currentPage={p}
+          pageSize={expenses.pageSize}
+          currentPage={page}
           hrefPrefix="/auth/expense"
           query={query}
         />
       </div>
     </>,
-    { title: "支出リスト" },
+    { title: "支出リスト" }
   );
 });

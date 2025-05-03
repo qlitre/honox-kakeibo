@@ -2,56 +2,76 @@ import type { Income } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { KakeiboClient } from "@/libs/kakeiboClient";
 import { setCookie } from "hono/cookie";
 import {
   successAlertCookieKey,
   alertCookieMaxage,
 } from "@/settings/kakeiboSettings";
+import { updateItem } from "@/libs/dbService";
 
+/* ---------- ルート固有設定 ---------- */
+const endPoint        = "income";
+const successMessage  = "収入編集に成功しました";
+
+/* ---------- バリデーション ---------- */
 const schema = z.object({
   date: z.string().length(10),
-  amount: z.string(),
-  income_category_id: z.string(),
+  amount: z.string().regex(/^\d+$/),
+  // ====変更点==== //
+  income_category_id: z.string().regex(/^\d+$/),
   description: z.string(),
 });
 
+/* ---------- ルート ---------- */
 export const POST = createRoute(
-  zValidator("form", schema, async (result, c) => {
-    // 作成と同様に失敗した時をどうするか。
+  zValidator("form", schema, (result, c) => {
     if (!result.success) {
-      c.redirect("/auth/income", 303);
+      return c.redirect(`/auth/${endPoint}`, 303);
     }
   }),
   async (c) => {
-    const id = c.req.param("id");
-    const redirectPage = c.req.query("redirectPage");
-    const client = new KakeiboClient({
-      token: c.env.HONO_IS_COOL,
-      baseUrl: new URL(c.req.url).origin,
-    });
-    const { date, amount, income_category_id, description } =
-      c.req.valid("form");
-    const parsedAmount = Number(amount);
-    const parsedCategoryId = Number(income_category_id);
-    if (isNaN(parsedAmount) || isNaN(parsedCategoryId)) {
-      return c.json({ error: "Invalid number format" }, 400);
-    }
-    const body = {
-      date: date,
-      amount: parsedAmount,
-      income_category_id: parsedCategoryId,
-      description: description,
+    /* 1. パラメータ */
+    const recordId    = Number(c.req.param("id"));
+    const queryString = c.req.url.split("?")[1] ?? "";
+
+    /* 2. フォーム値を取得＆型変換 */
+    const {
+      date,
+      amount,
+        // ====変更点==== //
+      income_category_id,
+      description,
+    } = c.req.valid("form");
+
+    const data = {
+      date,
+      amount: Number(amount),
+        // ====変更点==== //
+      income_category_id: Number(income_category_id),
+      description,
     };
-    const response = await client
-      .updateData<Income>({ endpoint: "income", contentId: id, data: body })
-      .catch((e) => {
-        console.error(e);
+
+    try {
+      /* 3. 更新処理（D1 直接） */
+      await updateItem<Income>({
+        db: c.env.DB,
+        table: endPoint,
+        id: recordId,
+        data,
       });
-    const queryString = c.req.url.split("?")[1] || "";
-    setCookie(c, successAlertCookieKey, "収入編集に成功しました", {
-      maxAge: alertCookieMaxage,
-    });
-    return c.redirect(`/auth/income?lastUpdate=${id}&${queryString}`, 303);
+
+      /* 4. Cookie & リダイレクト */
+      setCookie(c, successAlertCookieKey, successMessage, {
+        maxAge: alertCookieMaxage,
+      });
+
+      return c.redirect(
+        `/auth/${endPoint}?lastUpdate=${recordId}&${queryString}`,
+        303,
+      );
+    } catch (err) {
+      console.error(`${endPoint} update error:`, err);
+      return c.json({ error: `Failed to update ${endPoint}` }, 500);
+    }
   },
 );
