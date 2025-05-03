@@ -1,12 +1,8 @@
-import type {
-  ExpenseCategoryResponse,
-  SummaryResponse,
-  SummaryItem,
-} from "@/@types/dbTypes";
+import type { ExpenseCategory, SummaryItem } from "@/@types/dbTypes";
 import type { ExpenseTableItems } from "@/@types/common";
 import type { TableHeaderItem } from "@/@types/common";
 import { createRoute } from "honox/factory";
-import { KakeiboClient } from "@/libs/kakeiboClient";
+import { fetchSummary, fetchSimpleList } from "@/libs/dbService";
 import {
   formatDiff,
   getPrevMonthYear,
@@ -33,39 +29,31 @@ const getYearMonth = (year: number, month: number) => {
 };
 
 export default createRoute(async (c) => {
-  const client = new KakeiboClient({
-    token: c.env.HONO_IS_COOL,
-    baseUrl: new URL(c.req.url).origin,
-  });
+  const db = c.env.DB;
   const year = parseInt(c.req.param("year"));
   const month = parseInt(c.req.param("month"));
   const prevMonth = getPrevMonth(month);
   const prevYear = getPrevMonthYear(year, month);
   const yearMonth = getYearMonth(year, month);
   const prevYearMonth = getYearMonth(prevYear, prevMonth);
-  const expenseValueData = await client.getSummaryResponse<SummaryResponse>({
-    endpoint: "expense",
-    queries: {
-      groupby: "year_month, category_name",
-      orders: "year_month",
-      filters: `year_month[eq]${yearMonth}`,
-    },
+  const expenseValueData = await fetchSummary<SummaryItem>({
+    db: db,
+    table: "expense",
+    filters: `year_month[eq]${yearMonth}`,
+    groupBy: "year_month, category_name",
+    orderRaw: "year_month ASC",
   });
-  const prevExpenseValueData = await client.getSummaryResponse<SummaryResponse>(
-    {
-      endpoint: "expense",
-      queries: {
-        groupby: "year_month, category_name",
-        orders: "year_month",
-        filters: `year_month[eq]${prevYearMonth}`,
-      },
-    },
-  );
-  const categories = await client.getListResponse<ExpenseCategoryResponse>({
-    endpoint: "expense_category",
-    queries: {
-      limit: 100,
-    },
+  const prevExpenseValueData = await fetchSummary<SummaryItem>({
+    db: db,
+    table: "expense",
+    filters: `year_month[eq]${prevYearMonth}`,
+    groupBy: "year_month, category_name",
+    orderRaw: "year_month ASC",
+  });
+
+  const categories = await fetchSimpleList<ExpenseCategory>({
+    db,
+    table: "expense_category",
   });
 
   const tableItems: ExpenseTableItems = {};
@@ -94,13 +82,12 @@ export default createRoute(async (c) => {
     };
   }
 
-  const incomeValueData = await client.getSummaryResponse<SummaryResponse>({
-    endpoint: "income",
-    queries: {
-      groupby: "year_month, category_name",
-      orders: "year_month",
-      filters: `year_month[eq]${yearMonth}`,
-    },
+  const incomeValueData = await fetchSummary<SummaryItem>({
+    db: db,
+    table: "income",
+    filters: `year_month[eq]${yearMonth}`,
+    groupBy: "year_month, category_name",
+    orderRaw: "year_month ASC",
   });
 
   const expenseTotal = getTotal(expenseValueData.summary);
@@ -194,6 +181,6 @@ export default createRoute(async (c) => {
         </Card>
       </div>
     </div>,
-    { title: "月間収支" },
+    { title: "月間収支" }
   );
 });

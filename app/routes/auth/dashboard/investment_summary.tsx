@@ -1,7 +1,7 @@
-import type { SummaryResponse } from "@/@types/dbTypes";
+import type { SummaryItem } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
-import { KakeiboClient } from "@/libs/kakeiboClient";
 import { InvestmentSummaryChart } from "@/islands/chart/InvestmentSummaryChart";
+import { fetchSummary } from "@/libs/dbService";
 import {
   accumulate,
   getNextMonth,
@@ -11,19 +11,16 @@ import { CardWithHeading } from "@/components/share/CardWithHeading";
 import { Card } from "@/components/share/Card";
 
 export default createRoute(async (c) => {
-  const client = new KakeiboClient({
-    token: c.env.HONO_IS_COOL,
-    baseUrl: new URL(c.req.url).origin,
+  const db = c.env.DB;
+
+  const holdingValueData = await fetchSummary<SummaryItem>({
+    db,
+    table: "asset",
+    filters: "is_investment[eq]1",
+    groupBy: "year_month, is_investment, category_name",
+    orderRaw: "year_month ASC",
   });
 
-  const holdingValueData = await client.getSummaryResponse<SummaryResponse>({
-    endpoint: "asset",
-    queries: {
-      filters: "is_investment[eq]1",
-      groupby: "year_month, is_investment, category_name",
-      orders: "year_month",
-    },
-  });
   const mySet = new Set<string>();
   const objHoldingValues: Record<string, number> = {};
   for (const elm of holdingValueData.summary) {
@@ -34,12 +31,11 @@ export default createRoute(async (c) => {
   }
   const labels: string[] = Array.from(mySet);
   labels.sort((a, b) => a.localeCompare(b));
-  const investmentData = await client.getSummaryResponse<SummaryResponse>({
-    endpoint: "fund_transaction",
-    queries: {
-      groupby: "year_month",
-      orders: "date",
-    },
+  const investmentData = await fetchSummary<SummaryItem>({
+    db: db,
+    table: "fund_transaction",
+    groupBy: "year_month",
+    orders: "date",
   });
   const objInvestmentValues: Record<string, number> = {};
   for (const elm of investmentData.summary) {
@@ -89,6 +85,6 @@ export default createRoute(async (c) => {
           investmentAmounts={acc}
         ></InvestmentSummaryChart>
       </Card>
-    </>,
+    </>
   );
 });

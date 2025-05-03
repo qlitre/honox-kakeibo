@@ -7,6 +7,7 @@ import {
   generateInsertQuery,
   generateUpdateQuery,
   generateQueryBindValues,
+  generateSummaryQuery,
 } from "@/utils/sqlUtils";
 
 /* ---------- 共通レスポンス型 ---------- */
@@ -108,7 +109,10 @@ export async function createItem<T>(params: {
   const insertSql = await generateInsertQuery(table);
   const values = await generateQueryBindValues(table, data);
 
-  const insertResult = await db.prepare(insertSql).bind(...values).run();
+  const insertResult = await db
+    .prepare(insertSql)
+    .bind(...values)
+    .run();
   if (!insertResult.success) {
     throw new Error(`Failed to insert into ${table}`);
   }
@@ -143,7 +147,10 @@ export async function updateItem<T>(params: {
   values.push(new Date().toISOString().replace("T", " ").split(".")[0]);
   values.push(id);
 
-  const updateResult = await db.prepare(updateSql).bind(...values).run();
+  const updateResult = await db
+    .prepare(updateSql)
+    .bind(...values)
+    .run();
   if (!updateResult.success) {
     throw new Error(`Failed to update ${table}`);
   }
@@ -168,4 +175,48 @@ export async function deleteItem(params: {
   if (!del.success) {
     throw new Error(`Failed to delete from ${table}`);
   }
+}
+
+/** 集計結果の型 */
+export type SummaryResponse<T> = {
+  summary: T[];
+};
+
+/**
+ * テーブルのサマリー（合計・月次集計など）を取得する
+ *
+ * @param orders  例: "-date,category_id"       ← 既存（テーブル名を前に付与）
+ * @param orderRaw 例: "year_month ASC,total_amount DESC"
+ *                 プレフィックスを **付けず** にそのまま渡したいときに使用
+ *                 （SELECT 句で定義したエイリアスを並べ替えたい場合など）
+ */
+export async function fetchSummary<T>(params: {
+  db: D1Database;
+  table: TableName;
+  filters?: string;
+  groupBy?: string;
+  orders?: string;
+  orderRaw?: string;          // ⭐ 追加
+}): Promise<SummaryResponse<T>> {
+  const { db, table, filters, groupBy, orders, orderRaw } = params;
+
+  let sql = generateSummaryQuery(table);
+
+  if (filters) {
+    sql += ` ${buildSqlWhereClause(table, filters)}`;
+  }
+  if (groupBy) {
+    sql += ` GROUP BY ${groupBy}`;
+  }
+
+  // ── 並べ替え ─────────────────────────────
+  if (orderRaw) {
+    sql += ` ORDER BY ${orderRaw}`;          // alias をそのまま使用
+  } else if (orders) {
+    sql += ` ${buildSqlOrderByClause(table, orders)}`; // 既存ロジック
+  }
+  // ─────────────────────────────────────
+
+  const { results } = await db.prepare(sql).all();
+  return { summary: results as T[] };
 }
