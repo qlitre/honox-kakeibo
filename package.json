@@ -5,7 +5,7 @@
     "dev": "vite",
     "build": "vite build --mode client && vite build",
     "preview": "wrangler pages dev",
-    "format":"npx prettier --write .",
+    "format": "npx prettier --write .",
     "deploy": "yarn build&&wrangler deploy"
   },
   "private": true,
@@ -16,7 +16,7 @@
     "@tailwindcss/forms": "^0.5.9",
     "chart.js": "^4.4.5",
     "firebase": "^11.0.1",
-    "hono": "^4.7.8",
+    "hono": "^4.7.10",
     "honox": "^0.1.40",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
