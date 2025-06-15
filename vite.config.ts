@@ -12,6 +12,7 @@ export default defineConfig(async ({ mode }) => {
           "@": path.resolve(__dirname, "app"),
         },
       },
+      publicDir: "public",
       build: {
         rollupOptions: {
           input: ["./app/client.ts", "./app/style.css"],
