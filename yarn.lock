@@ -1999,10 +1999,10 @@ hasown@^2.0.2:
   dependencies:
     function-bind "^1.1.2"
 
-hono@^4.8.2:
-  version "4.8.2"
-  resolved "https://registry.yarnpkg.com/hono/-/hono-4.8.2.tgz#806ea770de3d799b7ff17dc9a17c430bf338ed99"
-  integrity sha512-hM+1RIn9PK1I6SiTNS6/y7O1mvg88awYLFEuEtoiMtRyT3SD2iu9pSFgbBXT3b1Ua4IwzvSTLvwO0SEhDxCi4w==
+hono@^4.8.3:
+  version "4.8.3"
+  resolved "https://registry.yarnpkg.com/hono/-/hono-4.8.3.tgz#4260b812b73d237be3b0e66cfe53089c20014f96"
+  integrity sha512-jYZ6ZtfWjzBdh8H/0CIFfCBHaFL75k+KMzaM177hrWWm2TWL39YMYaJgB74uK/niRc866NMlH9B8uCvIo284WQ==
 
 honox@^0.1.42:
   version "0.1.42"
