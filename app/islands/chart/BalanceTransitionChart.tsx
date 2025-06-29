@@ -41,18 +41,81 @@ export const BalanceTransitionChart: FC<Props> = ({
 }) => {
   const options: ChartOptions<"line"> = {
     responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
     plugins: {
       legend: {
         position: "top" as const,
+        labels: {
+          boxWidth: 12,
+          padding: 15,
+          font: {
+            size: 12,
+          },
+        },
       },
       title: {
         display: true,
         text: "収支",
+        font: {
+          size: 16,
+        },
+        padding: {
+          top: 10,
+          bottom: 20,
+        },
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleFont: {
+          size: 14,
+        },
+        bodyFont: {
+          size: 12,
+        },
+        padding: 10,
+        cornerRadius: 6,
       },
     },
     scales: {
+      x: {
+        display: true,
+        grid: {
+          display: false,
+        },
+        ticks: {
+          font: {
+            size: 10,
+          },
+          maxRotation: 45,
+          minRotation: 0,
+        },
+      },
       y: {
         beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          font: {
+            size: 10,
+          },
+          callback: function(value) {
+            return '¥' + Number(value).toLocaleString();
+          },
+        },
+      },
+    },
+    elements: {
+      point: {
+        radius: 4,
+        hoverRadius: 6,
+      },
+      line: {
+        borderWidth: 2,
       },
     },
   };
@@ -79,5 +142,9 @@ export const BalanceTransitionChart: FC<Props> = ({
     ],
   };
 
-  return <Chart type="line" data={data} options={options} />;
+  return (
+    <div className="w-full" style={{ height: '300px' }}>
+      <Chart type="line" data={data} options={options} />
+    </div>
+  );
 };
