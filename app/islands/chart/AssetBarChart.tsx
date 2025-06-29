@@ -75,24 +75,79 @@ export const AssetBarChart: FC<Props> = (props) => {
   const options: ChartOptions<"bar"> = {
     maintainAspectRatio: false,
     responsive: true,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
     plugins: {
       legend: {
         position: "top", // 凡例の位置
+        labels: {
+          boxWidth: 12,
+          padding: 10,
+          font: {
+            size: 11,
+          },
+        },
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleFont: {
+          size: 12,
+        },
+        bodyFont: {
+          size: 11,
+        },
+        padding: 8,
+        cornerRadius: 6,
+        callbacks: {
+          label: function(context) {
+            const label = context.dataset.label || '';
+            const value = Number(context.parsed.y).toLocaleString();
+            return `${label}: ¥${value}`;
+          },
+        },
       },
     },
     scales: {
       x: {
         stacked: true, // x軸のスタックを有効にする
+        grid: {
+          display: false,
+        },
+        ticks: {
+          font: {
+            size: 10,
+          },
+          maxRotation: 45,
+          minRotation: 0,
+        },
       },
       y: {
         stacked: true, // y軸のスタックを有効にする
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          font: {
+            size: 10,
+          },
+          callback: function(value) {
+            return '¥' + Number(value).toLocaleString();
+          },
+        },
+      },
+    },
+    elements: {
+      bar: {
+        borderWidth: 0,
       },
     },
   };
 
   return (
-    <div className="h-80">
-      <Bar data={data} options={options} />;
+    <div className="h-80 w-full">
+      <Bar data={data} options={options} />
     </div>
   );
 };

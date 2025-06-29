@@ -23,14 +23,36 @@ export const AssetPieChart: FC<Props> = (props) => {
     plugins: {
       legend: {
         display: true, // 凡例を表示
-        position: "top", // 凡例の位置を指定
+        position: "bottom", // スマホ対応で下に配置
         labels: {
-          boxWidth: 20, // ラベルのボックスサイズ
-          padding: 10, // ラベル間の余白
+          boxWidth: 12, // 小さく調整
+          padding: 8, // パディング調整
+          font: {
+            size: 11, // フォントサイズを小さく
+          },
+        },
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleFont: {
+          size: 12,
+        },
+        bodyFont: {
+          size: 11,
+        },
+        padding: 8,
+        cornerRadius: 6,
+        callbacks: {
+          label: function(context) {
+            const label = context.label || '';
+            const value = Number(context.parsed).toLocaleString();
+            return `${label}: ¥${value}`;
+          },
         },
       },
     },
     responsive: true,
+    maintainAspectRatio: false,
   };
 
   const labels = [];
@@ -58,7 +80,7 @@ export const AssetPieChart: FC<Props> = (props) => {
   };
 
   return (
-    <div>
+    <div className="w-full" style={{ height: '280px' }}>
       <Pie data={data} options={options} />
     </div>
   );
