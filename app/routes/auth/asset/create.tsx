@@ -1,4 +1,4 @@
-import type { Asset, AssetWithCategoryResponse } from "@/@types/dbTypes";
+import type { Asset } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
@@ -9,8 +9,8 @@ import {
   successAlertCookieKey,
 } from "@/settings/kakeiboSettings";
 import { sendSlackNotification } from "@/libs/slack";
-import { createItem, fetchListWithFilter } from "@/libs/dbService";
-import { getBeginningOfMonth, getEndOfMonth } from "@/utils/dashboardUtils";
+import { createItem } from "@/libs/dbService";
+import { checkAssetCategoryDuplication } from "@/utils/assetValidation";
 
 const endPoint = "asset";
 const successMessage = "資産追加に成功しました";
@@ -36,19 +36,13 @@ export const POST = createRoute(
     const { date, amount, asset_category_id, description } =
       c.req.valid("form");
 
-    const [yearStr, monthStr] = date.split("-");
-    const year = parseInt(yearStr, 10); // 年
-    const month = parseInt(monthStr, 10); // 月
-    const ge = getBeginningOfMonth(year, month);
-    const le = getEndOfMonth(year, month);
-    const r = await fetchListWithFilter<AssetWithCategoryResponse>({
+    const hasDuplication = await checkAssetCategoryDuplication({
       db: c.env.DB,
-      table: endPoint,
-      filters: `asset_category_id[eq]${asset_category_id}[and]date[greater_equal]${ge}[and]date[less_equal]${le}`,
-      limit: 10,
-      offset: 0,
+      date,
+      assetCategoryId: parseInt(asset_category_id, 10),
     });
-    if (r.totalCount > 0) {
+    
+    if (hasDuplication) {
       setCookie(
         c,
         dangerAlertCookieKey,
