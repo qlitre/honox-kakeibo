@@ -1999,15 +1999,15 @@ hasown@^2.0.2:
   dependencies:
     function-bind "^1.1.2"
 
-hono@^4.8.3:
-  version "4.8.3"
-  resolved "https://registry.yarnpkg.com/hono/-/hono-4.8.3.tgz#4260b812b73d237be3b0e66cfe53089c20014f96"
-  integrity sha512-jYZ6ZtfWjzBdh8H/0CIFfCBHaFL75k+KMzaM177hrWWm2TWL39YMYaJgB74uK/niRc866NMlH9B8uCvIo284WQ==
+hono@^4.8.5:
+  version "4.8.5"
+  resolved "https://registry.yarnpkg.com/hono/-/hono-4.8.5.tgz#a3b7703649a86f608c148e9aa1ca9ea41266cf8e"
+  integrity sha512-Up2cQbtNz1s111qpnnECdTGqSIUIhZJMLikdKkshebQSEBcoUKq6XJayLGqSZWidiH0zfHRCJqFu062Mz5UuRA==
 
-honox@^0.1.42:
-  version "0.1.42"
-  resolved "https://registry.yarnpkg.com/honox/-/honox-0.1.42.tgz#777c05d391aaae5dc8e6258726d1474e97b0ae80"
-  integrity sha512-FEz01nDUA8SrSR57ZLrUjJfQUUJ2XYcG++tajiTMwLIRv/2JLKb1UwOGT4no7CSAz5P/mejBOHcRclOTwuYGPQ==
+honox@^0.1.43:
+  version "0.1.43"
+  resolved "https://registry.yarnpkg.com/honox/-/honox-0.1.43.tgz#79f06a0a6e3d6daf1d4c332325edef1c422fd03a"
+  integrity sha512-PNlDHOPMrStgVwD4SOO/ihcA2iK3UaNluIWahxJkjY0dgvOc1hm8BBM06XpMNF2zVkOrtYk1xS3cCxCJZQIwpw==
   dependencies:
     "@babel/generator" "7.25.6"
     "@babel/parser" "7.25.6"
