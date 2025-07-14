@@ -6,6 +6,7 @@ import type {
 import { useState } from "react";
 import { Button } from "@/islands/Button";
 import { PageHeader } from "@/components/PageHeader";
+import { getTodayDate } from "@/utils/dateUtils";
 
 type Data = {
   date: string;
@@ -27,17 +28,6 @@ type CreateFormProps = {
 type Props = CreateFormProps & {
   buttonType: "primary" | "success";
   buttonTitle: string;
-};
-const getTodayDate = () => {
-  const now = new Date();
-  // UTC+9（日本時間）を適用
-  const jstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-  // 年、月、日を取得
-  const year = jstDate.getUTCFullYear();
-  const month = String(jstDate.getUTCMonth() + 1).padStart(2, "0"); // 月は0始まりのため+1
-  const day = String(jstDate.getUTCDate()).padStart(2, "0");
-  // yyyy-mm-dd形式で返す
-  return `${year}-${month}-${day}`;
 };
 
 export const ExpenseCreateModal: FC<Props> = ({
