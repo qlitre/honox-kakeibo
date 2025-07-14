@@ -18,6 +18,7 @@ import { kakeiboPerPage } from "@/settings/kakeiboSettings";
 import { getBeginningOfMonth, getEndOfMonth } from "@/utils/dashboardUtils";
 import { getQueryString } from "@/utils/getQueryString";
 import { fetchListWithFilter, fetchSimpleList } from "@/libs/dbService";
+import { getTodayDate } from "@/utils/dateUtils";
 
 export default createRoute(async (c) => {
   const db = c.env.DB;
@@ -161,7 +162,7 @@ export default createRoute(async (c) => {
                     buttonType="primary"
                     buttonTitle="複写"
                     data={{
-                      date: expense.date,
+                      date: getTodayDate(),
                       amount: String(expense.amount),
                       expense_category_id: String(expense.expense_category_id),
                       payment_method_id: String(expense.payment_method_id),

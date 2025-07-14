@@ -3,6 +3,7 @@ import type { IncomeCategoryResponse } from "@/@types/dbTypes";
 import { useState } from "react";
 import { Button } from "@/islands/Button";
 import { PageHeader } from "@/components/PageHeader";
+import { getTodayDate } from "@/utils/dateUtils";
 
 type Data = {
   date: string;
@@ -37,7 +38,7 @@ export const IncomeCreateModal: FC<Props> = ({
     setOpen(true);
   };
   const [formData, setFormData] = useState<Data>({
-    date: data?.date || "",
+    date: data?.date || getTodayDate(),
     amount: data?.amount || "",
     income_category_id: data?.income_category_id || "",
     description: data?.description || "",

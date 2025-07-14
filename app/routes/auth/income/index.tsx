@@ -13,6 +13,7 @@ import { successAlertCookieKey } from "@/settings/kakeiboSettings";
 import { getQueryString } from "@/utils/getQueryString";
 import { fetchListWithFilter, fetchSimpleList } from "@/libs/dbService";
 import { kakeiboPerPage } from "@/settings/kakeiboSettings";
+import { getTodayDate } from "@/utils/dateUtils";
 
 export default createRoute(async (c) => {
   const db = c.env.DB;
@@ -105,7 +106,7 @@ export default createRoute(async (c) => {
                     buttonType="primary"
                     buttonTitle="複写"
                     data={{
-                      date: income.date,
+                      date: getTodayDate(),
                       amount: String(income.amount),
                       income_category_id: String(income.income_category_id),
                       description: income.description || "",
