@@ -1,13 +1,15 @@
-import type { Asset } from "@/@types/dbTypes";
+import type { Asset, AssetWithCategoryResponse } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { setCookie } from "hono/cookie";
 import {
   successAlertCookieKey,
+  dangerAlertCookieKey,
   alertCookieMaxage,
 } from "@/settings/kakeiboSettings";
-import { updateItem } from "@/libs/dbService";
+import { updateItem, fetchDetail, fetchListWithFilter } from "@/libs/dbService";
+import { getBeginningOfMonth, getEndOfMonth } from "@/utils/dashboardUtils";
 
 /* ---------- ルート固有設定 ---------- */
 const endPoint = "asset";
@@ -36,6 +38,35 @@ export const POST = createRoute(
     /* 2. フォーム値を取得＆型変換 */
     const { date, amount, asset_category_id, description } =
       c.req.valid("form");
+    const oldData = await fetchDetail<Asset>({
+      db: c.env.DB,
+      table: endPoint,
+      id: recordId,
+    });
+    const oldCategoryId = oldData?.asset_category_id;
+    if (oldCategoryId != parseInt(asset_category_id, 10)) {
+      const [yearStr, monthStr] = date.split("-");
+      const year = parseInt(yearStr, 10); // 年
+      const month = parseInt(monthStr, 10); // 月
+      const ge = getBeginningOfMonth(year, month);
+      const le = getEndOfMonth(year, month);
+      const r = await fetchListWithFilter<AssetWithCategoryResponse>({
+        db: c.env.DB,
+        table: endPoint,
+        filters: `asset_category_id[eq]${asset_category_id}[and]date[greater_equal]${ge}[and]date[less_equal]${le}`,
+        limit: 10,
+        offset: 0,
+      });
+      if (r.totalCount > 0) {
+        setCookie(
+          c,
+          dangerAlertCookieKey,
+          "資産編集に失敗しました。同月に同カテゴリの資産が登録されています。",
+          { maxAge: alertCookieMaxage }
+        );
+        return c.redirect("/auth/asset", 303);
+      }
+    }
 
     const data = {
       date,
@@ -60,11 +91,11 @@ export const POST = createRoute(
 
       return c.redirect(
         `/auth/${endPoint}?lastUpdate=${recordId}&${queryString}`,
-        303,
+        303
       );
     } catch (err) {
       console.error(`${endPoint} update error:`, err);
       return c.json({ error: `Failed to update ${endPoint}` }, 500);
     }
-  },
+  }
 );
