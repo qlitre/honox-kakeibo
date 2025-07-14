@@ -3,6 +3,7 @@ import type { FC, ChangeEvent } from "react";
 import { useState } from "react";
 import { Button } from "@/islands/Button";
 import { PageHeader } from "@/components/PageHeader";
+import { getTodayDate } from "@/utils/dateUtils";
 
 type Data = {
   date: string;
@@ -37,7 +38,7 @@ export const AssetCreateModal: FC<Props> = ({
     setOpen(true);
   };
   const [formData, setFormData] = useState<Data>({
-    date: data?.date || "",
+    date: data?.date || getTodayDate(),
     amount: data?.amount || "",
     asset_category_id: data?.asset_category_id || "",
     description: data?.description || "",
