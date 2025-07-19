@@ -219,3 +219,83 @@ export async function fetchSummary<T>(params: {
   const { results } = await db.prepare(sql).all();
   return { summary: results as T[] };
 }
+
+/* ---------- 定期支払いチェック ---------- */
+export interface ExpenseCheckResult {
+  template: {
+    id: number;
+    name: string;
+    description_pattern: string;
+    expense_category_id: number;
+    category_name: string;
+  };
+  expense: {
+    id: number;
+    date: string;
+    amount: number;
+    description: string;
+  } | null;
+  isRegistered: boolean;
+}
+
+export async function checkMonthlyExpenses(params: {
+  db: D1Database;
+  year: string;
+  month: string;
+}): Promise<ExpenseCheckResult[]> {
+  const { db, year, month } = params;
+  
+  const targetDate = `${year}-${month.padStart(2, '0')}`;
+
+  // チェックテンプレート一覧を取得
+  const templatesQuery = `
+    SELECT 
+      ect.id,
+      ect.name,
+      ect.description_pattern,
+      ect.expense_category_id,
+      ec.name as category_name
+    FROM expense_check_template ect
+    LEFT JOIN expense_category ec ON ect.expense_category_id = ec.id
+    WHERE ect.is_active = 1
+    ORDER BY ect.name
+  `;
+  
+  const { results: templates } = await db.prepare(templatesQuery).all();
+
+  // 各テンプレートについて該当する支出があるかチェック
+  const checkResults: ExpenseCheckResult[] = [];
+  
+  for (const template of templates || []) {
+    const expenseQuery = `
+      SELECT 
+        e.id,
+        e.date,
+        e.amount,
+        e.description
+      FROM expense e
+      WHERE e.expense_category_id = ?
+        AND e.description LIKE ?
+        AND e.date LIKE ?
+      ORDER BY e.date DESC
+      LIMIT 1
+    `;
+    
+    const expenseResult = await db
+      .prepare(expenseQuery)
+      .bind(
+        template.expense_category_id,
+        `%${template.description_pattern}%`,
+        `${targetDate}%`
+      )
+      .first();
+
+    checkResults.push({
+      template: template as ExpenseCheckResult['template'],
+      expense: expenseResult as ExpenseCheckResult['expense'],
+      isRegistered: !!expenseResult
+    });
+  }
+
+  return checkResults;
+}

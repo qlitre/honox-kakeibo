@@ -1,83 +1,4 @@
-CREATE TABLE IF NOT EXISTS asset_category (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    is_investment BOOLEAN DEFAULT 0,
-    created_at TEXT DEFAULT (datetime('now')),
-    updated_at TEXT DEFAULT (datetime('now'))
-);
-
-CREATE TABLE IF NOT EXISTS asset (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT NOT NULL,
-    amount INTEGER NOT NULL,
-    asset_category_id INTEGER NOT NULL,
-    description TEXT,
-    created_at TEXT DEFAULT (datetime('now')),
-    updated_at TEXT DEFAULT (datetime('now')),
-    FOREIGN KEY (asset_category_id) REFERENCES asset_category(id) ON DELETE RESTRICT
-);
-
-
-CREATE TABLE IF NOT EXISTS expense_category (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    created_at TEXT DEFAULT (datetime('now')),
-    updated_at TEXT DEFAULT (datetime('now'))
-);
-
-CREATE TABLE IF NOT EXISTS payment_method (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    created_at TEXT DEFAULT (datetime('now')),
-    updated_at TEXT DEFAULT (datetime('now'))
-);
-
-CREATE TABLE IF NOT EXISTS expense (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT NOT NULL,
-    amount INTEGER NOT NULL,
-    expense_category_id INTEGER NOT NULL,
-    payment_method_id INTEGER NOT NULL,
-    description TEXT,
-    created_at TEXT DEFAULT (datetime('now')),
-    updated_at TEXT DEFAULT (datetime('now')),
-    FOREIGN KEY (expense_category_id) REFERENCES expense_category(id) ON DELETE RESTRICT,
-    FOREIGN KEY (payment_method_id) REFERENCES payment_method(id) ON DELETE RESTRICT
-);
-
-CREATE TABLE IF NOT EXISTS income_category (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    created_at TEXT DEFAULT (datetime('now')),
-    updated_at TEXT DEFAULT (datetime('now'))
-);
-
-CREATE TABLE IF NOT EXISTS income (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT NOT NULL,
-    amount INTEGER NOT NULL,
-    income_category_id INTEGER NOT NULL,
-    description TEXT,
-    created_at TEXT DEFAULT (datetime('now')),
-    updated_at TEXT DEFAULT (datetime('now')),
-    FOREIGN KEY (income_category_id) REFERENCES income_category(id) ON DELETE RESTRICT
-);
-
-CREATE TABLE IF NOT EXISTS fund_transaction (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT NOT NULL,               
-    amount INTEGER NOT NULL,          
-    description TEXT,                 
-    created_at TEXT DEFAULT (datetime('now')),
-    updated_at TEXT DEFAULT (datetime('now'))
-);
-
-
--- Asset categories
-INSERT INTO asset_category (name,is_investment) VALUES ('現金',0);
-INSERT INTO asset_category (name,is_investment) VALUES ('日本株式',1);
-INSERT INTO asset_category (name,is_investment) VALUES ('株式投信',1);
-INSERT INTO asset_category (name,is_investment) VALUES ('ビットコイン',0);
+-- サンプルデータ（開発用）
 
 -- Asset data from 2024-01 to 2024-11
 INSERT INTO asset (date, amount, asset_category_id, description) VALUES ('2024-01-01', 45000, 1, '1月の現金残高');
@@ -147,18 +68,6 @@ INSERT INTO fund_transaction (date, amount) VALUES ('2024-08-25', 20000);
 INSERT INTO fund_transaction (date, amount) VALUES ('2024-09-25', 20000);
 INSERT INTO fund_transaction (date, amount) VALUES ('2024-10-25', 20000);
 
--- Expense categories
-INSERT INTO expense_category (name) VALUES ('食費');
-INSERT INTO expense_category (name) VALUES ('交通費');
-INSERT INTO expense_category (name) VALUES ('家賃');
-INSERT INTO expense_category (name) VALUES ('娯楽');
-
--- Payment methods
-INSERT INTO payment_method (name) VALUES ('現金');
-INSERT INTO payment_method (name) VALUES ('クレジットカード');
-INSERT INTO payment_method (name) VALUES ('デビットカード');
-INSERT INTO payment_method (name) VALUES ('電子マネー');
-
 -- Expense data from 2024-01 to 2024-11
 INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-01-05', 1500, 1, 1, 'ランチ代');
 INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-01-10', 5000, 2, 2, '電車定期代');
@@ -213,12 +122,6 @@ INSERT INTO expense (date, amount, expense_category_id, payment_method_id, descr
 INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-11-10', 6200, 2, 2, 'タクシー代');
 INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-11-15', 80000, 3, 3, '家賃支払い');
 INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES ('2024-11-20', 2900, 4, 4, '演劇チケット');
-
-
-INSERT INTO income_category (name) VALUES ('給与');
-INSERT INTO income_category (name) VALUES ('副業');
-INSERT INTO income_category (name) VALUES ('投資収益');
-INSERT INTO income_category (name) VALUES ('ギフト');
 
 INSERT INTO income (date, amount, income_category_id, description) VALUES ('2024-01-15', 300000, 1, '1月の給与');
 INSERT INTO income (date, amount, income_category_id, description) VALUES ('2024-01-20', 50000, 2, '1月の副業収入');
