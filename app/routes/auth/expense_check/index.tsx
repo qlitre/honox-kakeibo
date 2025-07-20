@@ -1,5 +1,10 @@
 import { createRoute } from "honox/factory";
-import { checkMonthlyExpenses, type ExpenseCheckResult } from "@/libs/dbService";
+import { checkMonthlyExpenses, type ExpenseCheckResult, fetchSimpleList } from "@/libs/dbService";
+import type { ExpenseCategory, PaymentMethod } from "@/@types/dbTypes";
+import { ExpenseCreateModal } from "@/islands/expense/ExpenseCreateModal";
+import { getCookie } from "hono/cookie";
+import { successAlertCookieKey } from "@/settings/kakeiboSettings";
+import { Alert } from "@/islands/share/Alert";
 
 export default createRoute(async (c) => {
   const db = c.env.DB;
@@ -14,10 +19,28 @@ export default createRoute(async (c) => {
   const month = c.req.query("month") || currentMonth;
 
   try {
+    // 定期支払いチェック結果を取得
     const checkResults = await checkMonthlyExpenses({ db, year, month });
+    
+    // 支出カテゴリと支払い方法を取得（モーダル用）
+    const categories = await fetchSimpleList<ExpenseCategory>({
+      db,
+      table: "expense_category",
+      orders: "name",
+    });
+    
+    const paymentMethods = await fetchSimpleList<PaymentMethod>({
+      db,
+      table: "payment_method",
+      orders: "name",
+    });
+    
+    // 成功メッセージを取得
+    const successMessage = getCookie(c, successAlertCookieKey);
 
     return c.render(
       <div className="container mx-auto px-4 py-8">
+        {successMessage && <Alert message={successMessage} type="success" />}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">定期支払いチェック</h1>
           <a
@@ -130,7 +153,25 @@ export default createRoute(async (c) => {
                     }`}
                   >
                     {result.isRegistered ? "登録済み" : "未登録"}
-                  </span>                
+                  </span>
+                  
+                  {!result.isRegistered && (
+                    <ExpenseCreateModal
+                      buttonType="primary"
+                      buttonTitle="追加"
+                      data={{
+                        date: `${year}-${month.padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`,
+                        amount: "",
+                        expense_category_id: result.template.expense_category_id.toString(),
+                        payment_method_id: "",
+                        description: result.template.description_pattern,
+                      }}
+                      title="支出追加"
+                      actionUrl="/auth/expense_check/create"
+                      categories={categories}
+                      payment_methods={paymentMethods}
+                    />
+                  )}
                 </div>
               </div>
             ))}
