@@ -75,6 +75,17 @@ export type ExpenseWithDetails = Expense & {
   payment_method_name: string;
 };
 
+export type ExpenseCheckTemplate = KakeiboBaseField & {
+  name: string;
+  expense_category_id: number;
+  description_pattern: string;
+  is_active: number; // sqliteのbool型は内部的に0か1となる
+};
+
+export type ExpenseCheckTemplateWithDetails = ExpenseCheckTemplate & {
+  category_name: string;
+};
+
 // 各サマリーデータの型定義
 export type SummaryItem = {
   year_month: string;
@@ -98,3 +109,5 @@ export type IncomeCategoryResponse = KakeiboListResponse<IncomeCategory>;
 export type IncomeWithCategoryResponse =
   KakeiboListResponse<IncomeWithCategory>;
 export type FundTransationResponse = KakeiboListResponse<FundTransation>;
+export type ExpenseCheckTemplateResponse = KakeiboListResponse<ExpenseCheckTemplate>;
+export type ExpenseCheckTemplateWithDetailsResponse = KakeiboListResponse<ExpenseCheckTemplateWithDetails>;

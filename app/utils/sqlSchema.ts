@@ -137,4 +137,25 @@ export const schema: Schema = {
     requiredFields: ["name"],
     optionalFields: [],
   },
+  expense_check_template: {
+    fields: [
+      "id",
+      "name",
+      "expense_category_id",
+      "description_pattern",
+      "is_active",
+      "created_at",
+      "updated_at",
+    ],
+    joinFields: ["expense_category.name AS category_name"],
+    tableName: "expense_check_template",
+    joins: [
+      {
+        table: "expense_category",
+        condition: "expense_check_template.expense_category_id = expense_category.id",
+      },
+    ],
+    requiredFields: ["name", "expense_category_id", "description_pattern"],
+    optionalFields: ["is_active"],
+  },
 };

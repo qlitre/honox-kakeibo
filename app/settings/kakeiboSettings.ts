@@ -45,6 +45,8 @@ export const kakeiboMenu = () => {
       { name: "支出リスト", href: "/auth/expense" },
       { name: "支出カテゴリリスト", href: "/auth/expense_category" },
       { name: "支払い方法リスト", href: "/auth/payment_method" },
+      { name: "定期支払いチェック", href: "/auth/expense_check" },
+      { name: "チェックテンプレート", href: "/auth/expense_check_template" },
     ],
     収入管理: [
       { name: "収入リスト", href: "/auth/income" },
