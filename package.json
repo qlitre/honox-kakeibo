@@ -24,7 +24,7 @@
     "typescript": "^5.5.4"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240529.0",
+    "@cloudflare/workers-types": "^4.20250923.0",
     "@hono/vite-build": "^1.0.0",
     "@hono/vite-dev-server": "^0.15.1",
     "@types/react": "^18.3.12",
