@@ -35,8 +35,5 @@
     "tailwindcss": "^3.4.14",
     "vite": "^7.1.7",
     "wrangler": "^3.57.2"
-  },
-  "resolutions": {
-    "rollup": "4.24.0"
   }
 }
