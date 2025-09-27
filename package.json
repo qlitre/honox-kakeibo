@@ -6,7 +6,10 @@
     "build": "vite build --mode client && vite build",
     "preview": "wrangler pages dev",
     "format": "npx prettier --write .",
-    "deploy": "yarn build&&wrangler deploy"
+    "deploy": "yarn build&&wrangler deploy",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
   },
   "private": true,
   "dependencies": {
@@ -29,11 +32,14 @@
     "@hono/vite-dev-server": "^0.15.1",
     "@types/react": "^19.1.14",
     "@types/react-dom": "^18.3.1",
+    "@vitest/ui": "^3.2.4",
     "autoprefixer": "^10.4.20",
+    "jsdom": "^27.0.0",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "tailwindcss": "^3.4.14",
     "vite": "^7.1.7",
+    "vitest": "^3.2.4",
     "wrangler": "^3.57.2"
   }
 }
