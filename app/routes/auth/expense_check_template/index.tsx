@@ -81,6 +81,6 @@ export default createRoute(async (c) => {
         </div>
       )}
     </div>,
-    { title: "定期支払いチェックテンプレート" }
+    { title: "定期支払いチェックテンプレート" },
   );
 });

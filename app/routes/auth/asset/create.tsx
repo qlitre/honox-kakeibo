@@ -41,13 +41,13 @@ export const POST = createRoute(
       date,
       assetCategoryId: parseInt(asset_category_id, 10),
     });
-    
+
     if (hasDuplication) {
       setCookie(
         c,
         dangerAlertCookieKey,
         "資産追加に失敗しました。同月に同カテゴリの資産が登録されています。",
-        { maxAge: alertCookieMaxage }
+        { maxAge: alertCookieMaxage },
       );
       return c.redirect("/auth/asset", 303);
     }
@@ -83,5 +83,5 @@ ${newItem.date}
       console.error(`${endPoint} create error:`, err);
       return c.json({ error: `Failed to add ${endPoint}` }, 500);
     }
-  }
+  },
 );

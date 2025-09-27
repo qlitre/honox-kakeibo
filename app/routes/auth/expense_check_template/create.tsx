@@ -182,7 +182,7 @@ export const POST = createRoute(
             error: result.error.flatten().fieldErrors,
           }}
           categories={[]}
-        />
+        />,
       );
     }
   }),
@@ -210,8 +210,8 @@ export const POST = createRoute(
         <div className="container mx-auto px-4 py-8">
           <div className="text-red-600">作成に失敗しました</div>
         </div>,
-        { title: "エラー" }
+        { title: "エラー" },
       );
     }
-  }
+  },
 );

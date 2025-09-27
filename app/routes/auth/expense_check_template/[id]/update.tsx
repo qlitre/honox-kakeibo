@@ -24,13 +24,13 @@ type FormData = {
   is_active?: string;
 };
 
-const UpdateForm = ({ 
-  data, 
-  categories, 
-  actionUrl, 
-  templateId 
-}: { 
-  data?: FormData; 
+const UpdateForm = ({
+  data,
+  categories,
+  actionUrl,
+  templateId,
+}: {
+  data?: FormData;
   categories: ExpenseCategory[];
   actionUrl: string;
   templateId: string;
@@ -38,11 +38,16 @@ const UpdateForm = ({
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-md mx-auto">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">チェックテンプレート編集</h1>
-        
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+          チェックテンプレート編集
+        </h1>
+
         <form action={actionUrl} method="POST" className="space-y-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               名前
             </label>
             <input
@@ -59,7 +64,10 @@ const UpdateForm = ({
           </div>
 
           <div>
-            <label htmlFor="expense_category_id" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="expense_category_id"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               カテゴリ
             </label>
             <select
@@ -76,12 +84,17 @@ const UpdateForm = ({
               ))}
             </select>
             {data?.error?.expense_category_id && (
-              <p className="text-red-500 text-sm mt-1">{data.error.expense_category_id[0]}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {data.error.expense_category_id[0]}
+              </p>
             )}
           </div>
 
           <div>
-            <label htmlFor="description_pattern" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="description_pattern"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               検索パターン
             </label>
             <input
@@ -93,7 +106,9 @@ const UpdateForm = ({
               placeholder="家賃、電気など（部分一致）"
             />
             {data?.error?.description_pattern && (
-              <p className="text-red-500 text-sm mt-1">{data.error.description_pattern[0]}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {data.error.description_pattern[0]}
+              </p>
             )}
             <p className="text-sm text-gray-500 mt-1">
               支出の詳細欄でこのパターンを含むかチェックします
@@ -109,7 +124,10 @@ const UpdateForm = ({
               defaultChecked={data?.is_active === "1"}
               className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
             />
-            <label htmlFor="is_active" className="ml-2 block text-sm text-gray-900">
+            <label
+              htmlFor="is_active"
+              className="ml-2 block text-sm text-gray-900"
+            >
               有効
             </label>
           </div>
@@ -162,7 +180,7 @@ export default createRoute(async (c) => {
   });
 
   return c.render(
-    <UpdateForm 
+    <UpdateForm
       data={{
         name: detail.name,
         expense_category_id: String(detail.expense_category_id),
@@ -173,7 +191,7 @@ export default createRoute(async (c) => {
       actionUrl={`/auth/expense_check_template/${id}/update`}
       templateId={id}
     />,
-    { title: title }
+    { title: title },
   );
 });
 
@@ -182,8 +200,9 @@ export const POST = createRoute(
     if (!result.success) {
       const id = c.req.param("id");
       const db = c.env.DB;
-      const { name, expense_category_id, description_pattern, is_active } = result.data;
-      
+      const { name, expense_category_id, description_pattern, is_active } =
+        result.data;
+
       // カテゴリ一覧を再取得（エラー時に必要）
       const categories = await fetchSimpleList<ExpenseCategory>({
         db,
@@ -192,26 +211,27 @@ export const POST = createRoute(
       });
 
       return c.render(
-        <UpdateForm 
-          data={{ 
-            name, 
-            expense_category_id, 
-            description_pattern, 
+        <UpdateForm
+          data={{
+            name,
+            expense_category_id,
+            description_pattern,
             is_active,
-            error: result.error.flatten().fieldErrors 
-          }} 
+            error: result.error.flatten().fieldErrors,
+          }}
           categories={categories.contents}
           actionUrl={`/auth/expense_check_template/${id}/update`}
           templateId={id}
         />,
-        { title: title }
+        { title: title },
       );
     }
   }),
   async (c) => {
     const id = c.req.param("id");
-    const { name, expense_category_id, description_pattern, is_active } = c.req.valid("form");
-    
+    const { name, expense_category_id, description_pattern, is_active } =
+      c.req.valid("form");
+
     const data = {
       name,
       expense_category_id: parseInt(expense_category_id),
@@ -238,7 +258,7 @@ export const POST = createRoute(
         <div className="container mx-auto px-4 py-8">
           <div className="text-red-600">更新に失敗しました</div>
         </div>,
-        { title: "エラー" }
+        { title: "エラー" },
       );
     }
   },

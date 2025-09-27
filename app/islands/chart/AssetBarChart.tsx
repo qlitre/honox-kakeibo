@@ -76,7 +76,7 @@ export const AssetBarChart: FC<Props> = (props) => {
     maintainAspectRatio: false,
     responsive: true,
     interaction: {
-      mode: 'index',
+      mode: "index",
       intersect: false,
     },
     plugins: {
@@ -91,7 +91,7 @@ export const AssetBarChart: FC<Props> = (props) => {
         },
       },
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
         titleFont: {
           size: 12,
         },
@@ -101,8 +101,8 @@ export const AssetBarChart: FC<Props> = (props) => {
         padding: 8,
         cornerRadius: 6,
         callbacks: {
-          label: function(context) {
-            const label = context.dataset.label || '';
+          label: function (context) {
+            const label = context.dataset.label || "";
             const value = Number(context.parsed.y).toLocaleString();
             return `${label}: ¥${value}`;
           },
@@ -126,14 +126,14 @@ export const AssetBarChart: FC<Props> = (props) => {
       y: {
         stacked: true, // y軸のスタックを有効にする
         grid: {
-          color: 'rgba(0, 0, 0, 0.1)',
+          color: "rgba(0, 0, 0, 0.1)",
         },
         ticks: {
           font: {
             size: 10,
           },
-          callback: function(value) {
-            return '¥' + Number(value).toLocaleString();
+          callback: function (value) {
+            return "¥" + Number(value).toLocaleString();
           },
         },
       },

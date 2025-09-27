@@ -43,8 +43,11 @@ export const POST = createRoute(
         redirectYear = now.getFullYear().toString();
         redirectMonth = (now.getMonth() + 1).toString();
       }
-      
-      return c.redirect(`/auth/expense_check?year=${redirectYear}&month=${redirectMonth}`, 303);
+
+      return c.redirect(
+        `/auth/expense_check?year=${redirectYear}&month=${redirectMonth}`,
+        303,
+      );
     }
   }),
   async (c) => {
@@ -91,11 +94,14 @@ ${newItem.date}
       const dateObj = new Date(data.date);
       const redirectYear = dateObj.getFullYear().toString();
       const redirectMonth = (dateObj.getMonth() + 1).toString();
-      
-      return c.redirect(`/auth/expense_check?year=${redirectYear}&month=${redirectMonth}`, 303);
+
+      return c.redirect(
+        `/auth/expense_check?year=${redirectYear}&month=${redirectMonth}`,
+        303,
+      );
     } catch (err) {
       console.error(`${endPoint} create error:`, err);
-      
+
       // エラー時もdateから年月を取得してリダイレクト（フォールバック付き）
       let redirectYear, redirectMonth;
       try {
@@ -108,8 +114,11 @@ ${newItem.date}
         redirectYear = now.getFullYear().toString();
         redirectMonth = (now.getMonth() + 1).toString();
       }
-      
-      return c.redirect(`/auth/expense_check?year=${redirectYear}&month=${redirectMonth}&error=create_failed`, 303);
+
+      return c.redirect(
+        `/auth/expense_check?year=${redirectYear}&month=${redirectMonth}&error=create_failed`,
+        303,
+      );
     }
   },
 );

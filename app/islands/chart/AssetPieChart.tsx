@@ -33,7 +33,7 @@ export const AssetPieChart: FC<Props> = (props) => {
         },
       },
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
         titleFont: {
           size: 12,
         },
@@ -43,8 +43,8 @@ export const AssetPieChart: FC<Props> = (props) => {
         padding: 8,
         cornerRadius: 6,
         callbacks: {
-          label: function(context) {
-            const label = context.label || '';
+          label: function (context) {
+            const label = context.label || "";
             const value = Number(context.parsed).toLocaleString();
             return `${label}: ¥${value}`;
           },
@@ -80,7 +80,7 @@ export const AssetPieChart: FC<Props> = (props) => {
   };
 
   return (
-    <div className="w-full" style={{ height: '280px' }}>
+    <div className="w-full" style={{ height: "280px" }}>
       <Pie data={data} options={options} />
     </div>
   );

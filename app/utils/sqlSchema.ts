@@ -152,7 +152,8 @@ export const schema: Schema = {
     joins: [
       {
         table: "expense_category",
-        condition: "expense_check_template.expense_category_id = expense_category.id",
+        condition:
+          "expense_check_template.expense_category_id = expense_category.id",
       },
     ],
     requiredFields: ["name", "expense_category_id", "description_pattern"],

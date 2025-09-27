@@ -35,20 +35,20 @@ ChartJS.register(
   BarController,
 );
 
-type ViewMode = 'both' | 'income' | 'expense';
+type ViewMode = "both" | "income" | "expense";
 
 export const BalanceTransitionChart: FC<Props> = ({
   labels,
   incomeAmounts,
   expenseAmounts,
 }) => {
-  const [viewMode, setViewMode] = useState<ViewMode>('both');
+  const [viewMode, setViewMode] = useState<ViewMode>("both");
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const options: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: false,
     interaction: {
-      mode: 'index',
+      mode: "index",
       intersect: false,
     },
     onClick: (event, elements) => {
@@ -81,7 +81,7 @@ export const BalanceTransitionChart: FC<Props> = ({
         },
       },
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
         titleFont: {
           size: 14,
         },
@@ -109,14 +109,14 @@ export const BalanceTransitionChart: FC<Props> = ({
       y: {
         beginAtZero: true,
         grid: {
-          color: 'rgba(0, 0, 0, 0.1)',
+          color: "rgba(0, 0, 0, 0.1)",
         },
         ticks: {
           font: {
             size: 10,
           },
-          callback: function(value) {
-            return '¥' + Number(value).toLocaleString();
+          callback: function (value) {
+            return "¥" + Number(value).toLocaleString();
           },
         },
       },
@@ -133,8 +133,8 @@ export const BalanceTransitionChart: FC<Props> = ({
   };
 
   const datasets = [];
-  
-  if (viewMode === 'both' || viewMode === 'income') {
+
+  if (viewMode === "both" || viewMode === "income") {
     datasets.push({
       type: "line" as const,
       label: "収入",
@@ -144,8 +144,8 @@ export const BalanceTransitionChart: FC<Props> = ({
       tension: 0.4,
     });
   }
-  
-  if (viewMode === 'both' || viewMode === 'expense') {
+
+  if (viewMode === "both" || viewMode === "expense") {
     datasets.push({
       type: "line" as const,
       label: "支出",
@@ -179,52 +179,60 @@ export const BalanceTransitionChart: FC<Props> = ({
     <div className="w-full">
       <div className="mb-4 flex flex-wrap gap-2 justify-center sm:justify-start">
         <button
-          onClick={() => setViewMode('both')}
+          onClick={() => setViewMode("both")}
           className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-            viewMode === 'both'
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            viewMode === "both"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
         >
           両方
         </button>
         <button
-          onClick={() => setViewMode('income')}
+          onClick={() => setViewMode("income")}
           className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-            viewMode === 'income'
-              ? 'bg-green-500 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            viewMode === "income"
+              ? "bg-green-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
         >
           収入のみ
         </button>
         <button
-          onClick={() => setViewMode('expense')}
+          onClick={() => setViewMode("expense")}
           className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-            viewMode === 'expense'
-              ? 'bg-red-500 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            viewMode === "expense"
+              ? "bg-red-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
         >
           支出のみ
         </button>
       </div>
-      
+
       {selectedData && (
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <h4 className="font-medium text-blue-900 mb-2">{selectedData.month} の詳細</h4>
+          <h4 className="font-medium text-blue-900 mb-2">
+            {selectedData.month} の詳細
+          </h4>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm sm:gap-4">
             <div className="flex justify-between">
               <span className="text-gray-600">収入:</span>
-              <span className="font-medium text-green-600">¥{selectedData.income.toLocaleString()}</span>
+              <span className="font-medium text-green-600">
+                ¥{selectedData.income.toLocaleString()}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">支出:</span>
-              <span className="font-medium text-red-600">¥{selectedData.expense.toLocaleString()}</span>
+              <span className="font-medium text-red-600">
+                ¥{selectedData.expense.toLocaleString()}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">収支:</span>
-              <span className={`font-medium ${selectedData.balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <span
+                className={`font-medium ${selectedData.balance >= 0 ? "text-green-600" : "text-red-600"}`}
+              >
                 ¥{selectedData.balance.toLocaleString()}
               </span>
             </div>
@@ -232,11 +240,14 @@ export const BalanceTransitionChart: FC<Props> = ({
           <p className="text-xs text-gray-500 mt-2">クリックで詳細を非表示</p>
         </div>
       )}
-      
-      <div style={{ height: '300px' }} className="cursor-pointer relative overflow-hidden">
+
+      <div
+        style={{ height: "300px" }}
+        className="cursor-pointer relative overflow-hidden"
+      >
         <Chart type="line" data={data} options={options} />
       </div>
-      
+
       {!selectedData && (
         <p className="text-center text-sm text-gray-500 mt-2">
           グラフの点をクリックすると詳細を表示します

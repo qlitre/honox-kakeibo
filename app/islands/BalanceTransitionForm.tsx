@@ -17,10 +17,17 @@ export const BalanceTransitionForm: FC<Props> = ({
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
       <h3 className="text-lg font-medium text-gray-900 mb-3">フィルター設定</h3>
-      <form action="/auth/dashboard/balance_transition" method="GET" className="space-y-4">
+      <form
+        action="/auth/dashboard/balance_transition"
+        method="GET"
+        className="space-y-4"
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="income_category_id" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="income_category_id"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               収入カテゴリ
             </label>
             <select
@@ -39,7 +46,10 @@ export const BalanceTransitionForm: FC<Props> = ({
             </select>
           </div>
           <div>
-            <label htmlFor="expense_category_id" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="expense_category_id"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               支出カテゴリ
             </label>
             <select

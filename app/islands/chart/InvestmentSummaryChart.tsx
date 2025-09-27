@@ -43,7 +43,7 @@ export const InvestmentSummaryChart: FC<Props> = ({
     responsive: true,
     maintainAspectRatio: false,
     interaction: {
-      mode: 'index',
+      mode: "index",
       intersect: false,
     },
     plugins: {
@@ -69,7 +69,7 @@ export const InvestmentSummaryChart: FC<Props> = ({
         },
       },
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
         titleFont: {
           size: 14,
         },
@@ -79,8 +79,8 @@ export const InvestmentSummaryChart: FC<Props> = ({
         padding: 10,
         cornerRadius: 6,
         callbacks: {
-          label: function(context) {
-            const label = context.dataset.label || '';
+          label: function (context) {
+            const label = context.dataset.label || "";
             const value = Number(context.parsed.y).toLocaleString();
             return `${label}: ¥${value}`;
           },
@@ -104,14 +104,14 @@ export const InvestmentSummaryChart: FC<Props> = ({
       y: {
         beginAtZero: true,
         grid: {
-          color: 'rgba(0, 0, 0, 0.1)',
+          color: "rgba(0, 0, 0, 0.1)",
         },
         ticks: {
           font: {
             size: 10,
           },
-          callback: function(value) {
-            return '¥' + Number(value).toLocaleString();
+          callback: function (value) {
+            return "¥" + Number(value).toLocaleString();
           },
         },
       },
@@ -153,7 +153,7 @@ export const InvestmentSummaryChart: FC<Props> = ({
   };
 
   return (
-    <div className="w-full" style={{ height: '350px' }}>
+    <div className="w-full" style={{ height: "350px" }}>
       <Chart type="bar" data={data} options={options} />
     </div>
   );

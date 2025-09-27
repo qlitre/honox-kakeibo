@@ -244,8 +244,8 @@ export async function checkMonthlyExpenses(params: {
   month: string;
 }): Promise<ExpenseCheckResult[]> {
   const { db, year, month } = params;
-  
-  const targetDate = `${year}-${month.padStart(2, '0')}`;
+
+  const targetDate = `${year}-${month.padStart(2, "0")}`;
 
   // チェックテンプレート一覧を取得
   const templatesQuery = `
@@ -260,12 +260,12 @@ export async function checkMonthlyExpenses(params: {
     WHERE ect.is_active = 1
     ORDER BY ect.name
   `;
-  
+
   const { results: templates } = await db.prepare(templatesQuery).all();
 
   // 各テンプレートについて該当する支出があるかチェック
   const checkResults: ExpenseCheckResult[] = [];
-  
+
   for (const template of templates || []) {
     const expenseQuery = `
       SELECT 
@@ -280,20 +280,20 @@ export async function checkMonthlyExpenses(params: {
       ORDER BY e.date DESC
       LIMIT 1
     `;
-    
+
     const expenseResult = await db
       .prepare(expenseQuery)
       .bind(
         template.expense_category_id,
         `%${template.description_pattern}%`,
-        `${targetDate}%`
+        `${targetDate}%`,
       )
       .first();
 
     checkResults.push({
-      template: template as ExpenseCheckResult['template'],
-      expense: expenseResult as ExpenseCheckResult['expense'],
-      isRegistered: !!expenseResult
+      template: template as ExpenseCheckResult["template"],
+      expense: expenseResult as ExpenseCheckResult["expense"],
+      isRegistered: !!expenseResult,
     });
   }
 

@@ -109,5 +109,7 @@ export type IncomeCategoryResponse = KakeiboListResponse<IncomeCategory>;
 export type IncomeWithCategoryResponse =
   KakeiboListResponse<IncomeWithCategory>;
 export type FundTransationResponse = KakeiboListResponse<FundTransation>;
-export type ExpenseCheckTemplateResponse = KakeiboListResponse<ExpenseCheckTemplate>;
-export type ExpenseCheckTemplateWithDetailsResponse = KakeiboListResponse<ExpenseCheckTemplateWithDetails>;
+export type ExpenseCheckTemplateResponse =
+  KakeiboListResponse<ExpenseCheckTemplate>;
+export type ExpenseCheckTemplateWithDetailsResponse =
+  KakeiboListResponse<ExpenseCheckTemplateWithDetails>;
