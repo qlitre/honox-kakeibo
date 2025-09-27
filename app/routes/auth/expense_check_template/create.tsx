@@ -2,6 +2,7 @@ import { createRoute } from "honox/factory";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { createItem } from "@/libs/dbService";
+import { fetchSimpleList } from "@/libs/dbService";
 
 const schema = z.object({
   name: z.string().min(1, "名前は必須です"),
@@ -23,15 +24,30 @@ interface ExpenseCategory {
   name: string;
 }
 
-const CreateForm = ({ data, categories }: { data?: FormData; categories: ExpenseCategory[] }) => {
+const CreateForm = ({
+  data,
+  categories,
+}: {
+  data?: FormData;
+  categories: ExpenseCategory[];
+}) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-md mx-auto">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">チェックテンプレート新規追加</h1>
-        
-        <form action="/auth/expense_check_template/create" method="POST" className="space-y-6">
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+          チェックテンプレート新規追加
+        </h1>
+
+        <form
+          action="/auth/expense_check_template/create"
+          method="POST"
+          className="space-y-6"
+        >
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               名前
             </label>
             <input
@@ -48,7 +64,10 @@ const CreateForm = ({ data, categories }: { data?: FormData; categories: Expense
           </div>
 
           <div>
-            <label htmlFor="expense_category_id" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="expense_category_id"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               カテゴリ
             </label>
             <select
@@ -65,12 +84,17 @@ const CreateForm = ({ data, categories }: { data?: FormData; categories: Expense
               ))}
             </select>
             {data?.error?.expense_category_id && (
-              <p className="text-red-500 text-sm mt-1">{data.error.expense_category_id[0]}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {data.error.expense_category_id[0]}
+              </p>
             )}
           </div>
 
           <div>
-            <label htmlFor="description_pattern" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="description_pattern"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               検索パターン
             </label>
             <input
@@ -82,7 +106,9 @@ const CreateForm = ({ data, categories }: { data?: FormData; categories: Expense
               placeholder="家賃、電気など（部分一致）"
             />
             {data?.error?.description_pattern && (
-              <p className="text-red-500 text-sm mt-1">{data.error.description_pattern[0]}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {data.error.description_pattern[0]}
+              </p>
             )}
             <p className="text-sm text-gray-500 mt-1">
               支出の詳細欄でこのパターンを含むかチェックします
@@ -98,7 +124,10 @@ const CreateForm = ({ data, categories }: { data?: FormData; categories: Expense
               defaultChecked={data?.is_active === "1" || !data}
               className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
             />
-            <label htmlFor="is_active" className="ml-2 block text-sm text-gray-900">
+            <label
+              htmlFor="is_active"
+              className="ml-2 block text-sm text-gray-900"
+            >
               有効
             </label>
           </div>
@@ -125,38 +154,42 @@ const CreateForm = ({ data, categories }: { data?: FormData; categories: Expense
 
 export default createRoute(async (c) => {
   const db = c.env.DB;
-  
-  // 支出カテゴリ一覧を取得
-  const { results } = await db.prepare("SELECT id, name FROM expense_category ORDER BY name").all();
-  const categories = results as ExpenseCategory[];
 
-  return c.render(
-    <CreateForm categories={categories} />,
-    { title: "チェックテンプレート新規追加" }
-  );
+  // 支出カテゴリ一覧を取得
+  const categories = await fetchSimpleList<ExpenseCategory>({
+    db,
+    table: "expense_category",
+    orders: "id",
+  });
+
+  return c.render(<CreateForm categories={categories.contents} />, {
+    title: "チェックテンプレート新規追加",
+  });
 });
 
 export const POST = createRoute(
   zValidator("form", schema, (result, c) => {
     if (!result.success) {
-      const { name, expense_category_id, description_pattern, is_active } = result.data;
+      const { name, expense_category_id, description_pattern, is_active } =
+        result.data;
       return c.render(
-        <CreateForm 
-          data={{ 
-            name, 
-            expense_category_id, 
-            description_pattern, 
+        <CreateForm
+          data={{
+            name,
+            expense_category_id,
+            description_pattern,
             is_active,
-            error: result.error.flatten().fieldErrors 
-          }} 
-          categories={[]} 
+            error: result.error.flatten().fieldErrors,
+          }}
+          categories={[]}
         />
       );
     }
   }),
   async (c) => {
     const db = c.env.DB;
-    const { name, expense_category_id, description_pattern, is_active } = c.req.valid("form");
+    const { name, expense_category_id, description_pattern, is_active } =
+      c.req.valid("form");
 
     try {
       await createItem({
