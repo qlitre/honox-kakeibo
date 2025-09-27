@@ -26,7 +26,7 @@ export default createRoute(async (c) => {
     const categories = await fetchSimpleList<ExpenseCategory>({
       db,
       table: "expense_category",
-      orders: "name",
+      orders: "id",
     });
     
     const paymentMethods = await fetchSimpleList<PaymentMethod>({
