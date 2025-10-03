@@ -23,7 +23,7 @@
     "honox": "^0.1.43",
     "react": "^19.2.0",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "^19.1.1",
+    "react-dom": "^19.2.0",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
@@ -31,7 +31,7 @@
     "@hono/vite-build": "^1.0.0",
     "@hono/vite-dev-server": "^0.21.1",
     "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.1.11",
+    "@types/react-dom": "^19.2.0",
     "@vitest/ui": "^3.2.4",
     "autoprefixer": "^10.4.20",
     "jsdom": "^27.0.0",
