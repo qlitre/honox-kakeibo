@@ -2101,10 +2101,10 @@ hono@^4.8.5:
   resolved "https://registry.yarnpkg.com/hono/-/hono-4.9.9.tgz#a32ee02a5a9c4be8e7f4d48e4e181e738a1d65d7"
   integrity sha512-Hxw4wT6zjJGZJdkJzAx9PyBdf7ZpxaTSA0NfxqjLghwMrLBX8p33hJBzoETRakF3UJu6OdNQBZAlNSkGqKFukw==
 
-honox@^0.1.43:
-  version "0.1.47"
-  resolved "https://registry.yarnpkg.com/honox/-/honox-0.1.47.tgz#abd9d25c3d21fb7e1e0a990095c618aad3fcf529"
-  integrity sha512-z/bY7wmS/eTIFLHFJCvZtw/y1Y6vzDNx2MuqRsyKQ9f72Zlyxyfma0SYnyNPIrwXkG1R7PHWNRJ1PQEhVQQJQg==
+honox@^0.1.49:
+  version "0.1.49"
+  resolved "https://registry.yarnpkg.com/honox/-/honox-0.1.49.tgz#d52bec9482e8dafbadafc9fc0f9ef0262367fd34"
+  integrity sha512-oEM+Xw5r4/7Htz1gXA+0XO5aJ65xrYn+V+IzNOsKU7VCJEDXV3cmnFc/EKplXXJiMXuqz6wCH7rr/LPHGwg1rA==
   dependencies:
     "@babel/generator" "7.25.6"
     "@babel/parser" "7.25.6"
