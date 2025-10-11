@@ -18,7 +18,7 @@
     "@hono/zod-validator": "^0.7.3",
     "@tailwindcss/forms": "^0.5.9",
     "chart.js": "^4.5.0",
-    "firebase": "^12.3.0",
+    "firebase": "^12.4.0",
     "hono": "^4.8.5",
     "honox": "^0.1.49",
     "react": "^19.2.0",
