@@ -911,10 +911,10 @@
     "@hono/node-server" "^1.14.2"
     minimatch "^9.0.3"
 
-"@hono/vite-dev-server@^0.21.1":
-  version "0.21.1"
-  resolved "https://registry.yarnpkg.com/@hono/vite-dev-server/-/vite-dev-server-0.21.1.tgz#a276e729a0a50c1cc97caf53d0662daae981d74f"
-  integrity sha512-HRqwsgbbTJ4a0Jiq7aB5aWb12upHtXGSU6nh+LuokTaB6VzFfiIkUBRUdAtRbGV7a3EWehoGhAbVZZjfKgR3uw==
+"@hono/vite-dev-server@^0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@hono/vite-dev-server/-/vite-dev-server-0.23.0.tgz#e4378c99e5e316025e490e6f6b55148e4d451fc9"
+  integrity sha512-tHV86xToed9Up0j/dubQW2PDP4aYNFDSfQrjcV6Ra7bqCGrxhtg/zZBmbgSco3aTxKOEPzDXKK+6seAAfsbIXw==
   dependencies:
     "@hono/node-server" "^1.14.2"
     minimatch "^9.0.3"
