@@ -20,7 +20,7 @@
     "chart.js": "^4.5.1",
     "firebase": "^12.4.0",
     "hono": "^4.10.4",
-    "honox": "^0.1.49",
+    "honox": "^0.1.51",
     "react": "^19.2.0",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.0",
