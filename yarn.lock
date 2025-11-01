@@ -2072,10 +2072,10 @@ gonzales-pe@^4.3.0:
   dependencies:
     minimist "^1.2.5"
 
-hono@^4.10.1:
-  version "4.10.1"
-  resolved "https://registry.yarnpkg.com/hono/-/hono-4.10.1.tgz#94880edaa5f0d3e555390876a3e47bdc78d279e3"
-  integrity sha512-rpGNOfacO4WEPClfkEt1yfl8cbu10uB1lNpiI33AKoiAHwOS8lV748JiLx4b5ozO/u4qLjIvfpFsPXdY5Qjkmg==
+hono@^4.10.4:
+  version "4.10.4"
+  resolved "https://registry.yarnpkg.com/hono/-/hono-4.10.4.tgz#226f19a7be0f524c3acb736f5c9da5bd081954ca"
+  integrity sha512-YG/fo7zlU3KwrBL5vDpWKisLYiM+nVstBQqfr7gCPbSYURnNEP9BDxEMz8KfsDR9JX0lJWDRNc6nXX31v7ZEyg==
 
 honox@^0.1.49:
   version "0.1.49"
