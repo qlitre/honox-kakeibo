@@ -31,7 +31,7 @@
     "@hono/vite-build": "^1.0.0",
     "@hono/vite-dev-server": "^0.23.0",
     "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
+    "@types/react-dom": "^19.2.3",
     "@vitest/ui": "^4.0.8",
     "autoprefixer": "^10.4.20",
     "jsdom": "^27.1.0",
