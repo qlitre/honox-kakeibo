@@ -19,7 +19,7 @@
     "@tailwindcss/forms": "^0.5.9",
     "chart.js": "^4.5.1",
     "firebase": "^12.5.0",
-    "hono": "^4.10.4",
+    "hono": "^4.10.6",
     "honox": "^0.1.52",
     "react": "^19.2.0",
     "react-chartjs-2": "^5.3.1",
