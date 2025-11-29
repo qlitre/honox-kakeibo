@@ -903,10 +903,10 @@
   resolved "https://registry.yarnpkg.com/@hono/react-renderer/-/react-renderer-1.0.1.tgz#c7fa54dbfd0e910800f7f82bc8201dce72a8d4d0"
   integrity sha512-vjQ/70hVrbgsi2O44N7w5sO0v51lRcuXau/4caVzw0A1hje+U2zAnuhiBC3JhX56gGfhGT4kO5B0di4SROx0Lg==
 
-"@hono/vite-build@^1.0.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@hono/vite-build/-/vite-build-1.7.0.tgz#eddcd978ab80d9eaf4d3cca60eea0703d08ddf05"
-  integrity sha512-L73WBed5teC7DHTzXYkho83POYYluD2rTkbT76FJuqpfXPgTW/PsbIa8O0YcCETE3VUoh584fe6vuLAM5ctjww==
+"@hono/vite-build@^1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@hono/vite-build/-/vite-build-1.8.0.tgz#47626a85894fc5f0d993828416892de3309e6af9"
+  integrity sha512-T/w0Tuv8VV6FgjNnw2aW6LXtRfc5tOhaO54tKCRv4Zqc1tP3w6JyqTFtzJFFDvmY0xTxHS+Pj+ZPLhzFsdiFzQ==
 
 "@hono/vite-dev-server@^0.23.0":
   version "0.23.0"

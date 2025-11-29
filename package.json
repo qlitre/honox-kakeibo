@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20251121.0",
-    "@hono/vite-build": "^1.0.0",
+    "@hono/vite-build": "^1.8.0",
     "@hono/vite-dev-server": "^0.23.0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.3",
