@@ -21,7 +21,7 @@
     "firebase": "^12.6.0",
     "hono": "^4.10.7",
     "honox": "^0.1.52",
-    "react": "^19.2.0",
+    "react": "^19.2.1",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.0",
     "typescript": "^5.9.3"
@@ -30,7 +30,7 @@
     "@cloudflare/workers-types": "^4.20251205.0",
     "@hono/vite-build": "^1.8.0",
     "@hono/vite-dev-server": "^0.23.0",
-    "@types/react": "^19.2.2",
+    "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitest/ui": "^4.0.14",
     "autoprefixer": "^10.4.22",
