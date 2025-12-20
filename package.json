@@ -14,7 +14,7 @@
   "private": true,
   "dependencies": {
     "@hono/zod-validator": "^0.7.5",
-    "@tailwindcss/forms": "^0.5.9",
+    "@tailwindcss/forms": "^0.5.11",
     "chart.js": "^4.5.1",
     "firebase": "^12.6.0",
     "hono": "^4.10.7",
