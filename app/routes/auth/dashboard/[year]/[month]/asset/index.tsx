@@ -2,8 +2,8 @@ import type { AssetWithCategory, AssetCategory } from "@/@types/dbTypes";
 import type { AssetTableItems } from "@/@types/common";
 import { createRoute } from "honox/factory";
 import { fetchListWithFilter, fetchSimpleList } from "@/libs/dbService";
-import { AssetPieChart } from "@/islands/chart/AssetPieChart";
-import { AssetBarChart } from "@/islands/chart/AssetBarChart";
+import { AssetPieChart } from "@/components/chart/AssetPieChart";
+import { AssetBarChart } from "@/components/chart/AssetBarChart";
 import {
   getPrevMonthYear,
   getPrevMonth,
@@ -20,8 +20,8 @@ import { AssetTable } from "@/components/AssetTable";
 
 export default createRoute(async (c) => {
   const db = c.env.DB;
-  const year = parseInt(c.req.param("year"));
-  const month = parseInt(c.req.param("month"));
+  const year = parseInt(c.req.param("year")!);
+  const month = parseInt(c.req.param("month")!);
   const ge = getBeginningOfMonth(year, month);
   const le = getEndOfMonth(year, month);
 

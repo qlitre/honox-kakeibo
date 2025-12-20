@@ -5,7 +5,7 @@ import type {
   ExpenseCategory,
 } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
-import { BalanceTransitionChart } from "@/islands/chart/BalanceTransitionChart";
+import { BalanceTransitionChart } from "@/components/chart/BalanceTransitionChart";
 import { Card } from "@/components/share/Card";
 import { BalanceTransitionForm } from "@/islands/BalanceTransitionForm";
 import { fetchSummary, fetchSimpleList } from "@/libs/dbService";

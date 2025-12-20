@@ -1,45 +1,15 @@
-import { FC } from "react";
-import {
-  Chart as ChartJS,
-  BarElement,
-  LineElement,
-  PointElement,
-  CategoryScale,
-  LinearScale,
-  Title,
-  Tooltip,
-  Legend,
-  LineController,
-  BarController,
-} from "chart.js";
-import { Chart } from "react-chartjs-2";
-import { ChartData, ChartOptions } from "chart.js";
-
 type Props = {
   labels: string[];
   holdingValues: number[];
   investmentAmounts: number[];
 };
 
-ChartJS.register(
-  BarElement,
-  LineElement,
-  PointElement,
-  CategoryScale,
-  LinearScale,
-  Title,
-  Tooltip,
-  Legend,
-  LineController,
-  BarController,
-);
-
-export const InvestmentSummaryChart: FC<Props> = ({
+export const InvestmentSummaryChart = ({
   labels,
   holdingValues,
   investmentAmounts,
-}) => {
-  const options: ChartOptions<"bar" | "line"> = {
+}: Props) => {
+  const options = {
     responsive: true,
     maintainAspectRatio: false,
     interaction: {
@@ -48,7 +18,7 @@ export const InvestmentSummaryChart: FC<Props> = ({
     },
     plugins: {
       legend: {
-        position: "top" as const,
+        position: "top",
         labels: {
           boxWidth: 12,
           padding: 15,
@@ -79,7 +49,7 @@ export const InvestmentSummaryChart: FC<Props> = ({
         padding: 10,
         cornerRadius: 6,
         callbacks: {
-          label: function (context) {
+          label: function (context: any) {
             const label = context.dataset.label || "";
             const value = Number(context.parsed.y).toLocaleString();
             return `${label}: ¥${value}`;
@@ -110,7 +80,7 @@ export const InvestmentSummaryChart: FC<Props> = ({
           font: {
             size: 10,
           },
-          callback: function (value) {
+          callback: function (value: any) {
             return "¥" + Number(value).toLocaleString();
           },
         },
@@ -130,11 +100,11 @@ export const InvestmentSummaryChart: FC<Props> = ({
     },
   };
 
-  const data: ChartData<"bar" | "line", number[], string> = {
+  const data = {
     labels,
     datasets: [
       {
-        type: "bar" as const,
+        type: "bar",
         label: "投資金額",
         data: investmentAmounts,
         backgroundColor: "rgba(75, 192, 192, 0.5)",
@@ -142,7 +112,7 @@ export const InvestmentSummaryChart: FC<Props> = ({
         borderWidth: 1,
       },
       {
-        type: "line" as const,
+        type: "line",
         label: "保有価額",
         data: holdingValues,
         borderColor: "rgba(255, 99, 132, 1)",
@@ -154,7 +124,12 @@ export const InvestmentSummaryChart: FC<Props> = ({
 
   return (
     <div className="w-full" style={{ height: "350px" }}>
-      <Chart type="bar" data={data} options={options} />
+      <canvas
+        className="chart-canvas"
+        data-chart-type="bar"
+        data-chart-data={JSON.stringify(data)}
+        data-chart-options={JSON.stringify(options)}
+      />
     </div>
   );
 };

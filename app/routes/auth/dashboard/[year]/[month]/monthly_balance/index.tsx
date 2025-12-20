@@ -14,7 +14,7 @@ import { colorSchema } from "@/settings/kakeiboSettings";
 import { Card } from "@/components/share/Card";
 import { CardWithHeading } from "@/components/share/CardWithHeading";
 import { Table } from "@/components/share/Table";
-import { ExpensePieChart } from "@/islands/chart/ExpensePieChart";
+import { ExpensePieChart } from "@/components/chart/ExpensePieChart";
 
 const getTotal = (items: SummaryItem[]) => {
   let ret = 0;
@@ -30,8 +30,8 @@ const getYearMonth = (year: number, month: number) => {
 
 export default createRoute(async (c) => {
   const db = c.env.DB;
-  const year = parseInt(c.req.param("year"));
-  const month = parseInt(c.req.param("month"));
+  const year = parseInt(c.req.param("year")!);
+  const month = parseInt(c.req.param("month")!);
   const prevMonth = getPrevMonth(month);
   const prevYear = getPrevMonthYear(year, month);
   const yearMonth = getYearMonth(year, month);

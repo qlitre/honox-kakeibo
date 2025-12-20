@@ -1,6 +1,6 @@
 import type { SummaryItem } from "@/@types/dbTypes";
 import { createRoute } from "honox/factory";
-import { InvestmentSummaryChart } from "@/islands/chart/InvestmentSummaryChart";
+import { InvestmentSummaryChart } from "@/components/chart/InvestmentSummaryChart";
 import { fetchSummary } from "@/libs/dbService";
 import {
   accumulate,
