@@ -1,4 +1,3 @@
-import "@hono/react-renderer";
 import {} from "hono";
 
 declare module "hono" {
@@ -16,10 +15,10 @@ declare module "hono" {
       SLACK_WEBHOOK_URL: string;
     };
   }
-}
-
-declare module "@hono/react-renderer" {
-  interface Props {
-    title?: string;
+  interface ContextRenderer {
+    (
+      content: string | Promise<string>,
+      props?: { title?: string },
+    ): Response | Promise<Response>;
   }
 }

@@ -1,25 +1,12 @@
-import type { FC } from "react";
-import type { AssetWithCategory } from "@/@types/dbTypes";
-import {
-  ArcElement,
-  Legend,
-  Tooltip,
-  Chart as chartJs,
-  ChartOptions,
-} from "chart.js";
-import { Pie } from "react-chartjs-2";
+import type { SummaryItem } from "@/@types/dbTypes";
 
 type Props = {
-  assets: AssetWithCategory[];
+  items: SummaryItem[];
   colorMap: Record<number, string>;
 };
 
-export const AssetPieChart: FC<Props> = (props) => {
-  // 必要なコンポーネントを登録
-  chartJs.register(ArcElement, Tooltip, Legend);
-
-  // グラフのオプションを定義し、型注釈を追加
-  const options: ChartOptions<"pie"> = {
+export const ExpensePieChart = (props: Props) => {
+  const options = {
     plugins: {
       legend: {
         display: true, // 凡例を表示
@@ -43,7 +30,7 @@ export const AssetPieChart: FC<Props> = (props) => {
         padding: 8,
         cornerRadius: 6,
         callbacks: {
-          label: function (context) {
+          label: function (context: any) {
             const label = context.label || "";
             const value = Number(context.parsed).toLocaleString();
             return `${label}: ¥${value}`;
@@ -57,21 +44,21 @@ export const AssetPieChart: FC<Props> = (props) => {
 
   const labels = [];
   const amounts = [];
-  const colors = [];
-  for (let i = 0; i < props.assets.length; i++) {
-    const elm = props.assets[i];
+  const colors: string[] = [];
+  for (let i = 0; i < props.items.length; i++) {
+    const elm = props.items[i];
     const categoryName = elm.category_name;
-    const amount = elm.amount;
+    const amount = elm.total_amount;
     labels.push(categoryName);
     amounts.push(amount);
-    colors.push(props.colorMap[elm.asset_category_id]);
+    colors.push(props.colorMap[elm.category_id]);
   }
 
   const data = {
     labels: labels,
     datasets: [
       {
-        label: "資産内訳",
+        label: "支出内訳",
         data: amounts,
         backgroundColor: colors,
         hoverOffset: 4,
@@ -81,7 +68,12 @@ export const AssetPieChart: FC<Props> = (props) => {
 
   return (
     <div className="w-full" style={{ height: "280px" }}>
-      <Pie data={data} options={options} />
+      <canvas
+        className="chart-canvas"
+        data-chart-type="pie"
+        data-chart-data={JSON.stringify(data)}
+        data-chart-options={JSON.stringify(options)}
+      />
     </div>
   );
 };

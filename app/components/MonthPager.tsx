@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import type { FC } from "hono/jsx";
 import type { BaseProps } from "@/@types/common";
 import {
   getPrevMonthYear,

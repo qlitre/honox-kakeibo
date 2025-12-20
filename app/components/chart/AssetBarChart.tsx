@@ -1,25 +1,4 @@
-import type { FC } from "react";
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Title,
-  Tooltip,
-  Legend,
-  ChartOptions,
-} from "chart.js";
 import type { AssetWithCategory, AssetCategory } from "@/@types/dbTypes";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-);
 
 type Props = {
   assets: AssetWithCategory[];
@@ -33,7 +12,7 @@ type Dataset = {
   backgroundColor?: string;
 };
 
-export const AssetBarChart: FC<Props> = (props) => {
+export const AssetBarChart = (props: Props) => {
   const set = new Set();
   const labels = [];
   const datasets: Dataset[] = [];
@@ -72,7 +51,7 @@ export const AssetBarChart: FC<Props> = (props) => {
   };
 
   // オプションの設定
-  const options: ChartOptions<"bar"> = {
+  const options = {
     maintainAspectRatio: false,
     responsive: true,
     interaction: {
@@ -101,7 +80,7 @@ export const AssetBarChart: FC<Props> = (props) => {
         padding: 8,
         cornerRadius: 6,
         callbacks: {
-          label: function (context) {
+          label: function (context: any) {
             const label = context.dataset.label || "";
             const value = Number(context.parsed.y).toLocaleString();
             return `${label}: ¥${value}`;
@@ -132,7 +111,7 @@ export const AssetBarChart: FC<Props> = (props) => {
           font: {
             size: 10,
           },
-          callback: function (value) {
+          callback: function (value: any) {
             return "¥" + Number(value).toLocaleString();
           },
         },
@@ -147,7 +126,12 @@ export const AssetBarChart: FC<Props> = (props) => {
 
   return (
     <div className="h-80 w-full">
-      <Bar data={data} options={options} />
+      <canvas
+        className="chart-canvas"
+        data-chart-type="bar"
+        data-chart-data={JSON.stringify(data)}
+        data-chart-options={JSON.stringify(options)}
+      />
     </div>
   );
 };

@@ -1,6 +1,5 @@
-import type { FC } from "react";
-import { useState, useEffect, useRef } from "react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import type { FC } from "hono/jsx";
+import { useState, useEffect, useRef } from "hono/jsx";
 
 type Item = {
   name: string;
@@ -20,7 +19,7 @@ export const FlyoutMenu: FC<Props> = ({ items, title }) => {
     setIsOpen(!isOpen);
   };
 
-  // Close the menu when clicking outside of it
+  // 外部クリックで閉じる処理
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -29,42 +28,48 @@ export const FlyoutMenu: FC<Props> = ({ items, title }) => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Cleanup event listener on component unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative flyout-menu-container" ref={menuRef}>
       <button
+        type="button"
+        className="flyout-menu-button inline-flex items-center gap-x-1 text-sm font-semibold text-gray-900 focus:outline-none"
         onClick={togglePopover}
-        className="inline-flex items-center gap-x-1 text-sm font-semibold text-gray-900"
       >
         <span>{title}</span>
-        <ChevronDownIcon aria-hidden="true" className="h-5 w-5" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          className={`h-5 w-5 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+        >
+          <path
+            fillRule="evenodd"
+            d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+            clipRule="evenodd"
+          />
+        </svg>
       </button>
 
       {isOpen && (
         <div
-          className="absolute left-1/2 z-10 mt-5 flex w-screen max-w-min -translate-x-1/2 px-4 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
-          style={{
-            transform: "translateX(-50%)",
-          }}
+          className="flyout-menu-panel absolute left-1/2 z-10 mt-5 flex w-screen max-w-min -translate-x-1/2 px-4"
+          style={{ transform: "translateX(-50%)" }}
         >
-          <div className="w-56 shrink rounded-xl bg-white p-4 text-sm/6 font-semibold text-gray-900 shadow-lg ring-1 ring-gray-900/5">
+          <div className="w-56 shrink rounded-xl bg-white p-4 text-sm/6 font-semibold text-gray-900 shadow-lg ring-1 ring-gray-900/5 border border-gray-100">
             {items.map((item) => (
               <div
                 key={item.name}
-                className="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50"
+                className="group relative flex gap-x-6 rounded-lg p-2 hover:bg-gray-50"
               >
-                <div>
-                  <a href={item.href} className="font-semibold text-gray-900">
-                    {item.name}
-                    <span className="absolute inset-0" />
-                  </a>
-                </div>
+                <a href={item.href} className="block w-full font-semibold text-gray-900">
+                  {item.name}
+                  <span className="absolute inset-0" />
+                </a>
               </div>
             ))}
           </div>

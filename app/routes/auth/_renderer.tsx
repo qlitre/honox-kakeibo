@@ -1,7 +1,7 @@
-import { reactRenderer } from "@hono/react-renderer";
-import { Header } from "@/islands/Header";
+import { jsxRenderer } from "hono/jsx-renderer";
+import { Header } from "@/components/Header";
 
-export default reactRenderer(({ children, Layout, title }) => {
+export default jsxRenderer(({ children, Layout, title }) => {
   return (
     <Layout title={title}>
       <>

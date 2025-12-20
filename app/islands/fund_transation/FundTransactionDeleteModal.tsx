@@ -1,6 +1,6 @@
-import type { FC } from "react";
+import type { FC } from "hono/jsx";
 import type { FundTransation } from "@/@types/dbTypes";
-import { useState } from "react";
+import { useState } from "hono/jsx";
 import { Button } from "@/islands/Button";
 
 type Props = {

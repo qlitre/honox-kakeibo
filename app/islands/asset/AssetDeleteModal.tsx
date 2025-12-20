@@ -1,5 +1,5 @@
-import type { FC } from "react";
-import { useState } from "react";
+import type { FC } from "hono/jsx";
+import { useState } from "hono/jsx";
 import { Button } from "@/islands/Button";
 import type { AssetWithCategory } from "@/@types/dbTypes";
 

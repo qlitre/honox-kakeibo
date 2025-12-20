@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "hono/jsx";
 import type { AssetTableItems, TableHeaderItem } from "@/@types/common";
 import { Table } from "@/components/share/Table";
 import { formatDiff } from "@/utils/dashboardUtils";

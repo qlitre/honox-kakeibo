@@ -1,5 +1,5 @@
-import type { FC, ChangeEvent } from "react";
-import { useState } from "react";
+import type { FC } from "hono/jsx";
+import { useState } from "hono/jsx";
 import { Button } from "@/islands/Button";
 import { PageHeader } from "@/components/PageHeader";
 import { getTodayDate } from "@/utils/dateUtils";
@@ -40,10 +40,12 @@ export const FundTransactionCreateModal: FC<Props> = ({
     error: data?.error,
   });
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
+  const handleChange = (e: Event) => {
+    const target = e.target as
+      | HTMLInputElement
+      | HTMLSelectElement
+      | HTMLTextAreaElement;
+    const { name, value } = target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,

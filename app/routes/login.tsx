@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import type { FC } from "hono/jsx";
 import { createRoute } from "honox/factory";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
@@ -26,7 +26,7 @@ export const LoginForm: FC<{ data?: Data }> = ({ data }) => {
         </h2>
       </div>
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form action="/login" method="POST" className="space-y-6">
+        <form action="/login" method="post" className="space-y-6">
           <div>
             <label
               htmlFor="email"
@@ -86,7 +86,7 @@ export const LoginForm: FC<{ data?: Data }> = ({ data }) => {
           <div>
             <button
               type="submit"
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer"
             >
               Sign in
             </button>
