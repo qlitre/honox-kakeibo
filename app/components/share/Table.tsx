@@ -1,9 +1,9 @@
-import type { FC, ReactNode } from "react";
+import type { FC, Child } from "hono/jsx";
 import type { TableHeaderItem } from "@/@types/common";
 
 type Props = {
   headers: TableHeaderItem[];
-  children: ReactNode;
+  children: Child | Child[];
 };
 
 export const Table: FC<Props> = ({ headers, children }) => {

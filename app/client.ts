@@ -1,5 +1,7 @@
 import { Chart, registerables } from "chart.js";
+import { createClient } from 'honox/client'
 
+createClient()
 Chart.register(...registerables);
 
 // Chart.jsの初期化
@@ -31,10 +33,10 @@ function initBalanceTransitionChart(
   canvas: HTMLCanvasElement,
   chartType: string,
   chartData: any,
-  chartOptions: any
+  chartOptions: any,
 ) {
   const container = canvas.closest(
-    ".balance-transition-chart-container"
+    ".balance-transition-chart-container",
   ) as HTMLElement;
   if (!container) return;
 
@@ -74,7 +76,12 @@ function initBalanceTransitionChart(
 
       // ボタンのスタイルを更新
       buttons.forEach((b) => {
-        b.classList.remove("bg-blue-500", "bg-green-500", "bg-red-500", "text-white");
+        b.classList.remove(
+          "bg-blue-500",
+          "bg-green-500",
+          "bg-red-500",
+          "text-white",
+        );
         b.classList.add("bg-gray-200", "text-gray-700");
       });
 
@@ -127,7 +134,7 @@ function initBalanceTransitionChart(
   // 詳細表示を更新
   function updateDetailDisplay() {
     const detailContainer = container.querySelector(
-      ".balance-detail-container"
+      ".balance-detail-container",
     ) as HTMLElement;
     const hint = container.querySelector(".balance-hint") as HTMLElement;
 

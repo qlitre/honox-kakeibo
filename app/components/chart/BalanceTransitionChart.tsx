@@ -157,7 +157,10 @@ export const BalanceTransitionChart = ({
         <p className="text-xs text-gray-500 mt-2">クリックで詳細を非表示</p>
       </div>
 
-      <div style={{ height: "300px" }} className="cursor-pointer relative overflow-hidden">
+      <div
+        style={{ height: "300px" }}
+        className="cursor-pointer relative overflow-hidden"
+      >
         <canvas
           className="chart-canvas balance-transition-chart"
           data-chart-type="line"

@@ -1,8 +1,8 @@
-import type { FC, ReactNode } from "react";
+import type { FC, Child } from "hono/jsx";
 import type { BaseProps } from "@/@types/common";
 
 type Props = BaseProps & {
-  children: ReactNode;
+  children: Child | Child[];
 };
 
 export const Card: FC<Props> = ({ className, children }) => {

@@ -1,10 +1,10 @@
-import type { FC, ReactNode } from "react";
+import type { FC, Child } from "hono/jsx";
 import type { BaseProps } from "@/@types/common";
 
 type Props = BaseProps & {
   type: "primary" | "danger" | "success" | "secondary";
   href: string;
-  children: ReactNode;
+  children: Child | Child[];
 };
 
 export const ButtonLink: FC<Props> = ({
