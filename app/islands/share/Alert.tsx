@@ -9,7 +9,9 @@ type Props = {
 
 export const Alert: FC<Props> = ({ message, type }) => {
   const [isVisible, setIsVisible] = useState(true);
-
+  const closeAlert = () => {
+    setIsVisible(!isVisible);
+  };
   if (!isVisible) return null;
   // SVGアイコンの定義
   const SuccessIcon = () => (
@@ -81,7 +83,8 @@ export const Alert: FC<Props> = ({ message, type }) => {
           <div className="-mx-1.5 -my-1.5">
             <button
               type="button"
-              className={`alert-dismiss-btn inline-flex rounded-md ${bg} p-1.5 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 ${ring}`}
+              className={`alert-dismiss-btn inline-flex rounded-md ${bg} p-1.5 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer ${ring}`}
+              onClick={closeAlert}
             >
               <span className="sr-only">Dismiss</span>
               <XMarkIcon />

@@ -20,7 +20,7 @@ export const BalanceTransitionForm: FC<Props> = ({
   const handleSelectChange = (e: Event) => {
     // 1. currentTarget を HTMLSelectElement にキャストして 'form' へのアクセスを可能にする
     const target = e.currentTarget as HTMLSelectElement;
-    
+
     // 2. target および target.form の存在を確認して安全に submit を実行する
     if (target && target.form) {
       target.form.submit();

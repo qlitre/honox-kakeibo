@@ -1,7 +1,7 @@
 import { Chart, registerables } from "chart.js";
-import { createClient } from 'honox/client'
+import { createClient } from "honox/client";
 
-createClient()
+createClient();
 Chart.register(...registerables);
 
 // Chart.jsの初期化

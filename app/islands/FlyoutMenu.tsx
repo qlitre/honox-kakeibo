@@ -66,7 +66,10 @@ export const FlyoutMenu: FC<Props> = ({ items, title }) => {
                 key={item.name}
                 className="group relative flex gap-x-6 rounded-lg p-2 hover:bg-gray-50"
               >
-                <a href={item.href} className="block w-full font-semibold text-gray-900">
+                <a
+                  href={item.href}
+                  className="block w-full font-semibold text-gray-900"
+                >
                   {item.name}
                   <span className="absolute inset-0" />
                 </a>
