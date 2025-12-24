@@ -1,9 +1,5 @@
 import { createRoute } from "honox/factory";
-import {
-  checkMonthlyExpenses,
-  type ExpenseCheckResult,
-  fetchSimpleList,
-} from "@/libs/dbService";
+import { checkMonthlyExpenses, fetchSimpleList } from "@/libs/dbService";
 import type { ExpenseCategory, PaymentMethod } from "@/@types/dbTypes";
 import { ExpenseCreateModal } from "@/islands/expense/ExpenseCreateModal";
 import { getCookie } from "hono/cookie";
@@ -59,7 +55,7 @@ export default createRoute(async (c) => {
 
         {/* 年月選択 */}
         <div className="mb-6 bg-white rounded-lg shadow-sm border p-4">
-          <form method="GET" className="flex items-center gap-4">
+          <form method="get" className="flex items-center gap-4">
             <div>
               <label
                 htmlFor="year"
@@ -240,7 +236,7 @@ export default createRoute(async (c) => {
           </div>
         )}
       </div>,
-      { title: `定期支払いチェック - ${year}年${month}月` },
+      { title: `定期支払いチェック - ${year}年${month}月` }
     );
   } catch (error) {
     console.error("Error checking expenses:", error);
@@ -248,7 +244,7 @@ export default createRoute(async (c) => {
       <div className="container mx-auto px-4 py-8">
         <div className="text-red-600">エラーが発生しました</div>
       </div>,
-      { title: "エラー" },
+      { title: "エラー" }
     );
   }
 });

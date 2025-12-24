@@ -40,9 +40,6 @@ export const ExpenseCreateModal: FC<Props> = ({
   payment_methods,
 }) => {
   const [open, setOpen] = useState(false);
-  const handleClick = () => {
-    setOpen(true);
-  };
   const [formData, setFormData] = useState<Data>({
     date: data?.date || getTodayDate(),
     amount: data?.amount || "",
@@ -51,6 +48,10 @@ export const ExpenseCreateModal: FC<Props> = ({
     description: data?.description || "",
     error: data?.error,
   });
+
+  const handleClick = () => {
+    setOpen(true);
+  };
 
   const handleChange = (e: Event) => {
     const target = e.target as
@@ -138,11 +139,16 @@ export const ExpenseCreateModal: FC<Props> = ({
                   name="expense_category_id"
                   required
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  value={formData.expense_category_id}
                   onChange={handleChange}
                 >
                   {categories.contents.map((category) => (
-                    <option value={category.id} key={category.id}>
+                    <option
+                      value={String(category.id)}
+                      key={category.id}
+                      selected={
+                        String(category.id) === formData.expense_category_id
+                      }
+                    >
                       {category.name}
                     </option>
                   ))}
@@ -165,11 +171,19 @@ export const ExpenseCreateModal: FC<Props> = ({
                   name="payment_method_id"
                   required
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  value={formData.payment_method_id}
                   onChange={handleChange}
                 >
+                  <option value="" selected={formData.payment_method_id === ""}>
+                    選択してください
+                  </option>
                   {payment_methods.contents.map((method) => (
-                    <option value={method.id} key={method.id}>
+                    <option
+                      value={String(method.id)}
+                      key={method.id}
+                      selected={
+                        String(method.id) === formData.payment_method_id
+                      }
+                    >
                       {method.name}
                     </option>
                   ))}
