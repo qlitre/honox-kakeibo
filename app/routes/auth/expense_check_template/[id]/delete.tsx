@@ -58,7 +58,7 @@ const ExpenseCheckTemplateDeleteForm = ({
         </ButtonLink>
         <button
           type="submit"
-          className="px-6 py-2 text-white bg-red-500 rounded hover:bg-red-600 transition-colors font-medium"
+          className="px-6 py-2 text-white bg-red-500 rounded hover:bg-red-600 transition-colors font-medium cursor-pointer"
         >
           削除する
         </button>

@@ -37,7 +37,7 @@ export const FlyoutMenu: FC<Props> = ({ items, title }) => {
     <div className="relative flyout-menu-container" ref={menuRef}>
       <button
         type="button"
-        className="flyout-menu-button inline-flex items-center gap-x-1 text-sm font-semibold text-gray-900 focus:outline-none"
+        className="flyout-menu-button inline-flex items-center gap-x-1 text-sm font-semibold text-gray-900 focus:outline-none cursor-pointer"
         onClick={togglePopover}
       >
         <span>{title}</span>

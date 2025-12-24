@@ -119,19 +119,19 @@ export const BalanceTransitionChart = ({
     <div className="w-full balance-transition-chart-container">
       <div className="mb-4 flex flex-wrap gap-2 justify-center sm:justify-start">
         <button
-          className="balance-view-mode-btn px-3 py-1 rounded-md text-sm font-medium transition-colors bg-blue-500 text-white"
+          className="balance-view-mode-btn px-3 py-1 rounded-md text-sm font-medium transition-colors bg-blue-500 text-white cursor-pointer"
           data-mode="both"
         >
           両方
         </button>
         <button
-          className="balance-view-mode-btn px-3 py-1 rounded-md text-sm font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300"
+          className="balance-view-mode-btn px-3 py-1 rounded-md text-sm font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer"
           data-mode="income"
         >
           収入のみ
         </button>
         <button
-          className="balance-view-mode-btn px-3 py-1 rounded-md text-sm font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300"
+          className="balance-view-mode-btn px-3 py-1 rounded-md text-sm font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer"
           data-mode="expense"
         >
           支出のみ

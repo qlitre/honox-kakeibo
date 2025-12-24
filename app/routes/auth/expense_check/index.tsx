@@ -111,7 +111,7 @@ export default createRoute(async (c) => {
             <div className="flex items-end">
               <button
                 type="submit"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors cursor-pointer"
               >
                 表示
               </button>

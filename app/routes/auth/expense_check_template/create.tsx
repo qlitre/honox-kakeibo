@@ -135,7 +135,7 @@ const CreateForm = ({
           <div className="flex gap-4">
             <button
               type="submit"
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition-colors"
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition-colors cursor-pointer"
             >
               作成
             </button>

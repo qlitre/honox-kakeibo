@@ -68,7 +68,7 @@ export const ExpenseSearchForm: FC<Props> = ({
       <div className="sm:hidden mb-4">
         <button
           onClick={toggleForm}
-          className="w-full bg-blue-500 text-white px-4 py-2 rounded"
+          className="w-full bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"
         >
           {isOpen ? "検索条件を閉じる" : "検索条件を開く"}
         </button>
@@ -132,7 +132,7 @@ export const ExpenseSearchForm: FC<Props> = ({
             {/* 通常の検索ボタン */}
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded w-full sm:w-auto"
+              className="bg-blue-500 text-white px-4 py-2 rounded w-full sm:w-auto cursor-pointer"
             >
               検索
             </button>
@@ -141,7 +141,7 @@ export const ExpenseSearchForm: FC<Props> = ({
             <button
               type="button"
               onClick={handleClearAndSearch}
-              className="bg-gray-500 text-white px-4 py-2 rounded w-full sm:w-auto"
+              className="bg-gray-500 text-white px-4 py-2 rounded w-full sm:w-auto cursor-pointer"
             >
               クリア
             </button>
