@@ -131,11 +131,16 @@ export const IncomeCreateModal: FC<Props> = ({
                   name="income_category_id"
                   required
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  value={formData.income_category_id}
                   onChange={handleChange}
                 >
                   {categories.contents.map((category) => (
-                    <option value={category.id} key={category.id}>
+                    <option
+                      value={category.id}
+                      key={category.id}
+                      selected={
+                        String(category.id) === formData.income_category_id
+                      }
+                    >
                       {category.name}
                     </option>
                   ))}

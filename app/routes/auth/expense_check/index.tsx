@@ -236,7 +236,7 @@ export default createRoute(async (c) => {
           </div>
         )}
       </div>,
-      { title: `定期支払いチェック - ${year}年${month}月` }
+      { title: `定期支払いチェック - ${year}年${month}月` },
     );
   } catch (error) {
     console.error("Error checking expenses:", error);
@@ -244,7 +244,7 @@ export default createRoute(async (c) => {
       <div className="container mx-auto px-4 py-8">
         <div className="text-red-600">エラーが発生しました</div>
       </div>,
-      { title: "エラー" }
+      { title: "エラー" },
     );
   }
 });
