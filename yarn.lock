@@ -931,6 +931,14 @@
     "@hono/node-server" "^1.14.2"
     minimatch "^9.0.3"
 
+"@hono/vite-dev-server@^0.24.0":
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/@hono/vite-dev-server/-/vite-dev-server-0.24.0.tgz#039829faec6f260f5268771d42bcb46388bc2db3"
+  integrity sha512-yV+DHE9suDPPvZW/o4VhY2KFl0vrIPvt0zDlj22V6wkTsEKy7TGpAd4tw0swOhN3Zfb7mXch7QAGEtO9c6qrMQ==
+  dependencies:
+    "@hono/node-server" "^1.14.2"
+    minimatch "^9.0.3"
+
 "@hono/zod-validator@^0.7.5":
   version "0.7.6"
   resolved "https://registry.npmjs.org/@hono/zod-validator/-/zod-validator-0.7.6.tgz"
