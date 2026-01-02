@@ -22,7 +22,7 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20251205.0",
+    "@cloudflare/workers-types": "^4.20260101.0",
     "@hono/vite-build": "^1.8.0",
     "@hono/vite-dev-server": "^0.23.0",
     "@tailwindcss/vite": "^4.1.17",
