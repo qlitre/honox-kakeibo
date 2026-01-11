@@ -13,6 +13,10 @@ declare module "hono" {
       FB_MESSAGE_SENDER_ID: string;
       FB_APP_ID: string;
       SLACK_WEBHOOK_URL: string;
+      // @hono/firebase-auth用の環境変数
+      SERVICE_ACCOUNT_JSON: string;
+      PUBLIC_JWK_CACHE_KEY: string;
+      PUBLIC_JWK_CACHE_KV: KVNamespace;
     };
   }
   interface ContextRenderer {
