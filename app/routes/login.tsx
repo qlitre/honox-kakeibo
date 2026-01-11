@@ -5,6 +5,13 @@ import { z } from "zod";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { setCookie } from "hono/cookie";
 import { auth } from "@/firebase";
+import {
+  AdminAuthApiClient,
+  ServiceAccountCredential,
+} from "firebase-auth-cloudflare-workers";
+
+// セッション有効期限: 5日間（ミリ秒）
+const SESSION_EXPIRES_IN = 60 * 60 * 24 * 5 * 1000;
 
 const schema = z.object({
   email: z.string().min(3).includes("@"),
@@ -119,10 +126,26 @@ export const POST = createRoute(
       const data = await signInWithEmailAndPassword(_auth, email, password);
       if (data.user) {
         const idToken = await data.user.getIdToken();
-        setCookie(c, "firebase_token", idToken, {
+
+        // AdminAuthApiClientでセッションクッキーを作成
+        const authClient = AdminAuthApiClient.getOrInitialize(
+          c.env.FB_PROJECT_ID,
+          new ServiceAccountCredential(c.env.SERVICE_ACCOUNT_JSON),
+        );
+        const sessionCookie = await authClient.createSessionCookie(
+          idToken,
+          SESSION_EXPIRES_IN,
+        );
+
+        // セッションクッキーを設定
+        setCookie(c, "session", sessionCookie, {
+          maxAge: SESSION_EXPIRES_IN / 1000,
           httpOnly: true,
-          sameSite: "strict",
+          secure: true,
+          sameSite: "Strict",
+          path: "/",
         });
+
         return c.redirect("/auth", 303);
       }
     } catch (error) {

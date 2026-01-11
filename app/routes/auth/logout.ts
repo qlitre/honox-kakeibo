@@ -8,7 +8,8 @@ export default createRoute(async (c) => {
 
   try {
     await signOut(_auth);
-    deleteCookie(c, "firebase_token");
+    // クッキー名を変更
+    deleteCookie(c, "session");
     return c.redirect("/", 303);
   } catch (error) {
     console.error("Error during logout:", error);
