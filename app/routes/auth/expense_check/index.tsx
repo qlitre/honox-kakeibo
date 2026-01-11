@@ -72,7 +72,11 @@ export default createRoute(async (c) => {
                 {Array.from({ length: 5 }, (_, i) => {
                   const y = now.getFullYear() - 2 + i;
                   return (
-                    <option key={y} value={y}>
+                    <option
+                      key={y}
+                      value={y}
+                      selected={String(y) === String(year)}
+                    >
                       {y}年
                     </option>
                   );
@@ -96,7 +100,11 @@ export default createRoute(async (c) => {
                 {Array.from({ length: 12 }, (_, i) => {
                   const m = i + 1;
                   return (
-                    <option key={m} value={m}>
+                    <option
+                      key={m}
+                      value={m}
+                      selected={String(m) === String(month)}
+                    >
                       {m}月
                     </option>
                   );
