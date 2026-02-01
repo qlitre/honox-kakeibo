@@ -28,7 +28,7 @@
     "@hono/vite-dev-server": "^0.24.0",
     "@tailwindcss/vite": "^4.1.17",
     "@vitest/ui": "^4.0.15",
-    "autoprefixer": "^10.4.22",
+    "autoprefixer": "^10.4.24",
     "jsdom": "^27.4.0",
     "prettier": "^3.7.4",
     "tailwindcss": "^4.1.16",
