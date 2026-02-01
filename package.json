@@ -34,6 +34,6 @@
     "tailwindcss": "^4.1.16",
     "vite": "^7.2.6",
     "vitest": "^4.0.15",
-    "wrangler": "^4.53.0"
+    "wrangler": "^4.61.1"
   }
 }
