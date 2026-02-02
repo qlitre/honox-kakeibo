@@ -938,10 +938,10 @@
     "@hono/node-server" "^1.14.2"
     minimatch "^9.0.3"
 
-"@hono/vite-dev-server@^0.24.0":
-  version "0.24.0"
-  resolved "https://registry.npmjs.org/@hono/vite-dev-server/-/vite-dev-server-0.24.0.tgz"
-  integrity sha512-yV+DHE9suDPPvZW/o4VhY2KFl0vrIPvt0zDlj22V6wkTsEKy7TGpAd4tw0swOhN3Zfb7mXch7QAGEtO9c6qrMQ==
+"@hono/vite-dev-server@^0.24.1":
+  version "0.24.1"
+  resolved "https://registry.yarnpkg.com/@hono/vite-dev-server/-/vite-dev-server-0.24.1.tgz#41c4e28eb58b1bdb85bea03c1b3f7f34183f7733"
+  integrity sha512-1ga1v9awRuYgs/C2/nhnOiAUeB3zPI/rEbfXkow7kOSHa8AYxxveDSpVsMZneE3ojwgkXQl2G68S+xj2WqxWPw==
   dependencies:
     "@hono/node-server" "^1.14.2"
     minimatch "^9.0.3"
