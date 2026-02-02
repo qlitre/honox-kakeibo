@@ -27,13 +27,13 @@
     "@hono/vite-build": "^1.8.0",
     "@hono/vite-dev-server": "^0.24.1",
     "@tailwindcss/vite": "^4.1.17",
-    "@vitest/ui": "^4.0.15",
+    "@vitest/ui": "^4.0.18",
     "autoprefixer": "^10.4.24",
     "jsdom": "^27.4.0",
     "prettier": "^3.7.4",
     "tailwindcss": "^4.1.16",
     "vite": "^7.2.6",
-    "vitest": "^4.0.15",
+    "vitest": "^4.0.18",
     "wrangler": "^4.61.1"
   }
 }
