@@ -20,7 +20,8 @@
     "firebase": "^12.8.0",
     "hono": "^4.11.7",
     "honox": "^0.1.53",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260101.0",
