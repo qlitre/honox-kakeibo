@@ -2228,10 +2228,10 @@ graceful-fs@^4.2.4:
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
-hono@^4.11.7:
-  version "4.11.7"
-  resolved "https://registry.yarnpkg.com/hono/-/hono-4.11.7.tgz#f5b8d0b0b503ef0d913a246012dda52ea23dbe53"
-  integrity sha512-l7qMiNee7t82bH3SeyUCt9UF15EVmaBvsppY2zQtrbIhl/yzBTny+YUxsVjSjQ6gaqaeVtZmGocom8TzBlA4Yw==
+hono@^4.11.8:
+  version "4.11.8"
+  resolved "https://registry.yarnpkg.com/hono/-/hono-4.11.8.tgz#5a056734a75ea3cad86b4d1a6f7e562a214e68e9"
+  integrity sha512-eVkB/CYCCei7K2WElZW9yYQFWssG0DhaDhVvr7wy5jJ22K+ck8fWW0EsLpB0sITUTvPnc97+rrbQqIr5iqiy9Q==
 
 honox@^0.1.53:
   version "0.1.53"

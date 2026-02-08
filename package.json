@@ -18,7 +18,7 @@
     "@tailwindcss/forms": "^0.5.11",
     "chart.js": "^4.5.1",
     "firebase": "^12.8.0",
-    "hono": "^4.11.7",
+    "hono": "^4.11.8",
     "honox": "^0.1.53",
     "typescript": "^5.9.3",
     "zod": "^4.3.6"
