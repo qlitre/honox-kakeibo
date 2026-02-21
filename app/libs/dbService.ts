@@ -10,7 +10,7 @@ import {
 } from "@/utils/sqlUtils";
 
 /* ---------- 共通レスポンス型 ---------- */
-export interface ListResponse<T> {
+interface ListResponse<T> {
   contents: T[];
   totalCount: number;
   limit: number;
@@ -177,7 +177,7 @@ export async function deleteItem(params: {
 }
 
 /** 集計結果の型 */
-export type SummaryResponse<T> = {
+type SummaryResponse<T> = {
   summary: T[];
 };
 
@@ -221,7 +221,7 @@ export async function fetchSummary<T>(params: {
 }
 
 /* ---------- 定期支払いチェック ---------- */
-export interface ExpenseCheckResult {
+interface ExpenseCheckResult {
   template: {
     id: number;
     name: string;

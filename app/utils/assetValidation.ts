@@ -2,7 +2,7 @@ import type { AssetWithCategoryResponse } from "@/@types/dbTypes";
 import { fetchListWithFilter } from "@/libs/dbService";
 import { getBeginningOfMonth, getEndOfMonth } from "@/utils/dashboardUtils";
 
-export interface AssetCategoryDuplicationCheckParams {
+interface AssetCategoryDuplicationCheckParams {
   db: D1Database;
   date: string;
   assetCategoryId: number;

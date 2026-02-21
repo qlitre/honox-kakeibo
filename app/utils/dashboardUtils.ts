@@ -23,7 +23,7 @@ export const getNextMonth = (month: number) => {
 };
 
 // 日本時間を考慮してDateオブジェクトを作成
-export const getJSTDate = (date: Date) => {
+const getJSTDate = (date: Date) => {
   const jstOffset = 9 * 60 * 60 * 1000; // 9時間をミリ秒に変換
   return new Date(date.getTime() + jstOffset);
 };

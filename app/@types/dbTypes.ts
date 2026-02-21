@@ -94,22 +94,8 @@ export type SummaryItem = {
   category_id: number;
 };
 
-// SummaryResponseの型定義
-export type SummaryResponse = {
-  summary: SummaryItem[];
-};
-
 export type AssetWithCategoryResponse = KakeiboListResponse<AssetWithCategory>;
 export type AssetCategoryResponse = KakeiboListResponse<AssetCategory>;
-export type ExpenseWithDetailsResponse =
-  KakeiboListResponse<ExpenseWithDetails>;
 export type ExpenseCategoryResponse = KakeiboListResponse<ExpenseCategory>;
 export type PaymentMethodResponse = KakeiboListResponse<PaymentMethod>;
 export type IncomeCategoryResponse = KakeiboListResponse<IncomeCategory>;
-export type IncomeWithCategoryResponse =
-  KakeiboListResponse<IncomeWithCategory>;
-export type FundTransationResponse = KakeiboListResponse<FundTransation>;
-export type ExpenseCheckTemplateResponse =
-  KakeiboListResponse<ExpenseCheckTemplate>;
-export type ExpenseCheckTemplateWithDetailsResponse =
-  KakeiboListResponse<ExpenseCheckTemplateWithDetails>;
