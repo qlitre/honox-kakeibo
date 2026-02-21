@@ -9,7 +9,9 @@
     "deploy": "yarn build&&wrangler deploy",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "knip": "knip",
+    "prepare": "husky"
   },
   "private": true,
   "dependencies": {
@@ -29,6 +31,7 @@
     "@hono/vite-dev-server": "^0.24.1",
     "@tailwindcss/vite": "^4.1.17",
     "@vitest/ui": "^4.0.18",
+    "husky": "^9.1.7",
     "jsdom": "^27.4.0",
     "knip": "^5.84.1",
     "prettier": "^3.7.4",
