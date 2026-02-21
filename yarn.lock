@@ -2228,15 +2228,15 @@ graceful-fs@^4.2.4:
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
-hono@^4.11.8:
-  version "4.11.8"
-  resolved "https://registry.yarnpkg.com/hono/-/hono-4.11.8.tgz#5a056734a75ea3cad86b4d1a6f7e562a214e68e9"
-  integrity sha512-eVkB/CYCCei7K2WElZW9yYQFWssG0DhaDhVvr7wy5jJ22K+ck8fWW0EsLpB0sITUTvPnc97+rrbQqIr5iqiy9Q==
+hono@^4.12.0:
+  version "4.12.0"
+  resolved "https://registry.yarnpkg.com/hono/-/hono-4.12.0.tgz#18f96a2962274398efc57a1a79e22b3daad2ca1c"
+  integrity sha512-NekXntS5M94pUfiVZ8oXXK/kkri+5WpX2/Ik+LVsl+uvw+soj4roXIsPqO+XsWrAw20mOzaXOZf3Q7PfB9A/IA==
 
-honox@^0.1.53:
-  version "0.1.53"
-  resolved "https://registry.yarnpkg.com/honox/-/honox-0.1.53.tgz#f0cb619f50e9e6f071f1b0c275dad4e39dacfa1d"
-  integrity sha512-cVd5RErXH5gHamGc29+pvFFJ54b051Q/hOShSDWsNjRkZ2TcbawlDzgbD9htiC0lFgYCuo14DUhb4pdB5FERig==
+honox@^0.1.54:
+  version "0.1.54"
+  resolved "https://registry.yarnpkg.com/honox/-/honox-0.1.54.tgz#1f7a68980661e7fcdaa61f27516026a2d823cbb5"
+  integrity sha512-Tbwi2rKKSZyHZF2NbE2SLtw97oH8npvTX85XCLzmQVTaFLmxypaHLLIR/jyyL1YvE9EhkCeCsxR2mmLxhGhSOw==
   dependencies:
     "@babel/generator" "7.25.6"
     "@babel/parser" "7.25.6"
