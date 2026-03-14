@@ -68,6 +68,10 @@ export const kakeiboMenu = () => {
         href: `/auth/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}/monthly_balance`,
       },
       { name: "収支推移", href: `/auth/dashboard/balance_transition` },
+      {
+        name: "支出カレンダー",
+        href: `/auth/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}/expense_calendar`,
+      },
     ],
   };
 };
