@@ -1,6 +1,5 @@
 import { createRoute } from "honox/factory";
 import { createMiddleware } from "hono/factory";
-import { bearerAuth } from "hono/bearer-auth";
 import {
   verifySessionCookieFirebaseAuth,
   type VerifySessionCookieFirebaseAuthConfig,
@@ -34,11 +33,6 @@ const authMiddleware = createMiddleware(async (c, next) => {
     // @hono/firebase-authのミドルウェアを使用
     const verifyAuth = verifySessionCookieFirebaseAuth(firebaseAuthConfig);
     return verifyAuth(c, next);
-  } else if (c.req.path.startsWith("/api")) {
-    // API認証は既存のbearer authを維持
-    const token = c.env.HONO_IS_COOL;
-    const auth = bearerAuth({ token });
-    return auth(c, next);
   } else {
     await next();
   }
