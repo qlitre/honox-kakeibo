@@ -217,7 +217,7 @@ export const POST = createRoute(
             expense_category_id,
             description_pattern,
             is_active,
-            error: result.error.flatten().fieldErrors,
+            error: z.flattenError(result.error).fieldErrors,
           }}
           categories={categories.contents}
           actionUrl={`/auth/expense_check_template/${id}/update`}

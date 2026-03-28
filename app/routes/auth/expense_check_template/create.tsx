@@ -40,7 +40,7 @@ const CreateForm = ({
 
         <form
           action="/auth/expense_check_template/create"
-          method="POST"
+          method="post"
           className="space-y-6"
         >
           <div>
@@ -179,7 +179,7 @@ export const POST = createRoute(
             expense_category_id,
             description_pattern,
             is_active,
-            error: result.error.flatten().fieldErrors,
+            error: z.flattenError(result.error).fieldErrors,
           }}
           categories={[]}
         />,

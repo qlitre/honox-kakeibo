@@ -208,7 +208,7 @@ export default createRoute(async (c) => {
                         amount: "",
                         expense_category_id:
                           result.template.expense_category_id.toString(),
-                        payment_method_id: "",
+                        payment_method_id: '',
                         description: result.template.description_pattern,
                       }}
                       title="支出追加"

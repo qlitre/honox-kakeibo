@@ -52,7 +52,7 @@ export const POST = createRoute(
       const { name } = result.data;
       return c.render(
         <CategoryCreateForm
-          data={{ name, error: result.error.flatten().fieldErrors }}
+          data={{ name, error: z.flattenError(result.error).fieldErrors }}
           title={title}
           actionUrl={formActionUrl(id)}
           backUrl={`/auth/${endPoint}`}
