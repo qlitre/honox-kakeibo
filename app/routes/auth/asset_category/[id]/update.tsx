@@ -22,7 +22,7 @@ const successMesage = "資産カテゴリの編集に成功しました";
 const redirectUrl = "/auth/asset_category";
 
 export default createRoute(async (c) => {
-  const id = c.req.param("id");
+  const id = c.req.param("id")!;
   const detail = await fetchDetail<AssetCategory>({
     db: c.env.DB,
     table: endPoint,
@@ -48,7 +48,7 @@ export default createRoute(async (c) => {
 export const POST = createRoute(
   zValidator("form", schema, async (result, c) => {
     if (!result.success) {
-      const id = c.req.param("id");
+      const id = c.req.param("id")!;
       const { name } = result.data;
       return c.render(
         <CategoryCreateForm
@@ -61,7 +61,7 @@ export const POST = createRoute(
     }
   }),
   async (c) => {
-    const id = c.req.param("id");
+    const id = c.req.param("id")!;
     const { name, is_investment } = c.req.valid("form");
     let _is_investment = 0;
     if (is_investment === "1") _is_investment = 1;

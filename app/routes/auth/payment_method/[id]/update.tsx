@@ -20,7 +20,7 @@ const endPoint = "payment_method";
 const successMesage = "編集に成功しました";
 const redirectUrl = "/auth/payment_method";
 export default createRoute(async (c) => {
-  const id = c.req.param("id");
+  const id = c.req.param("id")!;
   const detail = await fetchDetail<PaymentMethod>({
     db: c.env.DB,
     table: endPoint,
@@ -45,7 +45,7 @@ export default createRoute(async (c) => {
 export const POST = createRoute(
   zValidator("form", schema, async (result, c) => {
     if (!result.success) {
-      const id = c.req.param("id");
+      const id = c.req.param("id")!;
       const { name } = result.data;
       return c.render(
         <CategoryCreateForm
@@ -58,7 +58,7 @@ export const POST = createRoute(
     }
   }),
   async (c) => {
-    const id = c.req.param("id");
+    const id = c.req.param("id")!;
     const { name } = c.req.valid("form");
     const body = {
       name: name,

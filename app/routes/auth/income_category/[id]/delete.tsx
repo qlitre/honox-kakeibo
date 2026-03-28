@@ -14,7 +14,7 @@ const successMessage = "収入カテゴリの削除に成功しました";
 const redirectUrl = "/auth/income_category";
 
 export default createRoute(async (c) => {
-  const id = c.req.param("id");
+  const id = c.req.param("id")!;
   const detail = await fetchDetail<IncomeCategory>({
     db: c.env.DB,
     table: endPoint,
@@ -32,7 +32,7 @@ export default createRoute(async (c) => {
 });
 
 export const POST = createRoute(async (c) => {
-  const id = c.req.param("id");
+  const id = c.req.param("id")!;
   const r = await deleteItem({ db: c.env.DB, table: endPoint, id: id });
   setCookie(c, successAlertCookieKey, successMessage, {
     maxAge: alertCookieMaxage,

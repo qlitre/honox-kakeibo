@@ -68,7 +68,7 @@ const ExpenseCheckTemplateDeleteForm = ({
 };
 
 export default createRoute(async (c) => {
-  const id = c.req.param("id");
+  const id = c.req.param("id")!;
   const detail = await fetchDetail<ExpenseCheckTemplate>({
     db: c.env.DB,
     table: endPoint,
@@ -85,7 +85,7 @@ export default createRoute(async (c) => {
 });
 
 export const POST = createRoute(async (c) => {
-  const id = c.req.param("id");
+  const id = c.req.param("id")!;
 
   try {
     await deleteItem({
