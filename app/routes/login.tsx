@@ -114,7 +114,11 @@ export const POST = createRoute(
       const { email, password } = result.data;
       return c.render(
         <LoginForm
-          data={{ email, password, error: z.flattenError(result.error).fieldErrors }}
+          data={{
+            email,
+            password,
+            error: z.flattenError(result.error).fieldErrors,
+          }}
         />,
       );
     }

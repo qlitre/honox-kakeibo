@@ -36,7 +36,14 @@ type CrudRoutesOptions = {
 };
 
 export function createCrudRoutes(options: CrudRoutesOptions) {
-  const { tableName, tag, entitySchema, createSchema, updateSchema, summarySchema } = options;
+  const {
+    tableName,
+    tag,
+    entitySchema,
+    createSchema,
+    updateSchema,
+    summarySchema,
+  } = options;
 
   const app = new OpenAPIHono();
 

@@ -118,9 +118,7 @@ const CreateForm = ({
                 <option
                   key={method.id}
                   value={String(method.id)}
-                  selected={
-                    String(method.id) === data?.payment_method_id
-                  }
+                  selected={String(method.id) === data?.payment_method_id}
                 >
                   {method.name}
                 </option>

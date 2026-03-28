@@ -88,9 +88,7 @@ const UpdateForm = ({
                 <option
                   key={category.id}
                   value={String(category.id)}
-                  selected={
-                    String(category.id) === data?.expense_category_id
-                  }
+                  selected={String(category.id) === data?.expense_category_id}
                 >
                   {category.name}
                 </option>
@@ -122,9 +120,7 @@ const UpdateForm = ({
                 <option
                   key={method.id}
                   value={String(method.id)}
-                  selected={
-                    String(method.id) === data?.payment_method_id
-                  }
+                  selected={String(method.id) === data?.payment_method_id}
                 >
                   {method.name}
                 </option>
@@ -307,9 +303,7 @@ export const POST = createRoute(
     const data = {
       name,
       expense_category_id: parseInt(expense_category_id),
-      payment_method_id: payment_method_id
-        ? parseInt(payment_method_id)
-        : null,
+      payment_method_id: payment_method_id ? parseInt(payment_method_id) : null,
       description_pattern,
       is_active: is_active === "1" ? 1 : 0,
     };

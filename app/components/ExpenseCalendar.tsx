@@ -8,11 +8,7 @@ type Props = {
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 
-export const ExpenseCalendar: FC<Props> = ({
-  year,
-  month,
-  dailyExpenses,
-}) => {
+export const ExpenseCalendar: FC<Props> = ({ year, month, dailyExpenses }) => {
   // 月の初日の曜日 (0=日, 1=月, ..., 6=土)
   const firstDayOfWeek = new Date(year, month - 1, 1).getDay();
   // 月の日数

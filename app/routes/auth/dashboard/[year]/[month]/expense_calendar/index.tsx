@@ -3,10 +3,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { MonthPager } from "@/components/MonthPager";
 import { Card } from "@/components/share/Card";
 import { ExpenseCalendar } from "@/components/ExpenseCalendar";
-import {
-  getBeginningOfMonth,
-  getEndOfMonth,
-} from "@/utils/dashboardUtils";
+import { getBeginningOfMonth, getEndOfMonth } from "@/utils/dashboardUtils";
 
 type DailyExpense = {
   date: string;
