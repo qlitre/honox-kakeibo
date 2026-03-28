@@ -76,9 +76,11 @@ CREATE TABLE IF NOT EXISTS expense_check_template (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     expense_category_id INTEGER NOT NULL,
+    payment_method_id INTEGER,
     description_pattern TEXT NOT NULL,
     is_active BOOLEAN DEFAULT 1,
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now')),
-    FOREIGN KEY (expense_category_id) REFERENCES expense_category(id) ON DELETE RESTRICT
+    FOREIGN KEY (expense_category_id) REFERENCES expense_category(id) ON DELETE RESTRICT,
+    FOREIGN KEY (payment_method_id) REFERENCES payment_method(id) ON DELETE RESTRICT
 );

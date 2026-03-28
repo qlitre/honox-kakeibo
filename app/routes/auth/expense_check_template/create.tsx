@@ -7,6 +7,7 @@ import { fetchSimpleList } from "@/libs/dbService";
 const schema = z.object({
   name: z.string().min(1, "名前は必須です"),
   expense_category_id: z.string().min(1, "カテゴリは必須です"),
+  payment_method_id: z.string().optional(),
   description_pattern: z.string().min(1, "検索パターンは必須です"),
   is_active: z.string().optional(),
 });
@@ -15,6 +16,7 @@ type FormData = {
   error?: Record<string, string[] | undefined>;
   name?: string;
   expense_category_id?: string;
+  payment_method_id?: string;
   description_pattern?: string;
   is_active?: string;
 };
@@ -24,12 +26,19 @@ interface ExpenseCategory {
   name: string;
 }
 
+interface PaymentMethod {
+  id: number;
+  name: string;
+}
+
 const CreateForm = ({
   data,
   categories,
+  paymentMethods,
 }: {
   data?: FormData;
   categories: ExpenseCategory[];
+  paymentMethods: PaymentMethod[];
 }) => {
   return (
     <div className="container mx-auto px-4 py-8">
@@ -88,6 +97,35 @@ const CreateForm = ({
                 {data.error.expense_category_id[0]}
               </p>
             )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="payment_method_id"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              支払い方法
+            </label>
+            <select
+              id="payment_method_id"
+              name="payment_method_id"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="" selected={!data?.payment_method_id}>
+                未指定
+              </option>
+              {paymentMethods.map((method) => (
+                <option
+                  key={method.id}
+                  value={String(method.id)}
+                  selected={
+                    String(method.id) === data?.payment_method_id
+                  }
+                >
+                  {method.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -162,34 +200,59 @@ export default createRoute(async (c) => {
     orders: "id",
   });
 
-  return c.render(<CreateForm categories={categories.contents} />, {
-    title: "チェックテンプレート新規追加",
+  // 支払い方法一覧を取得
+  const paymentMethods = await fetchSimpleList<PaymentMethod>({
+    db,
+    table: "payment_method",
+    orders: "name",
   });
+
+  return c.render(
+    <CreateForm
+      categories={categories.contents}
+      paymentMethods={paymentMethods.contents}
+    />,
+    {
+      title: "チェックテンプレート新規追加",
+    },
+  );
 });
 
 export const POST = createRoute(
   zValidator("form", schema, (result, c) => {
     if (!result.success) {
-      const { name, expense_category_id, description_pattern, is_active } =
-        result.data;
+      const {
+        name,
+        expense_category_id,
+        payment_method_id,
+        description_pattern,
+        is_active,
+      } = result.data;
       return c.render(
         <CreateForm
           data={{
             name,
             expense_category_id,
+            payment_method_id,
             description_pattern,
             is_active,
             error: z.flattenError(result.error).fieldErrors,
           }}
           categories={[]}
+          paymentMethods={[]}
         />,
       );
     }
   }),
   async (c) => {
     const db = c.env.DB;
-    const { name, expense_category_id, description_pattern, is_active } =
-      c.req.valid("form");
+    const {
+      name,
+      expense_category_id,
+      payment_method_id,
+      description_pattern,
+      is_active,
+    } = c.req.valid("form");
 
     try {
       await createItem({
@@ -198,6 +261,9 @@ export const POST = createRoute(
         data: {
           name,
           expense_category_id: parseInt(expense_category_id),
+          payment_method_id: payment_method_id
+            ? parseInt(payment_method_id)
+            : null,
           description_pattern,
           is_active: is_active === "1" ? 1 : 0,
         },

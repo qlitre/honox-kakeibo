@@ -17,6 +17,7 @@ export default createRoute(async (c) => {
   const headers: TableHeaderItem[] = [
     { name: "名前", textPosition: "left" },
     { name: "カテゴリ", textPosition: "left" },
+    { name: "支払い方法", textPosition: "left" },
     { name: "検索パターン", textPosition: "left" },
     { name: "状態", textPosition: "center" },
     { name: "操作", textPosition: "center" },
@@ -42,6 +43,9 @@ export default createRoute(async (c) => {
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                 {template.category_name}
+              </td>
+              <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                {template.payment_method_name || "-"}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                 {template.description_pattern}

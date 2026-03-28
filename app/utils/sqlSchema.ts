@@ -1,6 +1,7 @@
 type Join = {
   table: string;
   condition: string;
+  type?: "LEFT";
 };
 
 type SchemaEntry = {
@@ -142,12 +143,16 @@ export const schema: Schema = {
       "id",
       "name",
       "expense_category_id",
+      "payment_method_id",
       "description_pattern",
       "is_active",
       "created_at",
       "updated_at",
     ],
-    joinFields: ["expense_category.name AS category_name"],
+    joinFields: [
+      "expense_category.name AS category_name",
+      "payment_method.name AS payment_method_name",
+    ],
     tableName: "expense_check_template",
     joins: [
       {
@@ -155,8 +160,14 @@ export const schema: Schema = {
         condition:
           "expense_check_template.expense_category_id = expense_category.id",
       },
+      {
+        table: "payment_method",
+        condition:
+          "expense_check_template.payment_method_id = payment_method.id",
+        type: "LEFT",
+      },
     ],
     requiredFields: ["name", "expense_category_id", "description_pattern"],
-    optionalFields: ["is_active"],
+    optionalFields: ["is_active", "payment_method_id"],
   },
 };

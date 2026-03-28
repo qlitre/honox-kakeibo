@@ -228,6 +228,8 @@ interface ExpenseCheckResult {
     description_pattern: string;
     expense_category_id: number;
     category_name: string;
+    payment_method_id: number | null;
+    payment_method_name: string | null;
   };
   expense: {
     id: number;
@@ -249,14 +251,17 @@ export async function checkMonthlyExpenses(params: {
 
   // チェックテンプレート一覧を取得
   const templatesQuery = `
-    SELECT 
+    SELECT
       ect.id,
       ect.name,
       ect.description_pattern,
       ect.expense_category_id,
-      ec.name as category_name
+      ec.name as category_name,
+      ect.payment_method_id,
+      pm.name as payment_method_name
     FROM expense_check_template ect
     LEFT JOIN expense_category ec ON ect.expense_category_id = ec.id
+    LEFT JOIN payment_method pm ON ect.payment_method_id = pm.id
     WHERE ect.is_active = 1
     ORDER BY ect.name
   `;

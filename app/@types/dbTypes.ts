@@ -78,12 +78,14 @@ export type ExpenseWithDetails = Expense & {
 export type ExpenseCheckTemplate = KakeiboBaseField & {
   name: string;
   expense_category_id: number;
+  payment_method_id: number | null;
   description_pattern: string;
   is_active: number; // sqliteのbool型は内部的に0か1となる
 };
 
 export type ExpenseCheckTemplateWithDetails = ExpenseCheckTemplate & {
   category_name: string;
+  payment_method_name: string | null;
 };
 
 // 各サマリーデータの型定義

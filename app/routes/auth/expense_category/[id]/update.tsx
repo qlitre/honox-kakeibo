@@ -21,7 +21,7 @@ const successMesage = "支出カテゴリの編集に成功しました";
 const redirectUrl = "/auth/expense_category";
 
 export default createRoute(async (c) => {
-  const id = c.req.param("id");
+  const id = c.req.param("id")!;
   const detail = await fetchDetail<ExpenseCategory>({
     db: c.env.DB,
     table: endPoint,
@@ -46,7 +46,7 @@ export default createRoute(async (c) => {
 export const POST = createRoute(
   zValidator("form", schema, async (result, c) => {
     if (!result.success) {
-      const id = c.req.param("id");
+      const id = c.req.param("id")!;
       const { name } = result.data;
       return c.render(
         <CategoryCreateForm
@@ -59,7 +59,7 @@ export const POST = createRoute(
     }
   }),
   async (c) => {
-    const id = c.req.param("id");
+    const id = c.req.param("id")!;
     const { name } = c.req.valid("form");
     const body = {
       name: name,

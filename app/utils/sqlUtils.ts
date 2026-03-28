@@ -14,7 +14,8 @@ export const generateSelectQuery = (tableName: TableName) => {
   let query = `SELECT ${fields} FROM ${tableName}`;
   if (tableConfig.joins && tableConfig.joins.length > 0) {
     tableConfig.joins.forEach((join) => {
-      query += ` JOIN ${join.table} ON ${join.condition}`;
+      const joinType = join.type === "LEFT" ? "LEFT JOIN" : "JOIN";
+      query += ` ${joinType} ${join.table} ON ${join.condition}`;
     });
   }
   return query;

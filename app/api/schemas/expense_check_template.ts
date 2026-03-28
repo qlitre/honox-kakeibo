@@ -4,9 +4,11 @@ export const ExpenseCheckTemplateSchema = z.object({
   id: z.number(),
   name: z.string(),
   expense_category_id: z.number(),
+  payment_method_id: z.number().nullable(),
   description_pattern: z.string(),
   is_active: z.number(),
   category_name: z.string(),
+  payment_method_name: z.string().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -14,6 +16,7 @@ export const ExpenseCheckTemplateSchema = z.object({
 export const CreateExpenseCheckTemplateSchema = z.object({
   name: z.string(),
   expense_category_id: z.number(),
+  payment_method_id: z.number().nullable().optional(),
   description_pattern: z.string(),
   is_active: z.number().optional(),
 });
@@ -21,6 +24,7 @@ export const CreateExpenseCheckTemplateSchema = z.object({
 export const UpdateExpenseCheckTemplateSchema = z.object({
   name: z.string(),
   expense_category_id: z.number(),
+  payment_method_id: z.number().nullable().optional(),
   description_pattern: z.string(),
   is_active: z.number().optional(),
 });
