@@ -16,28 +16,28 @@
   "dependencies": {
     "@hono/firebase-auth": "^1.4.2",
     "@hono/swagger-ui": "^0.6.1",
-    "@hono/zod-openapi": "^1.2.2",
+    "@hono/zod-openapi": "^1.2.4",
     "@hono/zod-validator": "^0.7.5",
     "@tailwindcss/forms": "^0.5.11",
     "chart.js": "^4.5.1",
     "firebase": "^12.11.0",
-    "hono": "^4.12.8",
+    "hono": "^4.12.10",
     "honox": "^0.1.55",
     "typescript": "^6.0.2",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260404.1",
-    "@hono/vite-build": "^1.9.3",
-    "@hono/vite-dev-server": "^0.24.1",
-    "@tailwindcss/vite": "^4.1.17",
-    "@vitest/ui": "^4.0.18",
+    "@hono/vite-build": "^1.11.0",
+    "@hono/vite-dev-server": "^0.25.1",
+    "@tailwindcss/vite": "^4.2.2",
+    "@vitest/ui": "^4.1.2",
     "jsdom": "^29.0.1",
-    "knip": "^5.84.1",
+    "knip": "^6.3.0",
     "prettier": "^3.8.1",
     "tailwindcss": "^4.2.1",
-    "vite": "^7.3.1",
-    "vitest": "^4.0.18",
-    "wrangler": "^4.61.1"
+    "vite": "^8.0.3",
+    "vitest": "^4.1.2",
+    "wrangler": "^4.80.0"
   }
 }
