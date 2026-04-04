@@ -1,7 +1,11 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "monthly"
-      day: "friday"
+      interval: 'monthly'
+      day: 'friday'
+    groups:
+      dependencies:
+      patterns:
+        - '*'
