@@ -27,7 +27,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260404.1",
+    "@cloudflare/workers-types": "^4.20260503.1",
     "@hono/vite-build": "^1.9.3",
     "@hono/vite-dev-server": "^0.24.1",
     "@tailwindcss/vite": "^4.2.4",
