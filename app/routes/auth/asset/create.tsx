@@ -1,20 +1,20 @@
-import type { Asset } from "@/@types/dbTypes";
-import { createRoute } from "honox/factory";
-import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
-import { setCookie } from "hono/cookie";
+import type { Asset } from '@/@types/dbTypes'
+import { createRoute } from 'honox/factory'
+import { zValidator } from '@hono/zod-validator'
+import { z } from 'zod'
+import { setCookie } from 'hono/cookie'
 import {
   alertCookieMaxage,
   dangerAlertCookieKey,
   successAlertCookieKey,
-} from "@/settings/kakeiboSettings";
-import { sendSlackNotification } from "@/libs/slack";
-import { createItem } from "@/libs/dbService";
-import { checkAssetCategoryDuplication } from "@/utils/assetValidation";
+} from '@/settings/kakeiboSettings'
+import { sendSlackNotification } from '@/libs/slack'
+import { createItem } from '@/libs/dbService'
+import { checkAssetCategoryDuplication } from '@/utils/assetValidation'
 
-const endPoint = "asset";
-const successMessage = "資産追加に成功しました";
-const slackSuccessMessage = "資産が追加されました。";
+const endPoint = 'asset'
+const successMessage = '資産追加に成功しました'
+const slackSuccessMessage = '資産が追加されました。'
 
 /* --------------------- バリデーション --------------------- */
 const schema = z.object({
@@ -22,53 +22,52 @@ const schema = z.object({
   amount: z.string().regex(/^\d+$/), // 数値文字列のみ許可
   asset_category_id: z.string().regex(/^\d+$/),
   description: z.string(),
-});
+})
 
 /* --------------------- ルート --------------------- */
 export const POST = createRoute(
-  zValidator("form", schema, (result, c) => {
+  zValidator('form', schema, (result, c) => {
     if (!result.success) {
-      return c.redirect(`/auth/${endPoint}`, 303); // バリデーションエラー
+      return c.redirect(`/auth/${endPoint}`, 303) // バリデーションエラー
     }
   }),
   async (c) => {
     /* フォーム値を取得＆型変換 */
-    const { date, amount, asset_category_id, description } =
-      c.req.valid("form");
+    const { date, amount, asset_category_id, description } = c.req.valid('form')
 
     const hasDuplication = await checkAssetCategoryDuplication({
       db: c.env.DB,
       date,
       assetCategoryId: parseInt(asset_category_id, 10),
-    });
+    })
 
     if (hasDuplication) {
       setCookie(
         c,
         dangerAlertCookieKey,
-        "資産追加に失敗しました。同月に同カテゴリの資産が登録されています。",
-        { maxAge: alertCookieMaxage },
-      );
-      return c.redirect("/auth/asset", 303);
+        '資産追加に失敗しました。同月に同カテゴリの資産が登録されています。',
+        { maxAge: alertCookieMaxage }
+      )
+      return c.redirect('/auth/asset', 303)
     }
     const data = {
       date,
       amount: Number(amount),
       asset_category_id: Number(asset_category_id),
       description,
-    };
+    }
 
     try {
       const newItem = await createItem<Asset>({
         db: c.env.DB,
         table: endPoint,
         data,
-      });
+      })
 
       /* ---------- 成功後の処理 ---------- */
       setCookie(c, successAlertCookieKey, successMessage, {
         maxAge: alertCookieMaxage,
-      });
+      })
 
       const message = `
 ${slackSuccessMessage}
@@ -76,12 +75,12 @@ ${newItem.date}
 カテゴリ: ${newItem.category_name}
 金額: ${newItem.amount}
 詳細: ${newItem.description}
-      `.trim();
-      await sendSlackNotification(message, c.env.SLACK_WEBHOOK_URL);
-      return c.redirect(`/auth/${endPoint}?lastUpdate=${newItem.id}`, 303);
+      `.trim()
+      await sendSlackNotification(message, c.env.SLACK_WEBHOOK_URL)
+      return c.redirect(`/auth/${endPoint}?lastUpdate=${newItem.id}`, 303)
     } catch (err) {
-      console.error(`${endPoint} create error:`, err);
-      return c.json({ error: `Failed to add ${endPoint}` }, 500);
+      console.error(`${endPoint} create error:`, err)
+      return c.json({ error: `Failed to add ${endPoint}` }, 500)
     }
-  },
-);
+  }
+)
