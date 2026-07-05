@@ -33,7 +33,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260701.1",
     "@hono/vite-build": "^1.9.3",
-    "@hono/vite-dev-server": "^0.24.1",
+    "@hono/vite-dev-server": "^0.26.0",
     "@tailwindcss/vite": "^4.3.0",
     "@vitest/ui": "^4.1.2",
     "jsdom": "^29.1.1",
