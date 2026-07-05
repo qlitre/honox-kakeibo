@@ -1,24 +1,20 @@
 type Props = {
-  labels: string[];
-  incomeAmounts: number[];
-  expenseAmounts: number[];
-};
+  labels: string[]
+  incomeAmounts: number[]
+  expenseAmounts: number[]
+}
 
-export const BalanceTransitionChart = ({
-  labels,
-  incomeAmounts,
-  expenseAmounts,
-}: Props) => {
+export const BalanceTransitionChart = ({ labels, incomeAmounts, expenseAmounts }: Props) => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     interaction: {
-      mode: "index",
+      mode: 'index',
       intersect: false,
     },
     plugins: {
       legend: {
-        position: "top",
+        position: 'top',
         labels: {
           boxWidth: 12,
           padding: 15,
@@ -29,7 +25,7 @@ export const BalanceTransitionChart = ({
       },
       title: {
         display: true,
-        text: "収支",
+        text: '収支',
         font: {
           size: 16,
         },
@@ -39,7 +35,7 @@ export const BalanceTransitionChart = ({
         },
       },
       tooltip: {
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
         titleFont: {
           size: 14,
         },
@@ -67,14 +63,14 @@ export const BalanceTransitionChart = ({
       y: {
         beginAtZero: true,
         grid: {
-          color: "rgba(0, 0, 0, 0.1)",
+          color: 'rgba(0, 0, 0, 0.1)',
         },
         ticks: {
           font: {
             size: 10,
           },
           callback: function (value: any) {
-            return "¥" + Number(value).toLocaleString();
+            return '¥' + Number(value).toLocaleString()
           },
         },
       },
@@ -88,82 +84,79 @@ export const BalanceTransitionChart = ({
         borderWidth: 2,
       },
     },
-  };
+  }
 
   // 初期状態は両方表示
   const datasets = [
     {
-      type: "line",
-      label: "収入",
+      type: 'line',
+      label: '収入',
       data: incomeAmounts,
-      backgroundColor: "rgba(75, 192, 192, 0.5)",
-      borderColor: "rgba(75, 192, 192, 1)",
+      backgroundColor: 'rgba(75, 192, 192, 0.5)',
+      borderColor: 'rgba(75, 192, 192, 1)',
       tension: 0.4,
     },
     {
-      type: "line",
-      label: "支出",
+      type: 'line',
+      label: '支出',
       data: expenseAmounts,
-      borderColor: "rgba(255, 99, 132, 1)",
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
+      borderColor: 'rgba(255, 99, 132, 1)',
+      backgroundColor: 'rgba(255, 99, 132, 0.5)',
       tension: 0.4,
     },
-  ];
+  ]
 
   const data = {
     labels,
     datasets,
-  };
+  }
 
   return (
-    <div className="w-full balance-transition-chart-container">
-      <div className="mb-4 flex flex-wrap gap-2 justify-center sm:justify-start">
+    <div className='w-full balance-transition-chart-container'>
+      <div className='mb-4 flex flex-wrap gap-2 justify-center sm:justify-start'>
         <button
-          className="balance-view-mode-btn px-3 py-1 rounded-md text-sm font-medium transition-colors bg-blue-500 text-white cursor-pointer"
-          data-mode="both"
+          className='balance-view-mode-btn px-3 py-1 rounded-md text-sm font-medium transition-colors bg-blue-500 text-white cursor-pointer'
+          data-mode='both'
         >
           両方
         </button>
         <button
-          className="balance-view-mode-btn px-3 py-1 rounded-md text-sm font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer"
-          data-mode="income"
+          className='balance-view-mode-btn px-3 py-1 rounded-md text-sm font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer'
+          data-mode='income'
         >
           収入のみ
         </button>
         <button
-          className="balance-view-mode-btn px-3 py-1 rounded-md text-sm font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer"
-          data-mode="expense"
+          className='balance-view-mode-btn px-3 py-1 rounded-md text-sm font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer'
+          data-mode='expense'
         >
           支出のみ
         </button>
       </div>
 
-      <div className="balance-detail-container hidden mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-        <h4 className="font-medium text-blue-900 mb-2 balance-detail-title"></h4>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm sm:gap-4">
-          <div className="flex justify-between">
-            <span className="text-gray-600">収入:</span>
-            <span className="font-medium text-green-600 balance-detail-income"></span>
+      <div className='balance-detail-container hidden mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
+        <h4 className='font-medium text-blue-900 mb-2 balance-detail-title'></h4>
+        <div className='grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm sm:gap-4'>
+          <div className='flex justify-between'>
+            <span className='text-gray-600'>収入:</span>
+            <span className='font-medium text-green-600 balance-detail-income'></span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">支出:</span>
-            <span className="font-medium text-red-600 balance-detail-expense"></span>
+          <div className='flex justify-between'>
+            <span className='text-gray-600'>支出:</span>
+            <span className='font-medium text-red-600 balance-detail-expense'></span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">収支:</span>
-            <span className="font-medium balance-detail-balance"></span>
+          <div className='flex justify-between'>
+            <span className='text-gray-600'>収支:</span>
+            <span className='font-medium balance-detail-balance'></span>
           </div>
         </div>
-        <p className="text-xs text-gray-500 mt-2">クリックで詳細を非表示</p>
+        <p className='text-xs text-gray-500 mt-2'>クリックで詳細を非表示</p>
       </div>
 
-      <div
-        style={{ height: "300px" }}
-        className="cursor-pointer relative overflow-hidden"
-      >
+      <div style={{ height: '300px' }} className='cursor-pointer relative overflow-hidden'>
         <canvas
-          className="chart-canvas balance-transition-chart"
-          data-chart-type="line"
+          className='chart-canvas balance-transition-chart'
+          data-chart-type='line'
           data-chart-data={JSON.stringify(data)}
           data-chart-options={JSON.stringify(options)}
           data-labels={JSON.stringify(labels)}
@@ -172,9 +165,9 @@ export const BalanceTransitionChart = ({
         />
       </div>
 
-      <p className="balance-hint text-center text-sm text-gray-500 mt-2">
+      <p className='balance-hint text-center text-sm text-gray-500 mt-2'>
         グラフの点をクリックすると詳細を表示します
       </p>
     </div>
-  );
-};
+  )
+}

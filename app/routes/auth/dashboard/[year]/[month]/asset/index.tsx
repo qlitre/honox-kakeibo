@@ -1,9 +1,9 @@
-import type { AssetWithCategory, AssetCategory } from "@/@types/dbTypes";
-import type { AssetTableItems } from "@/@types/common";
-import { createRoute } from "honox/factory";
-import { fetchListWithFilter, fetchSimpleList } from "@/libs/dbService";
-import { AssetPieChart } from "@/components/chart/AssetPieChart";
-import { AssetBarChart } from "@/components/chart/AssetBarChart";
+import type { AssetWithCategory, AssetCategory } from '@/@types/dbTypes'
+import type { AssetTableItems } from '@/@types/common'
+import { createRoute } from 'honox/factory'
+import { fetchListWithFilter, fetchSimpleList } from '@/libs/dbService'
+import { AssetPieChart } from '@/components/chart/AssetPieChart'
+import { AssetBarChart } from '@/components/chart/AssetBarChart'
 import {
   getPrevMonthYear,
   getPrevMonth,
@@ -11,58 +11,58 @@ import {
   getEndOfMonth,
   getAnnualStartYear,
   formatDiff,
-} from "@/utils/dashboardUtils";
-import { annualStartMonth } from "@/settings/kakeiboSettings";
-import { PageHeader } from "@/components/PageHeader";
-import { MonthPager } from "@/components/MonthPager";
-import { colorSchema } from "@/settings/kakeiboSettings";
-import { Card } from "@/components/share/Card";
-import { CardWithHeading } from "@/components/share/CardWithHeading";
-import { AssetTable } from "@/components/AssetTable";
+} from '@/utils/dashboardUtils'
+import { annualStartMonth } from '@/settings/kakeiboSettings'
+import { PageHeader } from '@/components/PageHeader'
+import { MonthPager } from '@/components/MonthPager'
+import { colorSchema } from '@/settings/kakeiboSettings'
+import { Card } from '@/components/share/Card'
+import { CardWithHeading } from '@/components/share/CardWithHeading'
+import { AssetTable } from '@/components/AssetTable'
 
 export default createRoute(async (c) => {
-  const db = c.env.DB;
-  const year = parseInt(c.req.param("year")!);
-  const month = parseInt(c.req.param("month")!);
-  const ge = getBeginningOfMonth(year, month);
-  const le = getEndOfMonth(year, month);
+  const db = c.env.DB
+  const year = parseInt(c.req.param('year')!)
+  const month = parseInt(c.req.param('month')!)
+  const ge = getBeginningOfMonth(year, month)
+  const le = getEndOfMonth(year, month)
 
   const asset = await fetchListWithFilter<AssetWithCategory>({
     db: db,
-    table: "asset",
+    table: 'asset',
     filters: `date[greater_equal]${ge}[and]date[less_equal]${le}`,
     limit: 100,
     offset: 0,
-  });
+  })
 
   // 前月
-  const prevYear = getPrevMonthYear(year, month);
-  const prevMonth = getPrevMonth(month);
-  const prevGe = getBeginningOfMonth(prevYear, prevMonth);
-  const prevLe = getEndOfMonth(prevYear, prevMonth);
+  const prevYear = getPrevMonthYear(year, month)
+  const prevMonth = getPrevMonth(month)
+  const prevGe = getBeginningOfMonth(prevYear, prevMonth)
+  const prevLe = getEndOfMonth(prevYear, prevMonth)
   const prevAsset = await fetchListWithFilter<AssetWithCategory>({
     db: db,
-    table: "asset",
+    table: 'asset',
     filters: `date[greater_equal]${prevGe}[and]date[less_equal]${prevLe}`,
     limit: 100,
     offset: 0,
-  });
+  })
   // 年初
-  const annualStartYear = getAnnualStartYear(year, month);
-  const annualStartGe = getBeginningOfMonth(annualStartYear, annualStartMonth);
-  const annualStartLe = getEndOfMonth(annualStartYear, annualStartMonth);
+  const annualStartYear = getAnnualStartYear(year, month)
+  const annualStartGe = getBeginningOfMonth(annualStartYear, annualStartMonth)
+  const annualStartLe = getEndOfMonth(annualStartYear, annualStartMonth)
   const annualStartAsset = await fetchListWithFilter<AssetWithCategory>({
     db: db,
-    table: "asset",
+    table: 'asset',
     filters: `date[greater_equal]${annualStartGe}[and]date[less_equal]${annualStartLe}`,
     limit: 100,
     offset: 0,
-  });
+  })
 
-  const tableItems: AssetTableItems = {};
+  const tableItems: AssetTableItems = {}
   // 当月の記入
   for (const elm of asset.contents) {
-    const categoryId = elm.asset_category_id;
+    const categoryId = elm.asset_category_id
     tableItems[categoryId] = {
       categoryName: elm.category_name,
       now: elm.amount,
@@ -70,16 +70,16 @@ export default createRoute(async (c) => {
       prevDiffRatio: 0,
       annualStartDiff: 0,
       annualStartDiffRatio: 0,
-    };
+    }
   }
   // 前月の記入
   for (const elm of prevAsset.contents) {
-    const categoryId = elm.asset_category_id;
+    const categoryId = elm.asset_category_id
     if (categoryId in tableItems) {
-      const obj = tableItems[categoryId];
-      const diff = obj.now - elm.amount;
-      obj.prevDiff = diff;
-      obj.prevDiffRatio = diff / elm.amount;
+      const obj = tableItems[categoryId]
+      const diff = obj.now - elm.amount
+      obj.prevDiff = diff
+      obj.prevDiffRatio = diff / elm.amount
     } else {
       tableItems[categoryId] = {
         categoryName: elm.category_name,
@@ -88,17 +88,17 @@ export default createRoute(async (c) => {
         prevDiffRatio: -1,
         annualStartDiff: 0,
         annualStartDiffRatio: 0,
-      };
+      }
     }
   }
   // 年初の記入
   for (const elm of annualStartAsset.contents) {
-    const categoryId = elm.asset_category_id;
+    const categoryId = elm.asset_category_id
     if (categoryId in tableItems) {
-      const obj = tableItems[categoryId];
-      const diff = obj.now - elm.amount;
-      obj.annualStartDiff = diff;
-      obj.annualStartDiffRatio = diff / elm.amount;
+      const obj = tableItems[categoryId]
+      const diff = obj.now - elm.amount
+      obj.annualStartDiff = diff
+      obj.annualStartDiffRatio = diff / elm.amount
     } else {
       tableItems[categoryId] = {
         categoryName: elm.category_name,
@@ -107,86 +107,77 @@ export default createRoute(async (c) => {
         prevDiffRatio: 0,
         annualStartDiff: -1 * elm.amount,
         annualStartDiffRatio: -1,
-      };
+      }
     }
   }
 
   // 合計金額の計算
-  const totalAmount = asset.contents.reduce(
-    (sum, item) => sum + item.amount,
-    0,
-  );
-  const prevTotalAmount = prevAsset.contents.reduce(
-    (sum, item) => sum + item.amount,
-    0,
-  );
-  const prevTotalDiff = totalAmount - prevTotalAmount;
-  const prevTotalDiffRatio = prevTotalDiff / prevTotalAmount;
-  const annualTotalAmount = annualStartAsset.contents.reduce(
-    (sum, item) => sum + item.amount,
-    0,
-  );
-  const annualTotalDiff = totalAmount - annualTotalAmount;
-  const annualTotalDiffRatio = annualTotalDiff / annualTotalAmount;
+  const totalAmount = asset.contents.reduce((sum, item) => sum + item.amount, 0)
+  const prevTotalAmount = prevAsset.contents.reduce((sum, item) => sum + item.amount, 0)
+  const prevTotalDiff = totalAmount - prevTotalAmount
+  const prevTotalDiffRatio = prevTotalDiff / prevTotalAmount
+  const annualTotalAmount = annualStartAsset.contents.reduce((sum, item) => sum + item.amount, 0)
+  const annualTotalDiff = totalAmount - annualTotalAmount
+  const annualTotalDiffRatio = annualTotalDiff / annualTotalAmount
 
   // BarChart用のデータの取得
   const preReq = await fetchListWithFilter<AssetWithCategory>({
     db: db,
-    table: "asset",
+    table: 'asset',
     limit: 1,
     offset: 0,
-  });
-  const totalCount = preReq.totalCount;
+  })
+  const totalCount = preReq.totalCount
   const allAssets = await fetchListWithFilter<AssetWithCategory>({
     db: db,
-    table: "asset",
+    table: 'asset',
     limit: totalCount,
     offset: 0,
-  });
+  })
 
   // カテゴリ一覧取得
   const categories = await fetchSimpleList<AssetCategory>({
     db,
-    table: "asset_category",
-    orders: "updated_at",
-  });
+    table: 'asset_category',
+    orders: 'updated_at',
+  })
 
-  const colormap: Record<number, string> = {};
+  const colormap: Record<number, string> = {}
   for (let i = 0; i < categories.contents.length; i++) {
-    const categoryId = categories.contents[i].id;
-    const color = colorSchema[i];
-    colormap[categoryId] = color;
+    const categoryId = categories.contents[i].id
+    const color = colorSchema[i]
+    colormap[categoryId] = color
   }
 
-  const prevDiffFmt = formatDiff(prevTotalDiffRatio);
-  const annualDiffFmt = formatDiff(annualTotalDiffRatio);
+  const prevDiffFmt = formatDiff(prevTotalDiffRatio)
+  const annualDiffFmt = formatDiff(annualTotalDiffRatio)
 
   return c.render(
-    <div className="space-y-6">
-      <PageHeader title="資産ダッシュボード"></PageHeader>
-      <MonthPager year={year} month={month} hrefSuffix="asset"></MonthPager>
+    <div className='space-y-6'>
+      <PageHeader title='資産ダッシュボード'></PageHeader>
+      <MonthPager year={year} month={month} hrefSuffix='asset'></MonthPager>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <CardWithHeading heading="総資産">
-          <span className="text-gray-900">¥{totalAmount.toLocaleString()}</span>
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
+        <CardWithHeading heading='総資産'>
+          <span className='text-gray-900'>¥{totalAmount.toLocaleString()}</span>
         </CardWithHeading>
-        <CardWithHeading heading="前月比">
+        <CardWithHeading heading='前月比'>
           <div className={`flex flex-col ${prevDiffFmt.color}`}>
             <span>
               {prevDiffFmt.sign}¥{Math.abs(prevTotalDiff).toLocaleString()}
             </span>
-            <span className="text-base font-medium">
+            <span className='text-base font-medium'>
               {prevDiffFmt.sign}
               {(Math.abs(prevTotalDiffRatio) * 100).toFixed(2)}%
             </span>
           </div>
         </CardWithHeading>
-        <CardWithHeading heading="年初比">
+        <CardWithHeading heading='年初比'>
           <div className={`flex flex-col ${annualDiffFmt.color}`}>
             <span>
               {annualDiffFmt.sign}¥{Math.abs(annualTotalDiff).toLocaleString()}
             </span>
-            <span className="text-base font-medium">
+            <span className='text-base font-medium'>
               {annualDiffFmt.sign}
               {(Math.abs(annualTotalDiffRatio) * 100).toFixed(2)}%
             </span>
@@ -194,10 +185,10 @@ export default createRoute(async (c) => {
         </CardWithHeading>
       </div>
 
-      <section className="space-y-3">
-        <h3 className="text-lg font-semibold text-gray-800 px-1">資産内訳</h3>
-        <div className="grid lg:grid-cols-3 gap-4">
-          <Card className="lg:col-span-2">
+      <section className='space-y-3'>
+        <h3 className='text-lg font-semibold text-gray-800 px-1'>資産内訳</h3>
+        <div className='grid lg:grid-cols-3 gap-4'>
+          <Card className='lg:col-span-2'>
             <AssetTable
               totalAmount={totalAmount}
               prevTotalDiff={prevTotalDiff}
@@ -208,18 +199,15 @@ export default createRoute(async (c) => {
             />
           </Card>
           <Card>
-            <div className="w-full">
-              <AssetPieChart
-                assets={asset.contents}
-                colorMap={colormap}
-              ></AssetPieChart>
+            <div className='w-full'>
+              <AssetPieChart assets={asset.contents} colorMap={colormap}></AssetPieChart>
             </div>
           </Card>
         </div>
       </section>
 
-      <section className="space-y-3">
-        <h3 className="text-lg font-semibold text-gray-800 px-1">資産推移</h3>
+      <section className='space-y-3'>
+        <h3 className='text-lg font-semibold text-gray-800 px-1'>資産推移</h3>
         <Card>
           <AssetBarChart
             assets={allAssets.contents}
@@ -229,6 +217,6 @@ export default createRoute(async (c) => {
         </Card>
       </section>
     </div>,
-    { title: "資産ダッシュボード" },
-  );
-});
+    { title: '資産ダッシュボード' }
+  )
+})

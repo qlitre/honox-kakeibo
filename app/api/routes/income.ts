@@ -1,16 +1,16 @@
-import { createCrudRoutes } from "@/api/helpers/createCrudRoutes";
+import { createCrudRoutes } from '@/api/helpers/createCrudRoutes'
 import {
   IncomeSchema,
   CreateIncomeSchema,
   UpdateIncomeSchema,
   IncomeSummarySchema,
-} from "@/api/schemas/income";
+} from '@/api/schemas/income'
 
 export const incomeRoutes = createCrudRoutes({
-  tableName: "income",
-  tag: "Income",
+  tableName: 'income',
+  tag: 'Income',
   entitySchema: IncomeSchema,
   createSchema: CreateIncomeSchema,
   updateSchema: UpdateIncomeSchema,
   summarySchema: IncomeSummarySchema,
-});
+})

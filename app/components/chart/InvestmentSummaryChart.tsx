@@ -1,24 +1,20 @@
 type Props = {
-  labels: string[];
-  holdingValues: number[];
-  investmentAmounts: number[];
-};
+  labels: string[]
+  holdingValues: number[]
+  investmentAmounts: number[]
+}
 
-export const InvestmentSummaryChart = ({
-  labels,
-  holdingValues,
-  investmentAmounts,
-}: Props) => {
+export const InvestmentSummaryChart = ({ labels, holdingValues, investmentAmounts }: Props) => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     interaction: {
-      mode: "index",
+      mode: 'index',
       intersect: false,
     },
     plugins: {
       legend: {
-        position: "top",
+        position: 'top',
         labels: {
           boxWidth: 12,
           padding: 15,
@@ -29,7 +25,7 @@ export const InvestmentSummaryChart = ({
       },
       title: {
         display: true,
-        text: "投資金額推移",
+        text: '投資金額推移',
         font: {
           size: 16,
         },
@@ -39,7 +35,7 @@ export const InvestmentSummaryChart = ({
         },
       },
       tooltip: {
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
         titleFont: {
           size: 14,
         },
@@ -50,9 +46,9 @@ export const InvestmentSummaryChart = ({
         cornerRadius: 6,
         callbacks: {
           label: function (context: any) {
-            const label = context.dataset.label || "";
-            const value = Number(context.parsed.y).toLocaleString();
-            return `${label}: ¥${value}`;
+            const label = context.dataset.label || ''
+            const value = Number(context.parsed.y).toLocaleString()
+            return `${label}: ¥${value}`
           },
         },
       },
@@ -74,14 +70,14 @@ export const InvestmentSummaryChart = ({
       y: {
         beginAtZero: true,
         grid: {
-          color: "rgba(0, 0, 0, 0.1)",
+          color: 'rgba(0, 0, 0, 0.1)',
         },
         ticks: {
           font: {
             size: 10,
           },
           callback: function (value: any) {
-            return "¥" + Number(value).toLocaleString();
+            return '¥' + Number(value).toLocaleString()
           },
         },
       },
@@ -98,38 +94,38 @@ export const InvestmentSummaryChart = ({
         borderWidth: 1,
       },
     },
-  };
+  }
 
   const data = {
     labels,
     datasets: [
       {
-        type: "bar",
-        label: "投資金額",
+        type: 'bar',
+        label: '投資金額',
         data: investmentAmounts,
-        backgroundColor: "rgba(75, 192, 192, 0.5)",
-        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+        borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
       },
       {
-        type: "line",
-        label: "保有価額",
+        type: 'line',
+        label: '保有価額',
         data: holdingValues,
-        borderColor: "rgba(255, 99, 132, 1)",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
         tension: 0.4,
       },
     ],
-  };
+  }
 
   return (
-    <div className="w-full" style={{ height: "350px" }}>
+    <div className='w-full' style={{ height: '350px' }}>
       <canvas
-        className="chart-canvas"
-        data-chart-type="bar"
+        className='chart-canvas'
+        data-chart-type='bar'
         data-chart-data={JSON.stringify(data)}
         data-chart-options={JSON.stringify(options)}
       />
     </div>
-  );
-};
+  )
+}

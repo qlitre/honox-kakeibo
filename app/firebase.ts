@@ -1,6 +1,6 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { Context } from "hono";
+import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
+import { Context } from 'hono'
 
 export const auth = (c: Context) => {
   const firebaseConfig = {
@@ -10,8 +10,8 @@ export const auth = (c: Context) => {
     storageBucket: c.env.FB_STORAGE_BUCKET,
     messagingSenderId: c.env.FB_MESSAGE_SENDER_ID,
     appId: c.env.FB_APP_ID,
-  };
-  const app = initializeApp(firebaseConfig);
-  const _auth = getAuth(app);
-  return _auth;
-};
+  }
+  const app = initializeApp(firebaseConfig)
+  const _auth = getAuth(app)
+  return _auth
+}

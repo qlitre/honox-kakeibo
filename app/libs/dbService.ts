@@ -1,4 +1,4 @@
-import type { TableName } from "@/utils/sqlUtils";
+import type { TableName } from '@/utils/sqlUtils'
 import {
   generateSelectQuery,
   buildSqlOrderByClause,
@@ -7,46 +7,45 @@ import {
   generateUpdateQuery,
   generateQueryBindValues,
   generateSummaryQuery,
-} from "@/utils/sqlUtils";
+} from '@/utils/sqlUtils'
 
 /* ---------- 共通レスポンス型 ---------- */
 interface ListResponse<T> {
-  contents: T[];
-  totalCount: number;
-  limit: number;
-  offset: number;
-  pageSize: number;
+  contents: T[]
+  totalCount: number
+  limit: number
+  offset: number
+  pageSize: number
 }
 
 /* ---------- 一覧取得 (フィルタ／ソート有) ---------- */
 export async function fetchListWithFilter<T>(params: {
-  db: D1Database;
-  table: TableName;
-  filters?: string;
-  orders?: string;
-  limit: number;
-  offset: number;
+  db: D1Database
+  table: TableName
+  filters?: string
+  orders?: string
+  limit: number
+  offset: number
 }): Promise<ListResponse<T>> {
-  const { db, table, filters, orders, limit, offset } = params;
+  const { db, table, filters, orders, limit, offset } = params
 
-  let sql = generateSelectQuery(table);
-  let countSql = `SELECT COUNT(*) AS total FROM ${table}`;
+  let sql = generateSelectQuery(table)
+  let countSql = `SELECT COUNT(*) AS total FROM ${table}`
 
   if (filters) {
-    const where = buildSqlWhereClause(table, filters);
-    sql += ` ${where}`;
-    countSql += ` ${where}`;
+    const where = buildSqlWhereClause(table, filters)
+    sql += ` ${where}`
+    countSql += ` ${where}`
   }
 
   if (orders) {
-    sql += ` ${buildSqlOrderByClause(table, orders)}`;
+    sql += ` ${buildSqlOrderByClause(table, orders)}`
   }
 
-  sql += ` LIMIT ? OFFSET ?`;
+  sql += ` LIMIT ? OFFSET ?`
 
-  const { results } = await db.prepare(sql).bind(limit, offset).all();
-  const total =
-    (await db.prepare(countSql).first<{ total: number }>())?.total ?? 0;
+  const { results } = await db.prepare(sql).bind(limit, offset).all()
+  const total = (await db.prepare(countSql).first<{ total: number }>())?.total ?? 0
 
   return {
     contents: results as T[],
@@ -54,25 +53,25 @@ export async function fetchListWithFilter<T>(params: {
     limit,
     offset,
     pageSize: Math.ceil(total / limit),
-  };
+  }
 }
 
 /* ---------- 一覧取得 (フィルタなし) ---------- */
 export async function fetchSimpleList<T>(params: {
-  db: D1Database;
-  table: TableName;
-  orders?: string;
-  limit?: number;
+  db: D1Database
+  table: TableName
+  orders?: string
+  limit?: number
 }): Promise<ListResponse<T>> {
-  const { db, table, orders, limit = 100 } = params;
+  const { db, table, orders, limit = 100 } = params
 
-  let sql = generateSelectQuery(table);
+  let sql = generateSelectQuery(table)
   if (orders) {
-    sql += ` ${buildSqlOrderByClause(table, orders)}`;
+    sql += ` ${buildSqlOrderByClause(table, orders)}`
   }
-  sql += ` LIMIT ${limit}`;
+  sql += ` LIMIT ${limit}`
 
-  const { results } = await db.prepare(sql).all();
+  const { results } = await db.prepare(sql).all()
 
   return {
     contents: results as T[],
@@ -80,106 +79,105 @@ export async function fetchSimpleList<T>(params: {
     limit,
     offset: 0,
     pageSize: 1,
-  };
+  }
 }
 
 /* ---------- 単一詳細取得 ---------- */
 export async function fetchDetail<T>(params: {
-  db: D1Database;
-  table: TableName;
-  id: number | string;
+  db: D1Database
+  table: TableName
+  id: number | string
 }): Promise<T | null> {
-  const { db, table, id } = params;
+  const { db, table, id } = params
 
-  const sql = `${generateSelectQuery(table)} WHERE ${table}.id = ?`;
-  const record = await db.prepare(sql).bind(id).first<T>();
+  const sql = `${generateSelectQuery(table)} WHERE ${table}.id = ?`
+  const record = await db.prepare(sql).bind(id).first<T>()
 
-  return record ?? null;
+  return record ?? null
 }
 
 /* ---------- レコード追加 (CREATE) ---------- */
 export async function createItem<T>(params: {
-  db: D1Database;
-  table: TableName;
-  data: Record<string, unknown>;
+  db: D1Database
+  table: TableName
+  data: Record<string, unknown>
 }): Promise<T> {
-  const { db, table, data } = params;
+  const { db, table, data } = params
 
-  const insertSql = await generateInsertQuery(table);
-  const values = await generateQueryBindValues(table, data);
+  const insertSql = await generateInsertQuery(table)
+  const values = await generateQueryBindValues(table, data)
 
   const insertResult = await db
     .prepare(insertSql)
     .bind(...values)
-    .run();
+    .run()
   if (!insertResult.success) {
-    throw new Error(`Failed to insert into ${table}`);
+    throw new Error(`Failed to insert into ${table}`)
   }
 
   // 直前に入れた行を取得
-  const lastId =
-    (insertResult.meta as { last_row_id?: number }).last_row_id ?? undefined;
+  const lastId = (insertResult.meta as { last_row_id?: number }).last_row_id ?? undefined
 
   if (lastId === undefined) {
-    throw new Error(`Cannot fetch last_row_id for ${table}`);
+    throw new Error(`Cannot fetch last_row_id for ${table}`)
   }
 
-  const detail = await fetchDetail<T>({ db, table, id: lastId });
-  if (!detail) throw new Error(`Inserted ${table} not found`);
+  const detail = await fetchDetail<T>({ db, table, id: lastId })
+  if (!detail) throw new Error(`Inserted ${table} not found`)
 
-  return detail;
+  return detail
 }
 
 /* ---------- レコード更新 (UPDATE) ---------- */
 export async function updateItem<T>(params: {
-  db: D1Database;
-  table: TableName;
-  id: number | string;
-  data: Record<string, unknown>;
+  db: D1Database
+  table: TableName
+  id: number | string
+  data: Record<string, unknown>
 }): Promise<T> {
-  const { db, table, id, data } = params;
+  const { db, table, id, data } = params
 
-  const updateSql = await generateUpdateQuery(table);
-  const values = await generateQueryBindValues(table, data);
+  const updateSql = await generateUpdateQuery(table)
+  const values = await generateQueryBindValues(table, data)
 
   // updated_at を自動更新するカラムがある場合は utilities 内で生成済み
-  values.push(new Date().toISOString().replace("T", " ").split(".")[0]);
-  values.push(id);
+  values.push(new Date().toISOString().replace('T', ' ').split('.')[0])
+  values.push(id)
 
   const updateResult = await db
     .prepare(updateSql)
     .bind(...values)
-    .run();
+    .run()
   if (!updateResult.success) {
-    throw new Error(`Failed to update ${table}`);
+    throw new Error(`Failed to update ${table}`)
   }
 
-  const detail = await fetchDetail<T>({ db, table, id });
-  if (!detail) throw new Error(`Updated ${table} not found`);
+  const detail = await fetchDetail<T>({ db, table, id })
+  if (!detail) throw new Error(`Updated ${table} not found`)
 
-  return detail;
+  return detail
 }
 
 /* ---------- レコード削除 (DELETE) ---------- */
 export async function deleteItem(params: {
-  db: D1Database;
-  table: TableName;
-  id: number | string;
+  db: D1Database
+  table: TableName
+  id: number | string
 }): Promise<void> {
-  const { db, table, id } = params;
+  const { db, table, id } = params
 
-  const deleteSql = `DELETE FROM ${table} WHERE id = ?`;
-  const del = await db.prepare(deleteSql).bind(id).run();
+  const deleteSql = `DELETE FROM ${table} WHERE id = ?`
+  const del = await db.prepare(deleteSql).bind(id).run()
 
   if (!del.success) {
-    throw new Error(`Failed to delete from ${table}`);
+    throw new Error(`Failed to delete from ${table}`)
   }
 }
 
 /** 集計結果の型 */
 type SummaryResponse<T> = {
-  summary: T[];
-};
+  summary: T[]
+}
 
 /**
  * テーブルのサマリー（合計・月次集計など）を取得する
@@ -190,64 +188,64 @@ type SummaryResponse<T> = {
  *                 （SELECT 句で定義したエイリアスを並べ替えたい場合など）
  */
 export async function fetchSummary<T>(params: {
-  db: D1Database;
-  table: TableName;
-  filters?: string;
-  groupBy?: string;
-  orders?: string;
-  orderRaw?: string; // ⭐ 追加
+  db: D1Database
+  table: TableName
+  filters?: string
+  groupBy?: string
+  orders?: string
+  orderRaw?: string // ⭐ 追加
 }): Promise<SummaryResponse<T>> {
-  const { db, table, filters, groupBy, orders, orderRaw } = params;
+  const { db, table, filters, groupBy, orders, orderRaw } = params
 
-  let sql = generateSummaryQuery(table);
+  let sql = generateSummaryQuery(table)
 
   if (filters) {
-    sql += ` ${buildSqlWhereClause(table, filters)}`;
+    sql += ` ${buildSqlWhereClause(table, filters)}`
   }
   if (groupBy) {
-    sql += ` GROUP BY ${groupBy}`;
+    sql += ` GROUP BY ${groupBy}`
   }
 
   // ── 並べ替え ─────────────────────────────
   if (orderRaw) {
-    sql += ` ORDER BY ${orderRaw}`; // alias をそのまま使用
+    sql += ` ORDER BY ${orderRaw}` // alias をそのまま使用
   } else if (orders) {
-    sql += ` ${buildSqlOrderByClause(table, orders)}`; // 既存ロジック
+    sql += ` ${buildSqlOrderByClause(table, orders)}` // 既存ロジック
   }
   // ─────────────────────────────────────
 
-  const { results } = await db.prepare(sql).all();
-  return { summary: results as T[] };
+  const { results } = await db.prepare(sql).all()
+  return { summary: results as T[] }
 }
 
 /* ---------- 定期支払いチェック ---------- */
 interface ExpenseCheckResult {
   template: {
-    id: number;
-    name: string;
-    description_pattern: string;
-    expense_category_id: number;
-    category_name: string;
-    payment_method_id: number | null;
-    payment_method_name: string | null;
-  };
+    id: number
+    name: string
+    description_pattern: string
+    expense_category_id: number
+    category_name: string
+    payment_method_id: number | null
+    payment_method_name: string | null
+  }
   expense: {
-    id: number;
-    date: string;
-    amount: number;
-    description: string;
-  } | null;
-  isRegistered: boolean;
+    id: number
+    date: string
+    amount: number
+    description: string
+  } | null
+  isRegistered: boolean
 }
 
 export async function checkMonthlyExpenses(params: {
-  db: D1Database;
-  year: string;
-  month: string;
+  db: D1Database
+  year: string
+  month: string
 }): Promise<ExpenseCheckResult[]> {
-  const { db, year, month } = params;
+  const { db, year, month } = params
 
-  const targetDate = `${year}-${month.padStart(2, "0")}`;
+  const targetDate = `${year}-${month.padStart(2, '0')}`
 
   // チェックテンプレート一覧を取得
   const templatesQuery = `
@@ -264,12 +262,12 @@ export async function checkMonthlyExpenses(params: {
     LEFT JOIN payment_method pm ON ect.payment_method_id = pm.id
     WHERE ect.is_active = 1
     ORDER BY ect.name
-  `;
+  `
 
-  const { results: templates } = await db.prepare(templatesQuery).all();
+  const { results: templates } = await db.prepare(templatesQuery).all()
 
   // 各テンプレートについて該当する支出があるかチェック
-  const checkResults: ExpenseCheckResult[] = [];
+  const checkResults: ExpenseCheckResult[] = []
 
   for (const template of templates || []) {
     const expenseQuery = `
@@ -284,23 +282,19 @@ export async function checkMonthlyExpenses(params: {
         AND e.date LIKE ?
       ORDER BY e.date DESC
       LIMIT 1
-    `;
+    `
 
     const expenseResult = await db
       .prepare(expenseQuery)
-      .bind(
-        template.expense_category_id,
-        `%${template.description_pattern}%`,
-        `${targetDate}%`,
-      )
-      .first();
+      .bind(template.expense_category_id, `%${template.description_pattern}%`, `${targetDate}%`)
+      .first()
 
     checkResults.push({
-      template: template as ExpenseCheckResult["template"],
-      expense: expenseResult as ExpenseCheckResult["expense"],
+      template: template as ExpenseCheckResult['template'],
+      expense: expenseResult as ExpenseCheckResult['expense'],
       isRegistered: !!expenseResult,
-    });
+    })
   }
 
-  return checkResults;
+  return checkResults
 }

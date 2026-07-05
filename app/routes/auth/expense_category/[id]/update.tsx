@@ -1,34 +1,31 @@
-import type { ExpenseCategory } from "@/@types/dbTypes";
-import { createRoute } from "honox/factory";
-import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
-import { updateItem, fetchDetail } from "@/libs/dbService";
-import { CategoryCreateForm } from "@/components/share/CategoryCreateForm";
-import { setCookie } from "hono/cookie";
-import {
-  successAlertCookieKey,
-  alertCookieMaxage,
-} from "@/settings/kakeiboSettings";
+import type { ExpenseCategory } from '@/@types/dbTypes'
+import { createRoute } from 'honox/factory'
+import { zValidator } from '@hono/zod-validator'
+import { z } from 'zod'
+import { updateItem, fetchDetail } from '@/libs/dbService'
+import { CategoryCreateForm } from '@/components/share/CategoryCreateForm'
+import { setCookie } from 'hono/cookie'
+import { successAlertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings'
 
 const schema = z.object({
   name: z.string().min(1),
-});
+})
 
-const title = "支出カテゴリ編集";
-const formActionUrl = (id: string) => `/auth/expense_category/${id}/update`;
-const endPoint = "expense_category";
-const successMesage = "支出カテゴリの編集に成功しました";
-const redirectUrl = "/auth/expense_category";
+const title = '支出カテゴリ編集'
+const formActionUrl = (id: string) => `/auth/expense_category/${id}/update`
+const endPoint = 'expense_category'
+const successMesage = '支出カテゴリの編集に成功しました'
+const redirectUrl = '/auth/expense_category'
 
 export default createRoute(async (c) => {
-  const id = c.req.param("id")!;
+  const id = c.req.param('id')!
   const detail = await fetchDetail<ExpenseCategory>({
     db: c.env.DB,
     table: endPoint,
     id: id,
-  });
+  })
   if (!detail) {
-    return c.redirect(redirectUrl, 303);
+    return c.redirect(redirectUrl, 303)
   }
   return c.render(
     <>
@@ -39,40 +36,40 @@ export default createRoute(async (c) => {
         backUrl={`/auth/${endPoint}`}
       />
     </>,
-    { title: title },
-  );
-});
+    { title: title }
+  )
+})
 
 export const POST = createRoute(
-  zValidator("form", schema, async (result, c) => {
+  zValidator('form', schema, async (result, c) => {
     if (!result.success) {
-      const id = c.req.param("id")!;
-      const { name } = result.data;
+      const id = c.req.param('id')!
+      const { name } = result.data
       return c.render(
         <CategoryCreateForm
           data={{ name, error: z.flattenError(result.error).fieldErrors }}
           title={title}
           actionUrl={formActionUrl(id)}
           backUrl={`/auth/${endPoint}`}
-        />,
-      );
+        />
+      )
     }
   }),
   async (c) => {
-    const id = c.req.param("id")!;
-    const { name } = c.req.valid("form");
+    const id = c.req.param('id')!
+    const { name } = c.req.valid('form')
     const body = {
       name: name,
-    };
+    }
     const response = await updateItem<ExpenseCategory>({
       db: c.env.DB,
       table: endPoint,
       id: id,
       data: body,
-    });
+    })
     setCookie(c, successAlertCookieKey, successMesage, {
       maxAge: alertCookieMaxage,
-    });
-    return c.redirect(redirectUrl, 303);
-  },
-);
+    })
+    return c.redirect(redirectUrl, 303)
+  }
+)
