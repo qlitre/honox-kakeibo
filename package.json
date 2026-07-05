@@ -16,7 +16,7 @@
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "^0.8.1",
     "@hono/firebase-auth": "^1.4.2",
-    "@hono/mcp": "^0.2.5",
+    "@hono/mcp": "^0.3.0",
     "@hono/swagger-ui": "^0.6.1",
     "@hono/zod-openapi": "^1.3.0",
     "@hono/zod-validator": "^0.8.0",
