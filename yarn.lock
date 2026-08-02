@@ -844,10 +844,10 @@
   resolved "https://registry.npmjs.org/@hono/swagger-ui/-/swagger-ui-0.6.1.tgz"
   integrity sha512-sJTvldu1GPeEPfyeLG7gRj+W4vEuD+JDi+JjJ3TJs/DvMUtBLs0KJO5yokGegWWdy5qrbdnQGekbhgNRmPmYKQ==
 
-"@hono/vite-build@^1.9.3":
-  version "1.9.3"
-  resolved "https://registry.npmjs.org/@hono/vite-build/-/vite-build-1.9.3.tgz"
-  integrity sha512-qV9PQy4Xc0fOIfkff8ap1+rpde6Uf6VxlyWJYntAEr7K1A0IAWB4NncIzefWOOXCDrrX85AbBxU305yAB3OLsA==
+"@hono/vite-build@^1.11.1":
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/@hono/vite-build/-/vite-build-1.11.1.tgz#c604a3ae033e1efbd7c522320dec6a12abc63cc4"
+  integrity sha512-EQJmFL7G+71MXZQ/mmywNl4qW6DSyjTdC30cq7mlDS451a1/jE86old0M2DCWzNGCO50sv7CzQDYkz4L5dq5VQ==
 
 "@hono/vite-dev-server@^0.25.1":
   version "0.25.1"
