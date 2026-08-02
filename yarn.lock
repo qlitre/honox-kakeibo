@@ -834,10 +834,15 @@
   dependencies:
     pkce-challenge "^5.0.0"
 
-"@hono/node-server@^1.19.11", "@hono/node-server@^1.19.9":
+"@hono/node-server@^1.19.11":
   version "1.19.14"
   resolved "https://registry.yarnpkg.com/@hono/node-server/-/node-server-1.19.14.tgz#e30f844bc77e3ce7be442aac3b1f73ad8b58d181"
   integrity sha512-GwtvgtXxnWsucXvbQXkRgqksiH2Qed37H9xHZocE5sA3N8O8O8/8FA3uclQXxXVzc9XBZuEOMK7+r02FmSpHtw==
+
+"@hono/node-server@^1.19.9 || ^2.0.5":
+  version "2.0.12"
+  resolved "https://registry.yarnpkg.com/@hono/node-server/-/node-server-2.0.12.tgz#23876c8640ec7b9cc77dd457758464b1206a11cd"
+  integrity sha512-eWpQYr67tqJLeaSUl0Q+TquuYfUdTibpOJlUMV2FfUP7+KqCC5TufnwnlXL6mobZBJbGAYRd7ZvEBDCbLInjhg==
 
 "@hono/swagger-ui@^0.6.1":
   version "0.6.1"
@@ -1092,12 +1097,12 @@
   resolved "https://registry.npmjs.org/@kurkle/color/-/color-0.3.4.tgz"
   integrity sha512-M5UknZPHRu3DEDWoipU6sE8PdkZ6Z/S+v4dD+Ke8IaNlpdSQah50lz1KtcFBa2vsdOnwbbnxJwVM4wty6udA5w==
 
-"@modelcontextprotocol/sdk@^1.29.0":
-  version "1.29.0"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.29.0.tgz#79786d8b525e269de850ac82b1f1f757f3915f44"
-  integrity sha512-zo37mZA9hJWpULgkRpowewez1y6ML5GsXJPY8FI0tBBCd77HEvza4jDqRKOXgHNn867PVGCyTdzqpz0izu5ZjQ==
+"@modelcontextprotocol/sdk@^1.30.0":
+  version "1.30.0"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.30.0.tgz#dfa8a48347ec2d2c0d47917d7dc57f754e37f5ff"
+  integrity sha512-xKd8OIzlqNzcqcNumGAa6g+PW2kjD5vrpcKOnfldAUPP3j7lnqMPwlTXQm8gF+UwH72z0lqaRbjr9hqGz0eITA==
   dependencies:
-    "@hono/node-server" "^1.19.9"
+    "@hono/node-server" "^1.19.9 || ^2.0.5"
     ajv "^8.17.1"
     ajv-formats "^3.0.1"
     content-type "^1.0.5"
@@ -3782,12 +3787,7 @@ zod-to-json-schema@^3.25.1:
   resolved "https://registry.yarnpkg.com/zod-to-json-schema/-/zod-to-json-schema-3.25.2.tgz#3fa799a7badd554541472fb65843fdc460b2e5aa"
   integrity sha512-O/PgfnpT1xKSDeQYSCfRI5Gy3hPf91mKVDuYLUHZJMiDFptvP41MSnWofm8dnCm0256ZNfZIM7DSzuSMAFnjHA==
 
-"zod@^3.25 || ^4.0":
+"zod@^3.25 || ^4.0", zod@^4.1.11, zod@^4.3.6:
   version "4.4.3"
   resolved "https://registry.yarnpkg.com/zod/-/zod-4.4.3.tgz#b680f172885d18bbebf21a834ea25e55a1bbf356"
   integrity sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==
-
-zod@^4.1.11, zod@^4.3.6:
-  version "4.3.6"
-  resolved "https://registry.npmjs.org/zod/-/zod-4.3.6.tgz"
-  integrity sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==
