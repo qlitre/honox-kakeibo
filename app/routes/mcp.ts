@@ -1,5 +1,4 @@
-import { StreamableHTTPTransport } from '@hono/mcp'
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { McpServer, WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/server'
 import { z } from 'zod'
 import { Context } from 'hono'
 import { HTTPException } from 'hono/http-exception'
@@ -21,7 +20,7 @@ export const getMcpServer = async (c: Context<Env>) => {
       title: 'Add Payment',
       description:
         '支出（支払い）を1件登録する。日付を省略した場合は日本時間の今日日付で登録される。',
-      inputSchema: {
+      inputSchema: z.object({
         amount: z.number().int().positive().describe('金額（円）'),
         expense_category_id: z.number().int().positive().describe('支出カテゴリID'),
         payment_method_id: z.number().int().positive().describe('支払い方法ID'),
@@ -31,7 +30,7 @@ export const getMcpServer = async (c: Context<Env>) => {
           .optional()
           .describe('支払い日（yyyy-mm-dd）。省略時は今日'),
         description: z.string().optional().describe('メモ・内容'),
-      },
+      }),
     },
     async (params: {
       amount: number
@@ -103,9 +102,11 @@ const app = new Hono<Env>()
 
 app.all('/mcp', async (c) => {
   const mcpServer = await getMcpServer(c)
-  const transport = new StreamableHTTPTransport()
+  const transport = new WebStandardStreamableHTTPServerTransport({
+    sessionIdGenerator: undefined,
+  })
   await mcpServer.connect(transport)
-  return transport.handleRequest(c)
+  return transport.handleRequest(c.req.raw)
 })
 
 app.onError((err, c) => {
