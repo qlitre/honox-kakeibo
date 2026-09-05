@@ -1676,7 +1676,7 @@
   resolved "https://registry.yarnpkg.com/@vitest/spy/-/spy-4.1.11.tgz#0add45cae953afed9c88f98e2f6fc9164558c32a"
   integrity sha512-apNa/prQy2qCeywhnixOHPRCgGNhvg7T4Dapfl1GahLp/R+uhBm5cPyFoNVyqsNd2h1nJxL6BqqdIjiABL60YA==
 
-"@vitest/ui@^4.1.11":
+"@vitest/ui@^4.1.9":
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/@vitest/ui/-/ui-4.1.11.tgz#b24509b474d21cc27ff40fbb86421e5f7bc1f20c"
   integrity sha512-r/rwyKoev21mWdRGSEkZOqkQ2BYy68mwjihg9M90nNRbf4NGrgzZ4cj6JNCEwlOGJkbKeMgsjlykvwKUbRr7gw==
@@ -2215,15 +2215,15 @@ graceful-fs@^4.2.4:
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
-hono@^4.12.27:
-  version "4.12.27"
-  resolved "https://registry.yarnpkg.com/hono/-/hono-4.12.27.tgz#d9527b2c6e1da331731610889d1ddaea2c1d2b40"
-  integrity sha512-1yrb/+w6HWQJrUCLkJ2IF5jNIPvvFkblV5RNOYl6bV+OA6p9GLcMpHFFGTosSvHvcAUibuUukRqhlYI4z32C7Q==
+hono@^4.13.7:
+  version "4.13.7"
+  resolved "https://registry.yarnpkg.com/hono/-/hono-4.13.7.tgz#80fdab8326f03d02f049117fd968101933493600"
+  integrity sha512-c8/gF9ac8Y78/agExVocyLevgR+JlpNB444Py0FSX8pJoPdYUfUzRcXtYEYGwt6l19qIlVZPN5Mfsw9jFShmQQ==
 
-honox@^0.1.58:
-  version "0.1.58"
-  resolved "https://registry.yarnpkg.com/honox/-/honox-0.1.58.tgz#9aa527efe96c7cd4d1dbf0ba6a396783b443feb0"
-  integrity sha512-ggeAbZDQXGLXplAdFjm/Cglzmd1YOLk9E1uy8FGuvtQRnljW50REzGwCmaG8I63L0ZzQnyBtoIS1sUwX5WokHA==
+honox@^0.1.61:
+  version "0.1.61"
+  resolved "https://registry.yarnpkg.com/honox/-/honox-0.1.61.tgz#4db3f9d663cac0ab155483325fbb5d7df26eaed8"
+  integrity sha512-HMvVTyAIJYIWjHUvdowQvnMVA3I1HKeKD71TVCAKiTdUI+xU7cYRryMK+ASmnRb7lFV6Yak4/d1VqXjJnEYSvg==
   dependencies:
     "@babel/generator" "7.29.1"
     "@babel/parser" "7.29.3"
@@ -2995,7 +2995,7 @@ unenv@2.0.0-rc.24:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vitest@^4.1.11:
+vitest@^4.1.9:
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/vitest/-/vitest-4.1.11.tgz#1653c1521ae917f960d9b21877797c47dfd8bf21"
   integrity sha512-fhACrNXUidIbGSBr5FlbuBkO7VWC1ZyLl0DO4CU2DrQoAPxX84Ysxs+HeGQpii5lZWV1Q4gBZTTu49mF+A6Edw==
