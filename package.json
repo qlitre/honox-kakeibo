@@ -34,7 +34,7 @@
     "@hono/vite-dev-server": "^0.26.0",
     "@tailwindcss/vite": "^4.3.3",
     "@vitest/ui": "^4.1.9",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.0.1",
     "knip": "^5.84.1",
     "prettier": "^3.9.6",
     "tailwindcss": "^4.3.2",
