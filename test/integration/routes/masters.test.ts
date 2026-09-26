@@ -180,17 +180,26 @@ describe('asset_category の投資フラグ', () => {
 
   const checkbox = (html: string) => html.match(/<input[^>]*name="is_investment"[^>]*>/)?.[0]
 
-  it('FIXME: 編集画面の投資フラグが defaultChecked 属性で出力され、ブラウザでは常に未チェック', async () => {
-    const id = await insert('asset_category', { name: '証券口座', is_investment: 1 })
-    const input = checkbox(await (await authRequest(`/auth/asset_category/${id}/update`)).text())
-    expect(input).toContain('defaultChecked')
-    expect(input).not.toMatch(/\schecked/)
+  it.each([
+    [1, true],
+    [0, false],
+  ])('編集画面: is_investment=%i なら checked=%s で表示する', async (flag, checked) => {
+    const id = await insert('asset_category', { name: '口座', is_investment: flag })
+    const input = checkbox(await (await authRequest(`/auth/asset_category/${id}/update`)).text())!
+    expect(/\schecked/.test(input)).toBe(checked)
   })
 
-  it.fails('編集画面で投資用カテゴリはチェック済みで表示される', async () => {
+  it('編集画面のチェック状態をそのまま送信すると、投資フラグが保たれる', async () => {
     const id = await insert('asset_category', { name: '証券口座', is_investment: 1 })
-    const input = checkbox(await (await authRequest(`/auth/asset_category/${id}/update`)).text())
-    expect(input).toMatch(/\schecked/)
+    const input = checkbox(await (await authRequest(`/auth/asset_category/${id}/update`)).text())!
+    // ブラウザと同じく、チェックされているときだけ is_investment=1 を送る
+    const form: Record<string, string> = { name: '証券口座（改名）' }
+    if (/\schecked/.test(input)) form.is_investment = '1'
+    await postForm(`/auth/asset_category/${id}/update`, form)
+    expect(await row('asset_category', id)).toMatchObject({
+      name: '証券口座（改名）',
+      is_investment: 1,
+    })
   })
 
   it('更新でチェックを外すと0になる', async () => {
