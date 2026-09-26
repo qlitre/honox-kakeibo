@@ -10,6 +10,7 @@
     "app/**/*.{ts,tsx}"
   ],
   "ignoreDependencies": [
-    "firebase-auth-cloudflare-workers"
+    "firebase-auth-cloudflare-workers",
+    "cloudflare"
   ]
 }
