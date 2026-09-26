@@ -1,4 +1,4 @@
-import { env } from 'cloudflare:test'
+import { env } from 'cloudflare:workers'
 
 // 外部キーの依存順（子 → 親）
 const TABLES = [

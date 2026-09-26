@@ -1,4 +1,5 @@
-import { createExecutionContext, env, waitOnExecutionContext } from 'cloudflare:test'
+import { createExecutionContext, waitOnExecutionContext } from 'cloudflare:test'
+import { env } from 'cloudflare:workers'
 import worker from '@/server'
 
 const BASE = 'http://localhost'
@@ -6,7 +7,11 @@ const BASE = 'http://localhost'
 /** 本番と同じエントリ（OAuthProvider でラップされた app）にリクエストを投げる */
 export async function request(path: string, init?: RequestInit): Promise<Response> {
   const ctx = createExecutionContext()
-  const res = await worker.fetch(new Request(BASE + path, { redirect: 'manual', ...init }), env, ctx)
+  const res = await worker.fetch(
+    new Request(BASE + path, { redirect: 'manual', ...init }),
+    env,
+    ctx
+  )
   await waitOnExecutionContext(ctx)
   return res
 }

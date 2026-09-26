@@ -1,4 +1,4 @@
-import { env } from 'cloudflare:test'
+import { env } from 'cloudflare:workers'
 import { describe, expect, it } from 'vitest'
 import { authRequest, postForm, request } from '../helpers/app'
 import { insert, seedExpenseMasters } from '../helpers/db'
