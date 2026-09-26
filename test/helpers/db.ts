@@ -39,3 +39,13 @@ export async function seedExpenseMasters() {
   const cardId = await insert('payment_method', { name: 'クレジットカード' })
   return { foodId, rentId, cashId, cardId }
 }
+
+/** テーブルの行数 */
+export async function count(table: string): Promise<number> {
+  return (await env.DB.prepare(`SELECT COUNT(*) AS n FROM ${table}`).first<{ n: number }>())!.n
+}
+
+/** id で1行取得（JOINなしの生データ） */
+export function row<T = Record<string, unknown>>(table: string, id: number) {
+  return env.DB.prepare(`SELECT * FROM ${table} WHERE id = ?`).bind(id).first<T>()
+}

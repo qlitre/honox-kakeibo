@@ -30,3 +30,32 @@ export function postForm(path: string, data: Record<string, string | number>) {
   const body = new URLSearchParams(Object.entries(data).map(([k, v]) => [k, String(v)]))
   return authRequest(path, { method: 'POST', body })
 }
+
+/** Set-Cookie を {名前: デコード済みの値} にする */
+export function cookies(res: Response): Record<string, string> {
+  const out: Record<string, string> = {}
+  for (const c of res.headers.getSetCookie()) {
+    const [pair] = c.split(';')
+    const i = pair.indexOf('=')
+    out[pair.slice(0, i)] = decodeURIComponent(pair.slice(i + 1))
+  }
+  return out
+}
+
+/** Set-Cookie の生の文字列（属性の検証用） */
+export function rawSetCookie(res: Response, name: string): string | undefined {
+  return res.headers.getSetCookie().find((c) => c.startsWith(`${name}=`))
+}
+
+const unescapeHtml = (s: string) =>
+  s
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+
+/** グラフの <canvas data-chart-data="..."> に埋め込まれたデータを取り出す */
+export function chartData(html: string): any[] {
+  return [...html.matchAll(/data-chart-data="([^"]*)"/g)].map((m) => JSON.parse(unescapeHtml(m[1])))
+}
