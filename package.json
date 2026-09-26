@@ -12,6 +12,7 @@
     "test:run": "vitest run",
     "test:unit": "vitest run --project unit",
     "test:int": "vitest run --project integration",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "knip": "knip"
   },
@@ -35,6 +36,7 @@
     "@hono/vite-build": "^1.11.1",
     "@hono/vite-dev-server": "^0.26.0",
     "@tailwindcss/vite": "^4.3.3",
+    "@vitest/coverage-istanbul": "^4.1.11",
     "@vitest/ui": "^4.1.9",
     "jsdom": "^30.0.1",
     "knip": "^5.84.1",

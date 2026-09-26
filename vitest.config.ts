@@ -16,6 +16,13 @@ const schemaQueries = readFileSync(path.resolve(__dirname, 'schema-tables.sql'),
 
 export default defineConfig({
   test: {
+    coverage: {
+      // v8 は workerd 上で使えないため、両プロジェクト共通で istanbul を使う
+      provider: 'istanbul',
+      include: ['app/**/*.{ts,tsx}'],
+      exclude: ['app/devShims/**', 'app/**/*.d.ts'],
+      reporter: ['text', 'html'],
+    },
     projects: [
       {
         // L1: 純粋関数の単体テスト（Node上）

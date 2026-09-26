@@ -41,3 +41,5 @@ testdata.sql
 wrangler.jsonc
 repomix-output**
 CLAUDE.md
+# test
+coverage/
