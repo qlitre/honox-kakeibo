@@ -27,7 +27,7 @@ export const ExpenseSearchForm: FC<Props> = ({ data, categories, paymentMethods 
   }
 
   // クリアして検索するボタンのクリックハンドラ
-  const handleClearAndSearch = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleClearAndSearch = (e: MouseEvent) => {
     e.preventDefault()
     const form = formRef.current
     if (form) {

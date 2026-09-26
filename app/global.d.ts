@@ -5,7 +5,6 @@ declare module 'hono' {
   interface Env {
     Variables: {}
     Bindings: {
-      HONO_IS_COOL: string
       DB: D1Database
       FB_API_KEY: string
       FB_AUTH_DOMAIN: string

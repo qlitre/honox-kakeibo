@@ -22,7 +22,7 @@ export const CategoryCreateForm: FC<Props> = ({ data, title, actionUrl, backUrl 
           type='checkbox'
           id='is_investment'
           name='is_investment'
-          defaultChecked={data?.is_investment === '1'}
+          checked={data?.is_investment === '1'}
           className='h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500'
           value='1' // チェックされているときは 1 として送信される
         />

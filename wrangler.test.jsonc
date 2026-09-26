@@ -1,0 +1,25 @@
+// テスト専用のWrangler設定（vitest-pool-workersが読み込む）
+// 本番の wrangler.jsonc は秘匿値を含むためgit管理外。こちらはダミー値のみ。
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "honox-kakeibo-test",
+  "compatibility_date": "2025-05-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "FB_API_KEY": "",
+    "FB_AUTH_DOMAIN": "",
+    "FB_PROJECT_ID": "",
+    "FB_STORAGE_BUCKET": "",
+    "FB_MESSAGE_SENDER_ID": "",
+    "FB_APP_ID": "",
+    "SLACK_WEBHOOK_URL": "https://slack.test/webhook",
+    "PUBLIC_JWK_CACHE_KEY": "test-jwk-cache-key",
+    "CF_ACCESS_TEAM_DOMAIN": "",
+    "CF_ACCESS_AUDIENCE": ""
+  },
+  "kv_namespaces": [
+    { "binding": "PUBLIC_JWK_CACHE_KV", "id": "test-jwk-cache" },
+    { "binding": "OAUTH_KV", "id": "test-oauth" }
+  ],
+  "d1_databases": [{ "binding": "DB", "database_name": "kakeibo-test", "database_id": "test-db" }]
+}

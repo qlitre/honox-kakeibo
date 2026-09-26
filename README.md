@@ -184,8 +184,7 @@ http://localhost:5173/login にアクセスし、登録したメールアドレ�
 ```
 app/
 ├── routes/          # ファイルベースルーティング
-│   ├── auth/       # 認証が必要なページ
-│   └── api/        # APIエンドポイント
+│   └── auth/       # 認証が必要なページ
 ├── islands/        # クライアントサイドコンポーネント
 ├── components/     # サーバーサイドコンポーネント
 ├── libs/           # データベース操作（dbService.ts）

@@ -8,7 +8,7 @@ import {
   dangerAlertCookieKey,
   alertCookieMaxage,
 } from '@/settings/kakeiboSettings'
-import { updateItem, fetchDetail } from '@/libs/dbService'
+import { updateItem } from '@/libs/dbService'
 import { checkAssetCategoryDuplication } from '@/utils/assetValidation'
 
 /* ---------- ルート固有設定 ---------- */
@@ -37,29 +37,22 @@ export const POST = createRoute(
 
     /* 2. フォーム値を取得＆型変換 */
     const { date, amount, asset_category_id, description } = c.req.valid('form')
-    const oldData = await fetchDetail<Asset>({
+    // 日付だけ・カテゴリだけの変更でも重複しうるため、自分自身を除いて常にチェックする
+    const hasDuplication = await checkAssetCategoryDuplication({
       db: c.env.DB,
-      table: endPoint,
-      id: recordId,
+      date,
+      assetCategoryId: parseInt(asset_category_id, 10),
+      excludeId: recordId,
     })
-    const oldCategoryId = oldData?.asset_category_id
 
-    if (oldCategoryId != parseInt(asset_category_id, 10)) {
-      const hasDuplication = await checkAssetCategoryDuplication({
-        db: c.env.DB,
-        date,
-        assetCategoryId: parseInt(asset_category_id, 10),
-      })
-
-      if (hasDuplication) {
-        setCookie(
-          c,
-          dangerAlertCookieKey,
-          '資産編集に失敗しました。同月に同カテゴリの資産が登録されています。',
-          { maxAge: alertCookieMaxage }
-        )
-        return c.redirect('/auth/asset', 303)
-      }
+    if (hasDuplication) {
+      setCookie(
+        c,
+        dangerAlertCookieKey,
+        '資産編集に失敗しました。同月に同カテゴリの資産が登録されています。',
+        { maxAge: alertCookieMaxage }
+      )
+      return c.redirect('/auth/asset', 303)
     }
 
     const data = {

@@ -1,4 +1,4 @@
-import type { TableName } from '@/utils/sqlUtils'
+import type { TableName, WhereClause } from '@/utils/sqlUtils'
 import {
   generateSelectQuery,
   buildSqlOrderByClause,
@@ -31,11 +31,13 @@ export async function fetchListWithFilter<T>(params: {
 
   let sql = generateSelectQuery(table)
   let countSql = `SELECT COUNT(*) AS total FROM ${table}`
+  let bindValues: WhereClause['params'] = []
 
   if (filters) {
     const where = buildSqlWhereClause(table, filters)
-    sql += ` ${where}`
-    countSql += ` ${where}`
+    sql += ` ${where.sql}`
+    countSql += ` ${where.sql}`
+    bindValues = where.params
   }
 
   if (orders) {
@@ -44,8 +46,17 @@ export async function fetchListWithFilter<T>(params: {
 
   sql += ` LIMIT ? OFFSET ?`
 
-  const { results } = await db.prepare(sql).bind(limit, offset).all()
-  const total = (await db.prepare(countSql).first<{ total: number }>())?.total ?? 0
+  const { results } = await db
+    .prepare(sql)
+    .bind(...bindValues, limit, offset)
+    .all()
+  const total =
+    (
+      await db
+        .prepare(countSql)
+        .bind(...bindValues)
+        .first<{ total: number }>()
+    )?.total ?? 0
 
   return {
     contents: results as T[],
@@ -158,6 +169,10 @@ export async function updateItem<T>(params: {
   return detail
 }
 
+/** 他のテーブルから参照されている行の削除など、外部キー制約違反か */
+export const isForeignKeyConstraintError = (err: unknown): boolean =>
+  err instanceof Error && err.message.includes('FOREIGN KEY constraint failed')
+
 /* ---------- レコード削除 (DELETE) ---------- */
 export async function deleteItem(params: {
   db: D1Database
@@ -198,9 +213,12 @@ export async function fetchSummary<T>(params: {
   const { db, table, filters, groupBy, orders, orderRaw } = params
 
   let sql = generateSummaryQuery(table)
+  let bindValues: WhereClause['params'] = []
 
   if (filters) {
-    sql += ` ${buildSqlWhereClause(table, filters)}`
+    const where = buildSqlWhereClause(table, filters)
+    sql += ` ${where.sql}`
+    bindValues = where.params
   }
   if (groupBy) {
     sql += ` GROUP BY ${groupBy}`
@@ -214,7 +232,10 @@ export async function fetchSummary<T>(params: {
   }
   // ─────────────────────────────────────
 
-  const { results } = await db.prepare(sql).all()
+  const { results } = await db
+    .prepare(sql)
+    .bind(...bindValues)
+    .all()
   return { summary: results as T[] }
 }
 

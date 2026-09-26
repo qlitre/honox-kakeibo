@@ -10,16 +10,24 @@ import { PageHeader } from '@/components/PageHeader'
 
 type Props = {
   message?: string
+  dangerMessage?: string
   categories: AssetCategory[] | ExpenseCategory[] | IncomeCategory[] | PaymentMethod[]
   pageTitle: string
   endpoint: string
 }
 
-export const CategoryList: FC<Props> = ({ message, categories, pageTitle, endpoint }) => {
+export const CategoryList: FC<Props> = ({
+  message,
+  dangerMessage,
+  categories,
+  pageTitle,
+  endpoint,
+}) => {
   return (
     <div className='min-h-screen py-8 px-4 sm:px-6 lg:px-8'>
       <div className='max-w-3xl mx-auto'>
         {message && <Alert message={message} type='success' />}
+        {dangerMessage && <Alert message={dangerMessage} type='danger' />}
         <div className='flex justify-between items-center mb-4'>
           <PageHeader className='mb-0 md:mb-0' title={pageTitle} />
           <a
