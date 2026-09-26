@@ -169,6 +169,10 @@ export async function updateItem<T>(params: {
   return detail
 }
 
+/** 他のテーブルから参照されている行の削除など、外部キー制約違反か */
+export const isForeignKeyConstraintError = (err: unknown): boolean =>
+  err instanceof Error && err.message.includes('FOREIGN KEY constraint failed')
+
 /* ---------- レコード削除 (DELETE) ---------- */
 export async function deleteItem(params: {
   db: D1Database

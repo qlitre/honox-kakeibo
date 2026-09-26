@@ -9,6 +9,7 @@ import {
   fetchListWithFilter,
   fetchSimpleList,
   fetchSummary,
+  isForeignKeyConstraintError,
   updateItem,
 } from '@/libs/dbService'
 import { insert, seedExpenseMasters } from '../helpers/db'
@@ -390,6 +391,28 @@ describe('deleteItem', () => {
     expect(
       await fetchDetail<ExpenseCategory>({ db: db(), table: 'expense_category', id: m.foodId })
     ).not.toBeNull()
+  })
+})
+
+describe('isForeignKeyConstraintError', () => {
+  it('D1の外部キー制約違反だけを true と判定する', async () => {
+    const m = await seedExpenseMasters()
+    await insertExpense({
+      date: '2026-09-01',
+      amount: 1,
+      expense_category_id: m.foodId,
+      payment_method_id: m.cashId,
+    })
+    const fkError = await deleteItem({ db: db(), table: 'expense_category', id: m.foodId }).catch(
+      (e) => e
+    )
+    expect(isForeignKeyConstraintError(fkError)).toBe(true)
+
+    const syntaxError = await env.DB.prepare('SELEC 1')
+      .run()
+      .catch((e) => e)
+    expect(isForeignKeyConstraintError(syntaxError)).toBe(false)
+    expect(isForeignKeyConstraintError('FOREIGN KEY constraint failed')).toBe(false)
   })
 })
 

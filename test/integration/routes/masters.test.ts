@@ -154,19 +154,21 @@ describe.each(cases)('$endPoint', ({ endPoint, seedInUse }) => {
     expect(await count(endPoint)).toBe(0)
   })
 
-  it('FIXME: 明細から使われていると外部キー制約で500エラー画面になる', async () => {
-    const id = await seedInUse()
-    const res = await postForm(`${base}/${id}/delete`, {})
-    expect(res.status).toBe(500)
-    expect(await res.text()).toContain('Internal Server Error')
-    expect(await row(endPoint, id)).not.toBeNull()
-  })
-
-  it.fails('明細から使われている場合は、失敗メッセージ付きで一覧へ戻る', async () => {
+  it('明細から使われている場合は削除せず、失敗メッセージ付きで一覧へ303', async () => {
     const id = await seedInUse()
     const res = await postForm(`${base}/${id}/delete`, {})
     expect(res.status).toBe(303)
-    expect(cookies(res).dangerMessage).toBeTruthy()
+    expect(res.headers.get('Location')).toBe(base)
+    const message = cookies(res).dangerMessage
+    expect(message).toContain('明細で使われているため削除できません')
+    expect(cookies(res).successMessage).toBeUndefined()
+    expect(await row(endPoint, id)).not.toBeNull()
+
+    // 一覧画面で失敗メッセージを表示する
+    const list = await authRequest(base, {
+      headers: { Cookie: `dangerMessage=${encodeURIComponent(message)}` },
+    })
+    expect(await list.text()).toContain(message)
   })
 })
 
