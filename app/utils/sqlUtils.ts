@@ -116,12 +116,31 @@ export const generateSummaryQuery = (tableName: TableName): string => {
   return query
 }
 
-function isNumeric(value: unknown): boolean {
-  return !isNaN(Number(value))
+// 空白だけの文字列は Number(' ') === 0 になるため数値扱いしない
+function isNumeric(value: string): boolean {
+  return value.trim() !== '' && !isNaN(Number(value))
 }
 
-export const buildSqlWhereClause = (tableName: TableName, filterString: string) => {
+// LIKE の % と _ をワイルドカードではなく文字として扱う（ESCAPE '\' と組で使う）
+const escapeLike = (value: string) => value.replace(/[\\%_]/g, (c) => `\\${c}`)
+
+// テーブル外で WHERE に使える名前: JOIN先のエイリアス（"x.name AS category_name" の右側）と集計用の year_month
+const extraFilterFields = (tableName: TableName) =>
+  new Set([
+    ...schema[tableName].joinFields.map((f) => f.split(/\s+AS\s+/i)[1]).filter(Boolean),
+    'year_month',
+  ])
+
+export type WhereClause = {
+  /** "WHERE ..."。条件が無ければ空文字 */
+  sql: string
+  /** プレースホルダ ? に順にbindする値 */
+  params: (string | number)[]
+}
+
+export const buildSqlWhereClause = (tableName: TableName, filterString: string): WhereClause => {
   const conditions: string[] = [] // SQL 条件句を格納する配列
+  const params: (string | number)[] = []
   const operators: Record<string, string> = {
     '[greater_than]': '>',
     '[less_than]': '<',
@@ -131,6 +150,7 @@ export const buildSqlWhereClause = (tableName: TableName, filterString: string) 
     '[contain]': 'LIKE',
   }
   const baseFields = schema[tableName].fields
+  const extraFields = extraFilterFields(tableName)
   if (filterString) {
     // date[greater_equal]2024-11-01[and]date[less_equal]2024-11-30
     // のようなフィルター文字列を動的に解析する
@@ -138,30 +158,34 @@ export const buildSqlWhereClause = (tableName: TableName, filterString: string) 
       for (const operatorKey in operators) {
         if (condition.includes(operatorKey)) {
           const [fieldName, value] = condition.split(operatorKey)
-          // もっといいやり方がありそうだが、テーブルが持っているフィールドの場合はtablenameをprefixにつける。
-          // そうでなければ受け取った値をそのまま条件にする。join先のフィールドが指定された場合を想定。
-          let field = fieldName
+          // カラム名はbindできないため、既知の名前だけを許可する。
+          // テーブル自身のフィールドはテーブル名を付け、JOIN先のエイリアス等はそのまま使う。
+          let field: string
           if (baseFields.includes(fieldName)) {
-            field = tableName + '.' + field
+            field = `${tableName}.${fieldName}`
+          } else if (extraFields.has(fieldName)) {
+            field = fieldName
+          } else {
+            throw new Error(`Unknown filter field for ${tableName}: ${fieldName}`)
           }
           const operator = operators[operatorKey]
-          let conditionString
+          // 値は必ずプレースホルダで渡す（SQL文字列に埋め込まない）
           if (operatorKey === '[contain]') {
-            // LIKE演算子の場合は、値の前後にワイルドカードを付与する
-            conditionString = `${field} ${operator} '%${value}%'`
-          } else if (isNumeric(value)) {
-            conditionString = `${field} ${operator} ${value}`
+            conditions.push(`${field} ${operator} ? ESCAPE '\\'`)
+            params.push(`%${escapeLike(value)}%`)
           } else {
-            conditionString = `${field} ${operator} '${value}'`
+            conditions.push(`${field} ${operator} ?`)
+            params.push(isNumeric(value) ? Number(value) : value)
           }
-          conditions.push(conditionString)
         }
       }
     }
   }
 
-  const whereClause = conditions.join(' AND ')
-  return `WHERE ${whereClause}`
+  return {
+    sql: conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '',
+    params,
+  }
 }
 
 export const buildSqlOrderByClause = (tableName: TableName, orderParams: string) => {

@@ -109,74 +109,86 @@ describe('generateSummaryQuery', () => {
 })
 
 describe('buildSqlWhereClause', () => {
+  const where = (table: TableName, filter: string) => buildSqlWhereClause(table, filter)
+
   it.each([
-    ['[eq]', 'amount[eq]100', 'WHERE expense.amount = 100'],
-    ['[greater_than]', 'amount[greater_than]100', 'WHERE expense.amount > 100'],
-    ['[less_than]', 'amount[less_than]100', 'WHERE expense.amount < 100'],
-    ['[greater_equal]', 'amount[greater_equal]100', 'WHERE expense.amount >= 100'],
-    ['[less_equal]', 'amount[less_equal]100', 'WHERE expense.amount <= 100'],
-  ])('%s 演算子', (_, filter, expected) => {
-    expect(buildSqlWhereClause('expense', filter)).toBe(expected)
+    ['[eq]', 'amount[eq]100', 'WHERE expense.amount = ?'],
+    ['[greater_than]', 'amount[greater_than]100', 'WHERE expense.amount > ?'],
+    ['[less_than]', 'amount[less_than]100', 'WHERE expense.amount < ?'],
+    ['[greater_equal]', 'amount[greater_equal]100', 'WHERE expense.amount >= ?'],
+    ['[less_equal]', 'amount[less_equal]100', 'WHERE expense.amount <= ?'],
+  ])('%s 演算子', (_, filter, sql) => {
+    expect(where('expense', filter)).toEqual({ sql, params: [100] })
   })
 
-  it('[contain] は前後に%を付けた LIKE になる', () => {
-    expect(buildSqlWhereClause('expense', 'description[contain]ランチ')).toBe(
-      "WHERE expense.description LIKE '%ランチ%'"
-    )
+  it('[contain] は前後に%を付けた値で LIKE する', () => {
+    expect(where('expense', 'description[contain]ランチ')).toEqual({
+      sql: "WHERE expense.description LIKE ? ESCAPE '\\'",
+      params: ['%ランチ%'],
+    })
   })
 
-  it('数値として解釈できない値はシングルクォートで囲む', () => {
-    expect(buildSqlWhereClause('expense', 'date[greater_equal]2026-09-01')).toBe(
-      "WHERE expense.date >= '2026-09-01'"
-    )
+  it('[contain] の値に含まれる % _ \\ はエスケープして文字として検索する', () => {
+    expect(where('expense', 'description[contain]100%_OFF\\').params).toEqual([
+      '%100\\%\\_OFF\\\\%',
+    ])
   })
 
-  it('[and] で複数条件を AND 結合する', () => {
+  it('数値として解釈できる値は number、それ以外は文字列でbindする', () => {
+    expect(where('expense', 'date[greater_equal]2026-09-01').params).toEqual(['2026-09-01'])
+    expect(where('expense', 'expense_category_id[eq]3').params).toEqual([3])
+  })
+
+  it('空白だけの値は数値扱いしない', () => {
+    expect(where('expense', 'expense_category_id[eq] ').params).toEqual([' '])
+  })
+
+  it('[and] で複数条件を AND 結合し、値は順にbindする', () => {
     expect(
-      buildSqlWhereClause(
+      where(
         'expense',
         'date[greater_equal]2026-09-01[and]date[less_equal]2026-09-30[and]expense_category_id[eq]3'
       )
-    ).toBe(
-      "WHERE expense.date >= '2026-09-01' AND expense.date <= '2026-09-30' AND expense.expense_category_id = 3"
-    )
+    ).toEqual({
+      sql: 'WHERE expense.date >= ? AND expense.date <= ? AND expense.expense_category_id = ?',
+      params: ['2026-09-01', '2026-09-30', 3],
+    })
   })
 
-  it('テーブル自身のフィールドでなければプレフィックスを付けない（JOIN先・SELECTエイリアス用）', () => {
-    expect(buildSqlWhereClause('asset', 'is_investment[eq]1')).toBe('WHERE is_investment = 1')
-    expect(buildSqlWhereClause('expense', 'year_month[eq]2026-09')).toBe(
-      "WHERE year_month = '2026-09'"
+  it('JOIN先のエイリアスと year_month はテーブル名を付けずに使える', () => {
+    expect(where('asset', 'is_investment[eq]1')).toEqual({
+      sql: 'WHERE is_investment = ?',
+      params: [1],
+    })
+    expect(where('expense', 'category_name[eq]食費').sql).toBe('WHERE category_name = ?')
+    expect(where('expense', 'year_month[eq]2026-09')).toEqual({
+      sql: 'WHERE year_month = ?',
+      params: ['2026-09'],
+    })
+  })
+
+  it('未知のカラム名は例外（カラム名はbindできないため許可リストで検査する）', () => {
+    expect(() => where('expense', 'amount = 1 OR 1[eq]1')).toThrow(
+      'Unknown filter field for expense: amount = 1 OR 1'
     )
+    expect(() => where('expense', 'is_investment[eq]1')).toThrow('Unknown filter field')
   })
 
   it('未知の演算子の条件は黙って無視される', () => {
-    expect(buildSqlWhereClause('expense', 'amount[like]100[and]amount[eq]1')).toBe(
-      'WHERE expense.amount = 1'
-    )
+    expect(where('expense', 'amount[like]100[and]amount[eq]1')).toEqual({
+      sql: 'WHERE expense.amount = ?',
+      params: [1],
+    })
   })
 
-  it('FIXME: 空文字だと不正な "WHERE " を返す（現状は呼び出し側で空判定している）', () => {
-    expect(buildSqlWhereClause('expense', '')).toBe('WHERE ')
+  it('空文字なら WHERE を付けない', () => {
+    expect(where('expense', '')).toEqual({ sql: '', params: [] })
   })
 
-  it('FIXME: 値に含まれるシングルクォートがそのままSQLに入る（SQLインジェクション）', () => {
-    expect(buildSqlWhereClause('expense', "description[contain]x' OR '1'='1")).toBe(
-      "WHERE expense.description LIKE '%x' OR '1'='1%'"
-    )
-  })
-
-  it('FIXME: 数値扱いの値もそのまま埋め込まれる', () => {
-    // isNumeric(' ') は true になるため、空白だけの値は "= " という不正なSQLになる
-    expect(buildSqlWhereClause('expense', 'expense_category_id[eq] ')).toBe(
-      'WHERE expense.expense_category_id =  '
-    )
-  })
-
-  // あるべき挙動。リファクタリングで直ったら it.fails → it に変える
-  it.fails('値はSQL文字列に埋め込まれない（プレースホルダでbindする）', () => {
-    expect(buildSqlWhereClause('expense', "description[contain]x' OR '1'='1")).not.toContain(
-      "OR '1'='1"
-    )
+  it('値はSQL文字列に埋め込まれない（プレースホルダでbindする）', () => {
+    const { sql, params } = where('expense', "description[contain]x' OR '1'='1")
+    expect(sql).not.toContain("OR '1'='1")
+    expect(params).toEqual(["%x' OR '1'='1%"])
   })
 })
 

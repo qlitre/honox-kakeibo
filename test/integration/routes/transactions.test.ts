@@ -277,16 +277,29 @@ describe('支出一覧の検索・ページング', () => {
     expect(page2).not.toContain('明細31<')
   })
 
-  it("FIXME: キーワードに ' を含むと500（SQLインジェクション）", async () => {
-    await setup()
-    const res = await authRequest(`/auth/expense?keyword=${encodeURIComponent("McDonald's")}`)
-    expect(res.status).toBe(500)
-  })
-
-  it.fails("キーワードに ' を含んでも検索できる", async () => {
-    await setup()
+  it("キーワードに ' を含んでも検索できる", async () => {
+    const m = await setup()
+    await insert('expense', {
+      date: '2026-09-03',
+      amount: 4,
+      expense_category_id: m.foodId,
+      payment_method_id: m.cashId,
+      description: "McDonald's",
+    })
     const res = await authRequest(`/auth/expense?keyword=${encodeURIComponent("McDonald's")}`)
     expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).toContain('McDonald&#39;s')
+    expect(html).not.toContain('9月のランチ')
+  })
+
+  it('キーワードでSQLを注入しても、フィルタは無効化されない', async () => {
+    await setup()
+    const html = await (
+      await authRequest(`/auth/expense?keyword=${encodeURIComponent("x' OR 1=1 OR '")}`)
+    ).text()
+    expect(html).not.toContain('9月のランチ')
+    expect(html).not.toContain('8月のランチ')
   })
 })
 

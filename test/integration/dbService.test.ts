@@ -114,19 +114,7 @@ describe('fetchListWithFilter', () => {
     expect(res).toMatchObject({ contents: [], totalCount: 0, pageSize: 0 })
   })
 
-  it("FIXME: 検索語に ' を含むとSQLが壊れて例外になる（SQLインジェクション）", async () => {
-    await expect(
-      fetchListWithFilter({
-        db: db(),
-        table: 'expense',
-        filters: "description[contain]McDonald's",
-        limit: 30,
-        offset: 0,
-      })
-    ).rejects.toThrow()
-  })
-
-  it('FIXME: 注入された条件がそのまま実行され、フィルタを無効化できる', async () => {
+  it('注入を狙った文字列は、単なる検索語として扱われる', async () => {
     const m = await seedExpenseMasters()
     await insertExpense(
       { date: '2026-09-01', amount: 1, expense_category_id: m.foodId, payment_method_id: m.cashId },
@@ -140,16 +128,15 @@ describe('fetchListWithFilter', () => {
     const res = await fetchListWithFilter({
       db: db(),
       table: 'expense',
-      // 生成SQL: description LIKE '%存在しない' OR 1=1 OR '%'
       filters: "description[contain]存在しない' OR 1=1 OR '",
       limit: 30,
       offset: 0,
     })
-    expect(res.totalCount).toBe(2)
+    expect(res.totalCount).toBe(0)
+    expect(res.contents).toEqual([])
   })
 
-  // あるべき挙動。直ったら it.fails → it に変える
-  it.fails("検索語に ' を含んでも、その文字列として検索できる", async () => {
+  it("検索語に ' を含んでも、その文字列として検索できる", async () => {
     const m = await seedExpenseMasters()
     await insertExpense(
       { date: '2026-09-01', amount: 1, expense_category_id: m.foodId, payment_method_id: m.cashId },
@@ -164,6 +151,39 @@ describe('fetchListWithFilter', () => {
       offset: 0,
     })
     expect(res.contents.map((e) => e.description)).toEqual(["McDonald's"])
+  })
+
+  it('検索語の % や _ はワイルドカードではなく文字として一致する', async () => {
+    const m = await seedExpenseMasters()
+    const row = {
+      date: '2026-09-01',
+      amount: 1,
+      expense_category_id: m.foodId,
+      payment_method_id: m.cashId,
+    }
+    await insertExpense(row, '100%還元')
+    await insertExpense(row, '1000円')
+
+    const res = await fetchListWithFilter<any>({
+      db: db(),
+      table: 'expense',
+      filters: 'description[contain]100%',
+      limit: 30,
+      offset: 0,
+    })
+    expect(res.contents.map((e) => e.description)).toEqual(['100%還元'])
+  })
+
+  it('未知のカラム名でフィルタすると例外', async () => {
+    await expect(
+      fetchListWithFilter({
+        db: db(),
+        table: 'expense',
+        filters: 'no_such[eq]1',
+        limit: 30,
+        offset: 0,
+      })
+    ).rejects.toThrow('Unknown filter field')
   })
 })
 
