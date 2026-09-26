@@ -8,7 +8,6 @@
     "directory": "./dist/client",
   },
   "vars": {
-    "HONO_IS_COOL": "supersecret",
     "FB_API_KEY": "",
     "FB_AUTH_DOMAIN": "",
     "FB_PROJECT_ID": "",

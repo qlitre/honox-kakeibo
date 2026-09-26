@@ -1,12 +1,9 @@
 import { showRoutes } from 'hono/dev'
 import { createApp } from 'honox/server'
-import api from './api'
 import { OAuthProvider } from '@cloudflare/workers-oauth-provider'
 import mcpApp from './routes/mcp'
 
 const app = createApp()
-
-app.route('/api', api)
 
 showRoutes(app)
 

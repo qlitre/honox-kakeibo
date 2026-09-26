@@ -16,8 +16,6 @@
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "^0.10.3",
     "@hono/firebase-auth": "^1.4.2",
-    "@hono/swagger-ui": "^0.6.1",
-    "@hono/zod-openapi": "^1.3.0",
     "@hono/zod-validator": "^0.8.0",
     "@modelcontextprotocol/server": "^2.0.0",
     "@tailwindcss/forms": "^0.5.11",
