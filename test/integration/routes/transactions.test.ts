@@ -361,7 +361,7 @@ describe('資産の重複チェック（同月・同カテゴリは1件まで）
     expect(await row('asset', bankSep)).toMatchObject({ amount: 999 })
   })
 
-  it('FIXME: 更新でカテゴリを変えずに日付だけ別の月へ移すと、重複チェックをすり抜ける', async () => {
+  it('更新: カテゴリを変えずに日付だけ移して重複する場合も失敗し、更新しない', async () => {
     const { bank } = await setup()
     const bankOct = await insert('asset', {
       date: '2026-10-31',
@@ -369,29 +369,25 @@ describe('資産の重複チェック（同月・同カテゴリは1件まで）
       asset_category_id: bank,
       description: '',
     })
-    await postForm(`/auth/asset/${bankOct}/update`, {
+    const res = await postForm(`/auth/asset/${bankOct}/update`, {
       date: '2026-09-15',
       amount: 100,
       asset_category_id: bank,
       description: '',
     })
-    expect(await row('asset', bankOct)).toMatchObject({ date: '2026-09-15' })
+    expect(cookies(res).dangerMessage).toContain('資産編集に失敗しました')
+    expect(await row('asset', bankOct)).toMatchObject({ date: '2026-10-31' })
   })
 
-  it.fails('更新で日付だけ移して重複する場合も失敗する', async () => {
-    const { bank } = await setup()
-    const bankOct = await insert('asset', {
-      date: '2026-10-31',
+  it('更新: 空いている月へ移すのは成功する', async () => {
+    const { bank, bankSep } = await setup()
+    const res = await postForm(`/auth/asset/${bankSep}/update`, {
+      date: '2026-11-30',
       amount: 100,
       asset_category_id: bank,
       description: '',
     })
-    await postForm(`/auth/asset/${bankOct}/update`, {
-      date: '2026-09-15',
-      amount: 100,
-      asset_category_id: bank,
-      description: '',
-    })
-    expect(await row('asset', bankOct)).toMatchObject({ date: '2026-10-31' })
+    expect(res.headers.get('Location')).toBe(`/auth/asset?lastUpdate=${bankSep}&`)
+    expect(await row('asset', bankSep)).toMatchObject({ date: '2026-11-30' })
   })
 })

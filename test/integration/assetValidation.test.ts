@@ -36,6 +36,28 @@ describe('checkAssetCategoryDuplication（同じ月・同じカテゴリの資�
     )
   })
 
+  it('excludeId に自分自身を渡すと、自分は重複とみなさない（更新時）', async () => {
+    const bank = await insert('asset_category', { name: '普通預金' })
+    const id = await insert('asset', { date: '2026-09-30', amount: 100, asset_category_id: bank })
+    expect(
+      await checkAssetCategoryDuplication({
+        db: env.DB,
+        date: '2026-09-01',
+        assetCategoryId: bank,
+        excludeId: id,
+      })
+    ).toBe(false)
+    // 別の行を除外しても、自分が残るので重複
+    expect(
+      await checkAssetCategoryDuplication({
+        db: env.DB,
+        date: '2026-09-01',
+        assetCategoryId: bank,
+        excludeId: id + 1,
+      })
+    ).toBe(true)
+  })
+
   it('資産が無ければ false', async () => {
     const bank = await insert('asset_category', { name: '普通預金' })
     expect(
