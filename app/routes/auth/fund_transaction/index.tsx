@@ -2,9 +2,8 @@ import type { TableHeaderItem } from '@/@types/common'
 import { createRoute } from 'honox/factory'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
-import { Alert } from '@/islands/share/Alert'
-import { getCookie } from 'hono/cookie'
-import { successAlertCookieKey } from '@/settings/kakeiboSettings'
+import { getFlash } from '@/libs/flash'
+import { FlashAlerts } from '@/components/FlashAlerts'
 import { FundTransactionCreateModal } from '@/islands/fund_transation/FundTransactionCreateModal'
 import { FundTransactionDeleteModal } from '@/islands/fund_transation/FundTransactionDeleteModal'
 import { Table } from '@/components/share/Table'
@@ -31,7 +30,7 @@ export default createRoute(async (c) => {
     offset,
   })
 
-  const successMessage = getCookie(c, successAlertCookieKey)
+  const flash = getFlash(c)
 
   const headers: TableHeaderItem[] = [
     { name: '日付', textPosition: 'left' },
@@ -45,7 +44,7 @@ export default createRoute(async (c) => {
   return c.render(
     <>
       <div className='px-4 sm:px-6 lg:px-8'>
-        {successMessage && <Alert message={successMessage} type='success' />}
+        <FlashAlerts {...flash} />
         <div className='flex items-center justify-between'>
           <PageHeader title='投資用口座入金履歴' />
           <FundTransactionCreateModal

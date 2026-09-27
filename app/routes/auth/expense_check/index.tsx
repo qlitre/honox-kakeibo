@@ -1,9 +1,8 @@
 import { createRoute } from 'honox/factory'
 import { checkMonthlyExpenses, fetchSimpleList } from '@/libs/dbService'
 import { ExpenseCreateModal } from '@/islands/expense/ExpenseCreateModal'
-import { getCookie } from 'hono/cookie'
-import { successAlertCookieKey } from '@/settings/kakeiboSettings'
-import { Alert } from '@/islands/share/Alert'
+import { getFlash } from '@/libs/flash'
+import { FlashAlerts } from '@/components/FlashAlerts'
 import { getTodayDate, getYearMonth } from '@/utils/dateUtils'
 
 export default createRoute(async (c) => {
@@ -37,11 +36,11 @@ export default createRoute(async (c) => {
     })
 
     // 成功メッセージを取得
-    const successMessage = getCookie(c, successAlertCookieKey)
+    const flash = getFlash(c)
 
     return c.render(
       <div className='container mx-auto px-4 py-8'>
-        {successMessage && <Alert message={successMessage} type='success' />}
+        <FlashAlerts {...flash} />
         <div className='flex justify-between items-center mb-6'>
           <h1 className='text-2xl font-bold text-gray-900'>定期支払いチェック</h1>
           <a

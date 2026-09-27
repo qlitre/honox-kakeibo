@@ -207,7 +207,7 @@ describe('定期支払いチェック', () => {
     expect(fetch).toHaveBeenCalledTimes(1)
   })
 
-  it('POST create: DBエラーは error=create_failed 付きで戻る', async () => {
+  it('POST create: DBエラーは失敗メッセージ付きで、その年月へ戻る', async () => {
     const m = await seedExpenseMasters()
     const res = await postForm('/auth/expense_check/create', {
       date: '2026-09-27',
@@ -216,9 +216,8 @@ describe('定期支払いチェック', () => {
       payment_method_id: m.cardId,
       description: '',
     })
-    expect(res.headers.get('Location')).toBe(
-      '/auth/expense_check?year=2026&month=9&error=create_failed'
-    )
+    expect(res.headers.get('Location')).toBe('/auth/expense_check?year=2026&month=9')
+    expect(cookies(res).dangerMessage).toContain('支出追加に失敗しました')
     expect(await count('expense')).toBe(0)
   })
 
