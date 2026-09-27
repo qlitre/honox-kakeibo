@@ -1,6 +1,7 @@
 import type { Context } from 'hono'
 import type { z } from 'zod'
 import type { RowOf } from '@/@types/dbTypes'
+import type { Row } from '@/utils/sqlSchema'
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { createItem, deleteItem, updateItem } from '@/libs/dbService'
@@ -99,11 +100,14 @@ export const transactionRoutes = <
 const slackMessage = <N extends TransactionTable>(
   config: Pick<TransactionConfig<N, z.ZodObject, unknown>, 'label' | 'slackDetails'>,
   item: RowOf[N]
-) =>
-  [
+) => {
+  // 明細の4テーブルに共通のカラム（N が未確定だと型からは取り出せない）
+  const { date, amount, description } = item as Row<TransactionTable>
+  return [
     `${config.label}が追加されました。`,
-    item.date,
+    date,
     ...config.slackDetails(item),
-    `金額: ${item.amount}`,
-    `詳細: ${item.description}`,
+    `金額: ${amount}`,
+    `詳細: ${description}`,
   ].join('\n')
+}

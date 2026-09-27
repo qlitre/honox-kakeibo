@@ -1,15 +1,12 @@
-import { schema, type SchemaEntry } from '@/utils/sqlSchema'
+import {
+  schema,
+  type Column,
+  type JoinAlias,
+  type SchemaEntry,
+  type TableName,
+} from '@/utils/sqlSchema'
 
-type Schema = typeof schema
-
-export type TableName = keyof Schema
-
-// "x.name AS category_name" → "category_name"
-type Alias<S> = S extends `${string} AS ${infer A}` ? A : never
-type JoinAlias<T extends TableName> = Alias<Schema[T]['joinFields'][number]>
-
-/** テーブル自身のカラム */
-type Column<T extends TableName> = Schema[T]['fields'][number]
+export type { TableName }
 
 /** WHERE に使える名前: テーブル自身のカラム、JOIN先のエイリアス、集計用の year_month */
 export type FilterField<T extends TableName> = Column<T> | JoinAlias<T> | 'year_month'
@@ -35,10 +32,7 @@ export type SummaryKey<T extends TableName> = 'year_month' | 'category_id' | Joi
 // 実行時はリテラル型を広げた SchemaEntry として扱う
 const entry = (tableName: TableName): SchemaEntry => schema[tableName]
 
-const writableFields = (tableName: TableName) => [
-  ...entry(tableName).requiredFields,
-  ...entry(tableName).optionalFields,
-]
+const writableFields = (tableName: TableName) => entry(tableName).writableFields
 
 const joinAliases = (tableName: TableName) =>
   entry(tableName)

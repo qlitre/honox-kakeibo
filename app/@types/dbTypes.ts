@@ -1,8 +1,4 @@
-export type KakeiboBaseField = {
-  id: number
-  created_at: string
-  updated_at: string
-}
+import type { Row, TableName } from '@/utils/sqlSchema'
 
 export type KakeiboListResponse<T> = {
   contents: T[]
@@ -12,81 +8,18 @@ export type KakeiboListResponse<T> = {
   pageSize: number
 }
 
-export type AssetCategory = KakeiboBaseField & {
-  name: string
-  is_investment: number // sqliteのbool型は内部的に0か1となる
-}
+/** 各テーブルを fetch したときの行の型（テーブル定義 sqlSchema から導く） */
+export type RowOf = { [N in TableName]: Row<N> }
 
-export type Asset = KakeiboBaseField & {
-  date: string
-  amount: number
-  asset_category_id: number
-  category_name: string
-  description?: string
-}
-
-export type AssetWithCategory = Asset & {
-  category_name: string
-  is_investment: number // sqliteのbool型は内部的に0か1となる
-}
-
-export type FundTransation = KakeiboBaseField & {
-  date: string
-  amount: number
-  description?: string
-}
-
-export type ExpenseCategory = KakeiboBaseField & {
-  name: string
-}
-
-export type PaymentMethod = KakeiboBaseField & {
-  name: string
-}
-
-export type Expense = KakeiboBaseField & {
-  date: string
-  amount: number
-  expense_category_id: number
-  category_name: string
-  payment_method_id: number
-  payment_method_name: string
-  description?: string
-}
-
-export type IncomeCategory = KakeiboBaseField & {
-  name: string
-}
-
-export type Income = KakeiboBaseField & {
-  date: string
-  amount: number
-  income_category_id: number
-  category_name: string
-  description?: string
-}
-
-export type IncomeWithCategory = Income & {
-  category_name: string
-}
-
-export type ExpenseWithDetails = Expense & {
-  category_name: string
-  payment_method_name: string
-}
-
-export type ExpenseCheckTemplate = KakeiboBaseField & {
-  name: string
-  expense_category_id: number
-  payment_method_id: number | null
-  description_pattern: string
-  is_active: number // sqliteのbool型は内部的に0か1となる
-}
-
-export type ExpenseCheckTemplateWithDetails = ExpenseCheckTemplate & {
-  category_name: string
-  payment_method_name: string | null
-}
+export type AssetCategory = Row<'asset_category'>
+export type AssetWithCategory = Row<'asset'>
+export type FundTransaction = Row<'fund_transaction'>
+export type ExpenseCategory = Row<'expense_category'>
+export type PaymentMethod = Row<'payment_method'>
+export type Expense = Row<'expense'>
+export type IncomeCategory = Row<'income_category'>
+export type IncomeWithCategory = Row<'income'>
+export type ExpenseCheckTemplate = Row<'expense_check_template'>
 
 // 各サマリーデータの型定義
 export type SummaryItem = {
@@ -96,21 +29,7 @@ export type SummaryItem = {
   category_id: number
 }
 
-export type AssetWithCategoryResponse = KakeiboListResponse<AssetWithCategory>
 export type AssetCategoryResponse = KakeiboListResponse<AssetCategory>
 export type ExpenseCategoryResponse = KakeiboListResponse<ExpenseCategory>
 export type PaymentMethodResponse = KakeiboListResponse<PaymentMethod>
 export type IncomeCategoryResponse = KakeiboListResponse<IncomeCategory>
-
-/** 各テーブルを fetch したときの行の型（SELECT は常にJOIN先のエイリアス込み） */
-export type RowOf = {
-  asset: AssetWithCategory
-  asset_category: AssetCategory
-  fund_transaction: FundTransation
-  expense: ExpenseWithDetails
-  expense_category: ExpenseCategory
-  payment_method: PaymentMethod
-  income: IncomeWithCategory
-  income_category: IncomeCategory
-  expense_check_template: ExpenseCheckTemplateWithDetails
-}
