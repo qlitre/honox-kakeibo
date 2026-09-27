@@ -613,6 +613,21 @@ describe('checkMonthlyExpenses（定期支払いチェック）', () => {
     expect(res.map((r) => r.template.name)).toEqual(['A', 'B'])
   })
 
+  it('パターン中の \\ も文字として扱う', async () => {
+    const { m, tpl } = await setup()
+    await tpl('円記号', 'A\\B')
+    const expense = {
+      date: '2026-09-01',
+      amount: 1,
+      expense_category_id: m.rentId,
+      payment_method_id: m.cashId,
+    }
+    await insertExpense(expense, 'xA\\By')
+
+    const [r] = await checkMonthlyExpenses({ db: db(), year: '2026', month: '9' })
+    expect(r.isRegistered).toBe(true)
+  })
+
   it('パターン中の % や _ は文字として扱う', async () => {
     const { m, tpl } = await setup()
     await tpl('_', '家_')
