@@ -4,8 +4,6 @@ export const formLabelClass = 'block text-sm font-medium text-gray-700'
 export const formInputClass =
   'mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
 
-export const formErrorClass = 'text-red-500 text-sm mt-1'
-
 export const formSubmitClass =
   'w-full inline-flex justify-center py-3 px-4 border border-transparent shadow-sm text-base sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer'
 

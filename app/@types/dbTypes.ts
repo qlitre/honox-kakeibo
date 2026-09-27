@@ -13,12 +13,10 @@ export type RowOf = { [N in TableName]: Row<N> }
 
 export type AssetCategory = Row<'asset_category'>
 export type AssetWithCategory = Row<'asset'>
-export type FundTransaction = Row<'fund_transaction'>
 export type ExpenseCategory = Row<'expense_category'>
 export type PaymentMethod = Row<'payment_method'>
 export type Expense = Row<'expense'>
 export type IncomeCategory = Row<'income_category'>
-export type IncomeWithCategory = Row<'income'>
 export type ExpenseCheckTemplate = Row<'expense_check_template'>
 
 // 各サマリーデータの型定義
@@ -29,7 +27,5 @@ export type SummaryItem = {
   category_id: number
 }
 
-export type AssetCategoryResponse = KakeiboListResponse<AssetCategory>
 export type ExpenseCategoryResponse = KakeiboListResponse<ExpenseCategory>
 export type PaymentMethodResponse = KakeiboListResponse<PaymentMethod>
-export type IncomeCategoryResponse = KakeiboListResponse<IncomeCategory>
