@@ -12,9 +12,17 @@ type Props = {
   title: string
   actionUrl: string
   backUrl: string
+  /** 資産カテゴリの「投資用」チェックを出す */
+  showInvestment?: boolean
 }
 
-export const CategoryCreateForm: FC<Props> = ({ data, title, actionUrl, backUrl }) => {
+export const CategoryCreateForm: FC<Props> = ({
+  data,
+  title,
+  actionUrl,
+  backUrl,
+  showInvestment,
+}) => {
   const isInvestmentField = () => {
     return (
       <div className='flex items-center'>
@@ -51,9 +59,7 @@ export const CategoryCreateForm: FC<Props> = ({ data, title, actionUrl, backUrl 
           />
           {data?.error?.name && <p className='text-red-500 text-sm mt-1'>{data.error.name}</p>}
         </div>
-        {
-          actionUrl.includes('asset_category') && isInvestmentField() // 関数を直接呼び出して表示
-        }
+        {showInvestment && isInvestmentField()}
         <div>
           <button
             type='submit'

@@ -3,8 +3,7 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { updateItem, fetchDetail, fetchSimpleList } from '@/libs/dbService'
 import type { ExpenseCategory, PaymentMethod } from '@/@types/dbTypes'
-import { setCookie } from 'hono/cookie'
-import { successAlertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings'
+import { setFlash } from '@/libs/flash'
 
 const schema = z.object({
   name: z.string().min(1, '名前は必須です'),
@@ -283,19 +282,11 @@ export const POST = createRoute(
         data,
       })
 
-      setCookie(c, successAlertCookieKey, successMessage, {
-        maxAge: alertCookieMaxage,
-      })
-
-      return c.redirect(redirectUrl, 303)
+      setFlash(c, 'success', successMessage)
     } catch (error) {
       console.error('Error updating template:', error)
-      return c.render(
-        <div className='container mx-auto px-4 py-8'>
-          <div className='text-red-600'>更新に失敗しました</div>
-        </div>,
-        { title: 'エラー' }
-      )
+      setFlash(c, 'danger', 'チェックテンプレート編集に失敗しました。')
     }
+    return c.redirect(redirectUrl, 303)
   }
 )

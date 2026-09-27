@@ -127,15 +127,18 @@ describe.each(cases)('$endPoint', ({ endPoint, title, seed }) => {
       ['金額が小数', { amount: '12.5' }],
       ['金額が負', { amount: '-1' }],
       ['金額が空', { amount: '' }],
-    ])('入力エラー（%s）は失敗メッセージ付きで一覧へ303で、登録も通知もしない', async (_, override) => {
-      const { form } = await seed()
-      const res = await postForm(`${base}/create`, { ...form, ...override })
-      expect(res.status).toBe(303)
-      expect(res.headers.get('Location')).toBe(base)
-      expect(cookies(res).dangerMessage).toContain('入力内容を確認してください')
-      expect(await count(endPoint)).toBe(0)
-      expect(fetch).not.toHaveBeenCalled()
-    })
+    ])(
+      '入力エラー（%s）は失敗メッセージ付きで一覧へ303で、登録も通知もしない',
+      async (_, override) => {
+        const { form } = await seed()
+        const res = await postForm(`${base}/create`, { ...form, ...override })
+        expect(res.status).toBe(303)
+        expect(res.headers.get('Location')).toBe(base)
+        expect(cookies(res).dangerMessage).toContain('入力内容を確認してください')
+        expect(await count(endPoint)).toBe(0)
+        expect(fetch).not.toHaveBeenCalled()
+      }
+    )
 
     it.skipIf(endPoint === 'fund_transaction')(
       '存在しないカテゴリ等（DBエラー）は失敗メッセージ付きで一覧へ303',

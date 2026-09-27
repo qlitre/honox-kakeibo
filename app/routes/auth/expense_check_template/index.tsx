@@ -3,6 +3,8 @@ import { fetchSimpleList } from '@/libs/dbService'
 import type { TableHeaderItem } from '@/@types/common'
 import { PageHeader } from '@/components/PageHeader'
 import { Table } from '@/components/share/Table'
+import { FlashAlerts } from '@/components/FlashAlerts'
+import { getFlash } from '@/libs/flash'
 
 export default createRoute(async (c) => {
   const db = c.env.DB
@@ -24,6 +26,7 @@ export default createRoute(async (c) => {
 
   return c.render(
     <div className='px-4 sm:px-6 lg:px-8'>
+      <FlashAlerts {...getFlash(c)} />
       <div className='flex items-center justify-between'>
         <PageHeader title='定期支払いチェックテンプレート' />
         <a

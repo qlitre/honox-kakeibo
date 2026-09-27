@@ -1,8 +1,7 @@
 import type { ExpenseCheckTemplate } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { deleteItem, fetchDetail } from '@/libs/dbService'
-import { setCookie } from 'hono/cookie'
-import { successAlertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings'
+import { setFlash } from '@/libs/flash'
 import { PageHeader } from '@/components/PageHeader'
 import { ButtonLink } from '@/components/share/ButtonLink'
 
@@ -11,17 +10,10 @@ const title = 'チェックテンプレート削除'
 const successMessage = 'チェックテンプレートの削除に成功しました'
 const redirectUrl = '/auth/expense_check_template'
 
-const ExpenseCheckTemplateDeleteForm = ({
-  detail,
-  errorMessage,
-}: {
-  detail: ExpenseCheckTemplate
-  errorMessage?: string
-}) => {
+const ExpenseCheckTemplateDeleteForm = ({ detail }: { detail: ExpenseCheckTemplate }) => {
   return (
     <div className='p-6 max-w-lg mx-auto border border-gray-300 rounded-lg bg-white shadow-md'>
       <PageHeader title={title} />
-      {errorMessage && <p className='text-red-500 mb-4'>{errorMessage}</p>}
       <div className='mb-6 space-y-3'>
         <div className='border-l-4 border-red-500 pl-4'>
           <p className='text-lg font-medium text-gray-900 mb-2'>削除対象のテンプレート</p>
@@ -80,40 +72,12 @@ export default createRoute(async (c) => {
 })
 
 export const POST = createRoute(async (c) => {
-  const id = c.req.param('id')!
-
   try {
-    await deleteItem({
-      db: c.env.DB,
-      table: endPoint,
-      id: id,
-    })
-
-    setCookie(c, successAlertCookieKey, successMessage, {
-      maxAge: alertCookieMaxage,
-    })
-
-    return c.redirect(redirectUrl, 303)
+    await deleteItem({ db: c.env.DB, table: endPoint, id: c.req.param('id')! })
+    setFlash(c, 'success', successMessage)
   } catch (error) {
     console.error('Error deleting template:', error)
-
-    // エラー時は詳細を再取得して削除画面を再表示
-    const detail = await fetchDetail({
-      db: c.env.DB,
-      table: endPoint,
-      id: id,
-    })
-
-    if (!detail) {
-      return c.redirect(redirectUrl, 303)
-    }
-
-    return c.render(
-      <ExpenseCheckTemplateDeleteForm
-        detail={detail}
-        errorMessage='削除に失敗しました。もう一度お試しください。'
-      />,
-      { title: title }
-    )
+    setFlash(c, 'danger', 'チェックテンプレート削除に失敗しました。')
   }
+  return c.redirect(redirectUrl, 303)
 })
