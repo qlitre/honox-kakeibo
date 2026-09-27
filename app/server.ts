@@ -5,7 +5,8 @@ import mcpApp from './routes/mcp'
 
 const app = createApp()
 
-showRoutes(app)
+// ルート一覧の出力は開発時だけ（本番では起動のたびにログが出るため）
+if (import.meta.env.DEV) showRoutes(app)
 
 export default new OAuthProvider({
   apiRoute: '/mcp',
