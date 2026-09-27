@@ -127,6 +127,26 @@ describe('チェックテンプレート', () => {
     expect(html).toContain('失敗しました')
   })
 
+  it.each([
+    [1, true],
+    [0, false],
+  ])('GET [id]/update: 現在の値をフォームに入れる（is_active=%i）', async (flag, checked) => {
+    const m = await seedExpenseMasters()
+    const id = await insertTemplate(m, { payment_method_id: m.cardId, is_active: flag })
+    const html = await (await authRequest(`${base}/${id}/update`)).text()
+    const input = (name: string) => html.match(new RegExp(`<input[^>]*name="${name}"[^>]*>`))?.[0]
+    const selected = (name: string) =>
+      html
+        .match(new RegExp(`<select[^>]*name="${name}"[\\s\\S]*?</select>`))?.[0]
+        .match(/<option value="(\d+)" selected="">/)?.[1]
+    expect(html).toContain(`action="${base}/${id}/update"`)
+    expect(input('name')).toMatch(/\svalue="家賃"/)
+    expect(input('description_pattern')).toMatch(/\svalue="家賃"/)
+    expect(selected('expense_category_id')).toBe(String(m.rentId))
+    expect(selected('payment_method_id')).toBe(String(m.cardId))
+    expect(/\schecked/.test(input('is_active')!)).toBe(checked)
+  })
+
   it('POST [id]/update で更新して一覧へ303', async () => {
     const m = await seedExpenseMasters()
     const id = await insertTemplate(m, { is_active: 1 })
