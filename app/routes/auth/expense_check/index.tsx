@@ -5,14 +5,16 @@ import { ExpenseCreateModal } from '@/islands/expense/ExpenseCreateModal'
 import { getCookie } from 'hono/cookie'
 import { successAlertCookieKey } from '@/settings/kakeiboSettings'
 import { Alert } from '@/islands/share/Alert'
+import { getTodayDate, getYearMonth } from '@/utils/dateUtils'
 
 export default createRoute(async (c) => {
   const db = c.env.DB
 
   // 現在の年月を取得
-  const now = new Date()
-  const currentYear = now.getFullYear().toString()
-  const currentMonth = (now.getMonth() + 1).toString()
+  const today = getTodayDate()
+  const { year: thisYear, month: thisMonth } = getYearMonth(today)
+  const currentYear = String(thisYear)
+  const currentMonth = String(thisMonth)
 
   // クエリパラメータから年月を取得（デフォルトは現在の年月）
   const year = c.req.query('year') || currentYear
@@ -61,11 +63,10 @@ export default createRoute(async (c) => {
               <select
                 id='year'
                 name='year'
-                defaultValue={year}
                 className='px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'
               >
                 {Array.from({ length: 5 }, (_, i) => {
-                  const y = now.getFullYear() - 2 + i
+                  const y = thisYear - 2 + i
                   return (
                     <option key={y} value={y} selected={String(y) === String(year)}>
                       {y}年
@@ -82,7 +83,6 @@ export default createRoute(async (c) => {
               <select
                 id='month'
                 name='month'
-                defaultValue={month}
                 className='px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'
               >
                 {Array.from({ length: 12 }, (_, i) => {
@@ -181,7 +181,7 @@ export default createRoute(async (c) => {
                       buttonType='primary'
                       buttonTitle='追加'
                       data={{
-                        date: `${year}-${month.padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`,
+                        date: `${year}-${month.padStart(2, '0')}-${today.slice(8, 10)}`,
                         amount: '',
                         expense_category_id: result.template.expense_category_id.toString(),
                         payment_method_id: result.template.payment_method_id?.toString() || '',

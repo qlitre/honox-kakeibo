@@ -15,13 +15,7 @@ describe('kakeiboMenu', () => {
     expect(dashboardHref('支出カレンダー')).toBe('/auth/dashboard/2026/9/expense_calendar')
   })
 
-  it('FIXME: 年月はUTC基準のため、JSTの月初0〜9時は前月を指す', () => {
-    vi.setSystemTime(new Date('2026-09-30T16:00:00Z')) // JST 10/1 01:00
-    expect(dashboardHref('月間収支')).toBe('/auth/dashboard/2026/9/monthly_balance')
-  })
-
-  // あるべき挙動。直ったら it.fails → it に変える
-  it.fails('年月は日本時間で決まる', () => {
+  it('年月は日本時間で決まる', () => {
     vi.setSystemTime(new Date('2026-09-30T16:00:00Z')) // JST 10/1 01:00
     expect(dashboardHref('月間収支')).toBe('/auth/dashboard/2026/10/monthly_balance')
   })

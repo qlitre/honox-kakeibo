@@ -1,3 +1,5 @@
+import { getYearMonth } from '@/utils/dateUtils'
+
 // グラフのカラーチャート。python seabornより tab20
 export const colorSchema = [
   'rgba(31.00,119.00,180.00,0.6)',
@@ -26,19 +28,7 @@ export const colorSchema = [
 export const annualStartMonth = 1
 
 export const kakeiboMenu = () => {
-  const date = new Date()
-  let year = date.toLocaleString('ja-JP', {
-    timeZone: 'Asia/Tokyo',
-    year: 'numeric',
-  })
-  let month = date.toLocaleString('ja-JP', {
-    timeZone: 'Asia/Tokyo',
-    month: 'numeric',
-  })
-
-  // 2024年、11月のようになるので、最後の文字を取り除く
-  year = year.slice(0, year.length - 1)
-  month = month.slice(0, month.length - 1)
+  const { year, month } = getYearMonth()
 
   return {
     支出管理: [
@@ -61,16 +51,16 @@ export const kakeiboMenu = () => {
       { name: '投資サマリ', href: '/auth/dashboard/investment_summary' },
       {
         name: '資産ダッシュボード',
-        href: `/auth/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}/asset`,
+        href: `/auth/dashboard/${year}/${month}/asset`,
       },
       {
         name: '月間収支',
-        href: `/auth/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}/monthly_balance`,
+        href: `/auth/dashboard/${year}/${month}/monthly_balance`,
       },
       { name: '収支推移', href: `/auth/dashboard/balance_transition` },
       {
         name: '支出カレンダー',
-        href: `/auth/dashboard/${new Date().getFullYear()}/${new Date().getMonth() + 1}/expense_calendar`,
+        href: `/auth/dashboard/${year}/${month}/expense_calendar`,
       },
     ],
   }

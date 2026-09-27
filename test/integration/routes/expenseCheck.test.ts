@@ -162,6 +162,17 @@ describe('定期支払いチェック', () => {
     expect(html).toContain('¥80,000')
   })
 
+  it('GET: 年月の指定が無ければ日本時間の今月', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-09-30T16:00:00Z')) // JST 10/1 01:00
+    try {
+      const html = await (await authRequest('/auth/expense_check')).text()
+      expect(html).toMatch(/<option value="10" selected="">/)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('GET: テンプレートが無ければ案内を表示する', async () => {
     const html = await (await authRequest('/auth/expense_check?year=2026&month=9')).text()
     expect(html).toContain('チェックテンプレートが登録されていません')
@@ -208,18 +219,7 @@ describe('定期支払いチェック', () => {
     expect(res.headers.get('Location')).toBe('/auth/expense_check?year=2026&month=8')
   })
 
-  it('FIXME: 日付が不正な入力エラーでは year=NaN&month=NaN へリダイレクトされる', async () => {
-    const res = await postForm('/auth/expense_check/create', {
-      date: 'abc',
-      amount: 1,
-      expense_category_id: 1,
-      payment_method_id: 1,
-      description: '',
-    })
-    expect(res.headers.get('Location')).toBe('/auth/expense_check?year=NaN&month=NaN')
-  })
-
-  it.fails('日付が不正な入力エラーでは現在の年月へ戻る', async () => {
+  it('日付が不正な入力エラーでは現在の年月へ戻る', async () => {
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(new Date('2026-09-15T03:00:00Z'))
     try {
