@@ -7,6 +7,7 @@ import {
   generateUpdateQuery,
   generateQueryBindValues,
   generateSummaryQuery,
+  escapeLike,
 } from '@/utils/sqlUtils'
 
 /* ---------- 共通レスポンス型 ---------- */
@@ -115,8 +116,10 @@ export async function createItem<T>(params: {
 }): Promise<T> {
   const { db, table, data } = params
 
-  const insertSql = await generateInsertQuery(table)
-  const values = await generateQueryBindValues(table, data)
+  // 値が undefined のカラムは入れず、DBの既定値に任せる
+  const columns = Object.keys(data).filter((key) => data[key] !== undefined)
+  const insertSql = await generateInsertQuery(table, columns)
+  const values = (await generateQueryBindValues(table, data)).filter((v) => v !== undefined)
 
   const insertResult = await db
     .prepare(insertSql)
@@ -299,15 +302,19 @@ export async function checkMonthlyExpenses(params: {
         e.description
       FROM expense e
       WHERE e.expense_category_id = ?
-        AND e.description LIKE ?
-        AND e.date LIKE ?
+        AND e.description LIKE ? ESCAPE '\\'
+        AND e.date LIKE ? ESCAPE '\\'
       ORDER BY e.date DESC
       LIMIT 1
     `
 
     const expenseResult = await db
       .prepare(expenseQuery)
-      .bind(template.expense_category_id, `%${template.description_pattern}%`, `${targetDate}%`)
+      .bind(
+        template.expense_category_id,
+        `%${escapeLike(String(template.description_pattern))}%`,
+        `${escapeLike(targetDate)}%`
+      )
       .first()
 
     checkResults.push({

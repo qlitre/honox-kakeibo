@@ -39,15 +39,11 @@ export const getAndValidateFormData = async (formData: Record<any, any>, tableNa
   return { data: extractedData, isValid: true }
 }
 
-// 動的にINSERTクエリを生成
-export const generateInsertQuery = async (tableName: TableName) => {
-  const fields = []
-  for (const field of schema[tableName].requiredFields) {
-    fields.push(field)
-  }
-  for (const field of schema[tableName].optionalFields) {
-    fields.push(field)
-  }
+// 動的にINSERTクエリを生成。columns を渡すと、そのカラムだけに絞る（残りはDBの既定値）
+export const generateInsertQuery = async (tableName: TableName, columns?: string[]) => {
+  const fields = [...schema[tableName].requiredFields, ...schema[tableName].optionalFields].filter(
+    (field) => !columns || columns.includes(field)
+  )
   const placeholders = fields.map(() => '?').join(', ')
   const insertQuery = `
       INSERT INTO ${tableName} (${fields.join(', ')})
@@ -122,7 +118,7 @@ function isNumeric(value: string): boolean {
 }
 
 // LIKE の % と _ をワイルドカードではなく文字として扱う（ESCAPE '\' と組で使う）
-const escapeLike = (value: string) => value.replace(/[\\%_]/g, (c) => `\\${c}`)
+export const escapeLike = (value: string) => value.replace(/[\\%_]/g, (c) => `\\${c}`)
 
 // テーブル外で WHERE に使える名前: JOIN先のエイリアス（"x.name AS category_name" の右側）と集計用の year_month
 const extraFilterFields = (tableName: TableName) =>
