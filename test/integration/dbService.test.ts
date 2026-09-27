@@ -282,10 +282,19 @@ describe('createItem', () => {
     expect(item.created_at).not.toBe('2000-01-01')
   })
 
-  it('FIXME: 任意カラムを省略すると undefined をbindして失敗する（DBの既定値は使われない）', async () => {
+  it('任意カラムを省略するとDBの既定値が入る', async () => {
+    const item = await createItem<any>({
+      db: db(),
+      table: 'asset_category',
+      data: { name: '証券口座' },
+    })
+    expect(item).toMatchObject({ name: '証券口座', is_investment: 0 })
+  })
+
+  it('必須カラムを省略すると例外で、行は残らない', async () => {
     await expect(
-      createItem({ db: db(), table: 'asset_category', data: { name: '証券口座' } })
-    ).rejects.toThrow()
+      createItem({ db: db(), table: 'asset_category', data: { is_investment: 1 } })
+    ).rejects.toThrow(/NOT NULL/)
     expect(await count('asset_category')).toBe(0)
   })
 

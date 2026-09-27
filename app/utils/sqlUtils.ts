@@ -39,15 +39,11 @@ export const getAndValidateFormData = async (formData: Record<any, any>, tableNa
   return { data: extractedData, isValid: true }
 }
 
-// 動的にINSERTクエリを生成
-export const generateInsertQuery = async (tableName: TableName) => {
-  const fields = []
-  for (const field of schema[tableName].requiredFields) {
-    fields.push(field)
-  }
-  for (const field of schema[tableName].optionalFields) {
-    fields.push(field)
-  }
+// 動的にINSERTクエリを生成。columns を渡すと、そのカラムだけに絞る（残りはDBの既定値）
+export const generateInsertQuery = async (tableName: TableName, columns?: string[]) => {
+  const fields = [...schema[tableName].requiredFields, ...schema[tableName].optionalFields].filter(
+    (field) => !columns || columns.includes(field)
+  )
   const placeholders = fields.map(() => '?').join(', ')
   const insertQuery = `
       INSERT INTO ${tableName} (${fields.join(', ')})

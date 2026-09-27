@@ -115,8 +115,10 @@ export async function createItem<T>(params: {
 }): Promise<T> {
   const { db, table, data } = params
 
-  const insertSql = await generateInsertQuery(table)
-  const values = await generateQueryBindValues(table, data)
+  // 値が undefined のカラムは入れず、DBの既定値に任せる
+  const columns = Object.keys(data).filter((key) => data[key] !== undefined)
+  const insertSql = await generateInsertQuery(table, columns)
+  const values = (await generateQueryBindValues(table, data)).filter((v) => v !== undefined)
 
   const insertResult = await db
     .prepare(insertSql)
