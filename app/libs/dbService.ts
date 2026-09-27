@@ -94,6 +94,21 @@ export async function fetchSimpleList<N extends TableName>(params: {
   }
 }
 
+/* ---------- 全件取得（グラフ用。件数で打ち切らない） ---------- */
+export async function fetchAll<N extends TableName>(params: {
+  db: D1Database
+  table: N
+  orders?: string
+}): Promise<RowOf[N][]> {
+  const { db, table, orders } = params
+  let sql = generateSelectQuery(table)
+  if (orders) {
+    sql += ` ${buildSqlOrderByClause(table, orders)}`
+  }
+  const { results } = await db.prepare(sql).all()
+  return results as RowOf[N][]
+}
+
 /* ---------- 単一詳細取得 ---------- */
 export async function fetchDetail<N extends TableName>(params: {
   db: D1Database

@@ -1,9 +1,9 @@
-// app/routes/auth/balance/transition.tsx
 import { createRoute } from 'honox/factory'
 import { BalanceTransitionChart } from '@/components/chart/BalanceTransitionChart'
 import { Card } from '@/components/share/Card'
 import { BalanceTransitionForm } from '@/islands/BalanceTransitionForm'
 import { fetchSummary, fetchSimpleList } from '@/libs/dbService'
+import { buildBalanceTransition } from '@/utils/dashboardAggregates'
 
 export default createRoute(async (c) => {
   const db = c.env.DB
@@ -12,58 +12,18 @@ export default createRoute(async (c) => {
   const incomeCategoryId = c.req.query('income_category') ?? ''
   const expenseCategoryId = c.req.query('expense_category') ?? ''
 
-  /* ---------- サマリー取得 ---------- */
-  const incomeData = await fetchSummary({
-    db,
-    table: 'income',
-    groupBy: ['year_month', 'category_name'],
-  })
-
-  const expenseData = await fetchSummary({
-    db,
-    table: 'expense',
-    groupBy: ['year_month', 'category_name'],
-  })
-
-  /* ---------- 月別集計を組み立て ---------- */
-  const months = new Set<string>()
-  const incMap: Record<string, number> = {}
-  const expMap: Record<string, number> = {}
-
-  for (const row of incomeData.summary) {
-    const ym = row.year_month
-    months.add(ym)
-    if (!incMap[ym]) incMap[ym] = 0
-    if (!incomeCategoryId || String(row.category_id) === incomeCategoryId) {
-      incMap[ym] += row.total_amount
-    }
-  }
-
-  for (const row of expenseData.summary) {
-    const ym = row.year_month
-    months.add(ym)
-    if (!expMap[ym]) expMap[ym] = 0
-    if (!expenseCategoryId || String(row.category_id) === expenseCategoryId) {
-      expMap[ym] += row.total_amount
-    }
-  }
-
-  const labels = Array.from(months).sort((a, b) => a.localeCompare(b))
-  const incomeAmounts = labels.map((m) => incMap[m] ?? 0)
-  const expenseAmounts = labels.map((m) => expMap[m] ?? 0)
-
-  /* ---------- カテゴリリスト ---------- */
-  const incomeCats = await fetchSimpleList({
-    db,
-    table: 'income_category',
-    orders: 'updated_at',
-  })
-
-  const expenseCats = await fetchSimpleList({
-    db,
-    table: 'expense_category',
-    orders: 'updated_at',
-  })
+  const [income, expense, incomeCats, expenseCats] = await Promise.all([
+    fetchSummary({ db, table: 'income', groupBy: ['year_month', 'category_name'] }),
+    fetchSummary({ db, table: 'expense', groupBy: ['year_month', 'category_name'] }),
+    fetchSimpleList({ db, table: 'income_category', orders: 'updated_at' }),
+    fetchSimpleList({ db, table: 'expense_category', orders: 'updated_at' }),
+  ])
+  const { labels, incomeAmounts, expenseAmounts } = buildBalanceTransition(
+    income.summary,
+    expense.summary,
+    incomeCategoryId,
+    expenseCategoryId
+  )
 
   /* ---------- レンダリング ---------- */
   return c.render(

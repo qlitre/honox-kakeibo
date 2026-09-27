@@ -1,6 +1,5 @@
-import type { AssetTableItems } from '@/@types/common'
 import { createRoute } from 'honox/factory'
-import { fetchListWithFilter, fetchSimpleList } from '@/libs/dbService'
+import { fetchAll, fetchListWithFilter, fetchSimpleList } from '@/libs/dbService'
 import { AssetPieChart } from '@/components/chart/AssetPieChart'
 import { AssetBarChart } from '@/components/chart/AssetBarChart'
 import {
@@ -10,12 +9,11 @@ import {
   getEndOfMonth,
   getAnnualStartYear,
   formatDiff,
-  ratio,
 } from '@/utils/dashboardUtils'
+import { buildAssetSummary, buildColorMap } from '@/utils/dashboardAggregates'
 import { annualStartMonth } from '@/settings/kakeiboSettings'
 import { PageHeader } from '@/components/PageHeader'
 import { MonthPager } from '@/components/MonthPager'
-import { colorSchema } from '@/settings/kakeiboSettings'
 import { Card } from '@/components/share/Card'
 import { CardWithHeading } from '@/components/share/CardWithHeading'
 import { AssetTable } from '@/components/AssetTable'
@@ -24,140 +22,39 @@ export default createRoute(async (c) => {
   const db = c.env.DB
   const year = parseInt(c.req.param('year')!)
   const month = parseInt(c.req.param('month')!)
-  const ge = getBeginningOfMonth(year, month)
-  const le = getEndOfMonth(year, month)
 
-  const asset = await fetchListWithFilter({
-    db: db,
-    table: 'asset',
-    filters: [
-      { field: 'date', op: 'gte', value: ge },
-      { field: 'date', op: 'lte', value: le },
-    ],
-    limit: 100,
-    offset: 0,
-  })
-
-  // 前月
-  const prevYear = getPrevMonthYear(year, month)
-  const prevMonth = getPrevMonth(month)
-  const prevGe = getBeginningOfMonth(prevYear, prevMonth)
-  const prevLe = getEndOfMonth(prevYear, prevMonth)
-  const prevAsset = await fetchListWithFilter({
-    db: db,
-    table: 'asset',
-    filters: [
-      { field: 'date', op: 'gte', value: prevGe },
-      { field: 'date', op: 'lte', value: prevLe },
-    ],
-    limit: 100,
-    offset: 0,
-  })
-  // 年初
-  const annualStartYear = getAnnualStartYear(year, month)
-  const annualStartGe = getBeginningOfMonth(annualStartYear, annualStartMonth)
-  const annualStartLe = getEndOfMonth(annualStartYear, annualStartMonth)
-  const annualStartAsset = await fetchListWithFilter({
-    db: db,
-    table: 'asset',
-    filters: [
-      { field: 'date', op: 'gte', value: annualStartGe },
-      { field: 'date', op: 'lte', value: annualStartLe },
-    ],
-    limit: 100,
-    offset: 0,
-  })
-
-  const tableItems: AssetTableItems = {}
-  // 当月の記入
-  for (const elm of asset.contents) {
-    const categoryId = elm.asset_category_id
-    tableItems[categoryId] = {
-      categoryName: elm.category_name,
-      now: elm.amount,
-      prevDiff: 0,
-      prevDiffRatio: 0,
-      annualStartDiff: 0,
-      annualStartDiffRatio: 0,
-    }
-  }
-  // 前月の記入
-  for (const elm of prevAsset.contents) {
-    const categoryId = elm.asset_category_id
-    if (categoryId in tableItems) {
-      const obj = tableItems[categoryId]
-      const diff = obj.now - elm.amount
-      obj.prevDiff = diff
-      obj.prevDiffRatio = ratio(diff, elm.amount)
-    } else {
-      tableItems[categoryId] = {
-        categoryName: elm.category_name,
-        now: 0,
-        prevDiff: -1 * elm.amount,
-        prevDiffRatio: -1,
-        annualStartDiff: 0,
-        annualStartDiffRatio: 0,
-      }
-    }
-  }
-  // 年初の記入
-  for (const elm of annualStartAsset.contents) {
-    const categoryId = elm.asset_category_id
-    if (categoryId in tableItems) {
-      const obj = tableItems[categoryId]
-      const diff = obj.now - elm.amount
-      obj.annualStartDiff = diff
-      obj.annualStartDiffRatio = ratio(diff, elm.amount)
-    } else {
-      tableItems[categoryId] = {
-        categoryName: elm.category_name,
-        now: 0,
-        prevDiff: 0,
-        prevDiffRatio: 0,
-        annualStartDiff: -1 * elm.amount,
-        annualStartDiffRatio: -1,
-      }
-    }
+  // その月に登録された資産（カテゴリごとに月1件）
+  const assetsOf = async (y: number, m: number) => {
+    const { contents } = await fetchListWithFilter({
+      db,
+      table: 'asset',
+      filters: [
+        { field: 'date', op: 'gte', value: getBeginningOfMonth(y, m) },
+        { field: 'date', op: 'lte', value: getEndOfMonth(y, m) },
+      ],
+      limit: 100,
+      offset: 0,
+    })
+    return contents
   }
 
-  // 合計金額の計算
-  const totalAmount = asset.contents.reduce((sum, item) => sum + item.amount, 0)
-  const prevTotalAmount = prevAsset.contents.reduce((sum, item) => sum + item.amount, 0)
-  const prevTotalDiff = totalAmount - prevTotalAmount
-  const prevTotalDiffRatio = ratio(prevTotalDiff, prevTotalAmount)
-  const annualTotalAmount = annualStartAsset.contents.reduce((sum, item) => sum + item.amount, 0)
-  const annualTotalDiff = totalAmount - annualTotalAmount
-  const annualTotalDiffRatio = ratio(annualTotalDiff, annualTotalAmount)
+  const [assets, prevAssets, annualStartAssets, allAssets, categories] = await Promise.all([
+    assetsOf(year, month),
+    assetsOf(getPrevMonthYear(year, month), getPrevMonth(month)),
+    assetsOf(getAnnualStartYear(year, month), annualStartMonth),
+    fetchAll({ db, table: 'asset' }),
+    fetchSimpleList({ db, table: 'asset_category', orders: 'updated_at' }),
+  ])
 
-  // BarChart用のデータの取得
-  const preReq = await fetchListWithFilter({
-    db: db,
-    table: 'asset',
-    limit: 1,
-    offset: 0,
-  })
-  const totalCount = preReq.totalCount
-  const allAssets = await fetchListWithFilter({
-    db: db,
-    table: 'asset',
-    limit: totalCount,
-    offset: 0,
-  })
-
-  // カテゴリ一覧取得
-  const categories = await fetchSimpleList({
-    db,
-    table: 'asset_category',
-    orders: 'updated_at',
-  })
-
-  const colormap: Record<number, string> = {}
-  for (let i = 0; i < categories.contents.length; i++) {
-    const categoryId = categories.contents[i].id
-    const color = colorSchema[i]
-    colormap[categoryId] = color
-  }
-
+  const {
+    tableItems,
+    totalAmount,
+    prevTotalDiff,
+    prevTotalDiffRatio,
+    annualTotalDiff,
+    annualTotalDiffRatio,
+  } = buildAssetSummary(assets, prevAssets, annualStartAssets)
+  const colormap = buildColorMap(categories.contents)
   const prevDiffFmt = formatDiff(prevTotalDiffRatio)
   const annualDiffFmt = formatDiff(annualTotalDiffRatio)
 
@@ -209,7 +106,7 @@ export default createRoute(async (c) => {
           </Card>
           <Card>
             <div className='w-full'>
-              <AssetPieChart assets={asset.contents} colorMap={colormap}></AssetPieChart>
+              <AssetPieChart assets={assets} colorMap={colormap}></AssetPieChart>
             </div>
           </Card>
         </div>
@@ -218,11 +115,7 @@ export default createRoute(async (c) => {
       <section className='space-y-3'>
         <h3 className='text-lg font-semibold text-gray-800 px-1'>資産推移</h3>
         <Card>
-          <AssetBarChart
-            assets={allAssets.contents}
-            categories={categories.contents}
-            colorMap={colormap}
-          />
+          <AssetBarChart assets={allAssets} categories={categories.contents} colorMap={colormap} />
         </Card>
       </section>
     </div>,
