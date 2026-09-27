@@ -64,3 +64,7 @@ export const formatDiff = (value: number) => {
   const color = value >= 0 ? 'text-blue-500' : 'text-red-500'
   return { sign, color }
 }
+
+/** 比率。分母が0なら0（NaN・Infinity を表示しないため） */
+export const ratio = (numerator: number, denominator: number) =>
+  denominator === 0 ? 0 : numerator / denominator

@@ -10,6 +10,7 @@ import {
   getEndOfMonth,
   getAnnualStartYear,
   formatDiff,
+  ratio,
 } from '@/utils/dashboardUtils'
 import { annualStartMonth } from '@/settings/kakeiboSettings'
 import { PageHeader } from '@/components/PageHeader'
@@ -87,7 +88,7 @@ export default createRoute(async (c) => {
       const obj = tableItems[categoryId]
       const diff = obj.now - elm.amount
       obj.prevDiff = diff
-      obj.prevDiffRatio = diff / elm.amount
+      obj.prevDiffRatio = ratio(diff, elm.amount)
     } else {
       tableItems[categoryId] = {
         categoryName: elm.category_name,
@@ -106,7 +107,7 @@ export default createRoute(async (c) => {
       const obj = tableItems[categoryId]
       const diff = obj.now - elm.amount
       obj.annualStartDiff = diff
-      obj.annualStartDiffRatio = diff / elm.amount
+      obj.annualStartDiffRatio = ratio(diff, elm.amount)
     } else {
       tableItems[categoryId] = {
         categoryName: elm.category_name,
@@ -123,10 +124,10 @@ export default createRoute(async (c) => {
   const totalAmount = asset.contents.reduce((sum, item) => sum + item.amount, 0)
   const prevTotalAmount = prevAsset.contents.reduce((sum, item) => sum + item.amount, 0)
   const prevTotalDiff = totalAmount - prevTotalAmount
-  const prevTotalDiffRatio = prevTotalDiff / prevTotalAmount
+  const prevTotalDiffRatio = ratio(prevTotalDiff, prevTotalAmount)
   const annualTotalAmount = annualStartAsset.contents.reduce((sum, item) => sum + item.amount, 0)
   const annualTotalDiff = totalAmount - annualTotalAmount
-  const annualTotalDiffRatio = annualTotalDiff / annualTotalAmount
+  const annualTotalDiffRatio = ratio(annualTotalDiff, annualTotalAmount)
 
   // BarChart用のデータの取得
   const preReq = await fetchListWithFilter({
