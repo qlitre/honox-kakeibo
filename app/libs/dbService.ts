@@ -94,6 +94,21 @@ export async function fetchSimpleList<N extends TableName>(params: {
   }
 }
 
+/* ---------- 全件取得（グラフ用。件数で打ち切らない） ---------- */
+export async function fetchAll<N extends TableName>(params: {
+  db: D1Database
+  table: N
+  orders?: string
+}): Promise<RowOf[N][]> {
+  const { db, table, orders } = params
+  let sql = generateSelectQuery(table)
+  if (orders) {
+    sql += ` ${buildSqlOrderByClause(table, orders)}`
+  }
+  const { results } = await db.prepare(sql).all()
+  return results as RowOf[N][]
+}
+
 /* ---------- 単一詳細取得 ---------- */
 export async function fetchDetail<N extends TableName>(params: {
   db: D1Database
@@ -246,58 +261,62 @@ export async function checkMonthlyExpenses(params: {
 
   const targetDate = `${year}-${month.padStart(2, '0')}`
 
-  // チェックテンプレート一覧を取得
-  const templatesQuery = `
+  // 有効なテンプレートごとに、対象月・同カテゴリで説明にパターンを含む最新の支出を1件 JOIN する。
+  // パターンの % _ \ は LIKE のワイルドカードではなく文字として扱う（ESCAPE '\'）
+  const sql = String.raw`
     SELECT
       ect.id,
       ect.name,
       ect.description_pattern,
       ect.expense_category_id,
-      ec.name as category_name,
+      ec.name AS category_name,
       ect.payment_method_id,
-      pm.name as payment_method_name
+      pm.name AS payment_method_name,
+      e.id AS expense_id,
+      e.date AS expense_date,
+      e.amount AS expense_amount,
+      e.description AS expense_description
     FROM expense_check_template ect
     LEFT JOIN expense_category ec ON ect.expense_category_id = ec.id
     LEFT JOIN payment_method pm ON ect.payment_method_id = pm.id
+    LEFT JOIN expense e ON e.id = (
+      SELECT e2.id
+      FROM expense e2
+      WHERE e2.expense_category_id = ect.expense_category_id
+        AND e2.description LIKE '%' || REPLACE(REPLACE(REPLACE(
+          ect.description_pattern, '\', '\\'), '%', '\%'), '_', '\_') || '%' ESCAPE '\'
+        AND e2.date LIKE ? ESCAPE '\'
+      ORDER BY e2.date DESC
+      LIMIT 1
+    )
     WHERE ect.is_active = 1
     ORDER BY ect.name
   `
 
-  const { results: templates } = await db.prepare(templatesQuery).all()
-
-  // 各テンプレートについて該当する支出があるかチェック
-  const checkResults: ExpenseCheckResult[] = []
-
-  for (const template of templates || []) {
-    const expenseQuery = `
-      SELECT 
-        e.id,
-        e.date,
-        e.amount,
-        e.description
-      FROM expense e
-      WHERE e.expense_category_id = ?
-        AND e.description LIKE ? ESCAPE '\\'
-        AND e.date LIKE ? ESCAPE '\\'
-      ORDER BY e.date DESC
-      LIMIT 1
-    `
-
-    const expenseResult = await db
-      .prepare(expenseQuery)
-      .bind(
-        template.expense_category_id,
-        `%${escapeLike(String(template.description_pattern))}%`,
-        `${escapeLike(targetDate)}%`
-      )
-      .first()
-
-    checkResults.push({
-      template: template as ExpenseCheckResult['template'],
-      expense: expenseResult as ExpenseCheckResult['expense'],
-      isRegistered: !!expenseResult,
-    })
+  type ResultRow = ExpenseCheckResult['template'] & {
+    expense_id: number | null
+    expense_date: string
+    expense_amount: number
+    expense_description: string
   }
+  const { results } = await db
+    .prepare(sql)
+    .bind(`${escapeLike(targetDate)}%`)
+    .all<ResultRow>()
 
-  return checkResults
+  return results.map(
+    ({ expense_id, expense_date, expense_amount, expense_description, ...template }) => ({
+      template,
+      expense:
+        expense_id === null
+          ? null
+          : {
+              id: expense_id,
+              date: expense_date,
+              amount: expense_amount,
+              description: expense_description,
+            },
+      isRegistered: expense_id !== null,
+    })
+  )
 }

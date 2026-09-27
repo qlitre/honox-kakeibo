@@ -1,103 +1,51 @@
-import type { SummaryItem } from '@/@types/dbTypes'
-import type { ExpenseTableItems } from '@/@types/common'
 import type { TableHeaderItem } from '@/@types/common'
 import { createRoute } from 'honox/factory'
 import { fetchSummary, fetchSimpleList } from '@/libs/dbService'
-import { formatDiff, getPrevMonthYear, getPrevMonth } from '@/utils/dashboardUtils'
+import { formatDiff, getPrevMonthYear, getPrevMonth, ratio } from '@/utils/dashboardUtils'
+import { buildColorMap, buildMonthlyBalance } from '@/utils/dashboardAggregates'
 import { PageHeader } from '@/components/PageHeader'
 import { MonthPager } from '@/components/MonthPager'
-import { colorSchema } from '@/settings/kakeiboSettings'
 import { Card } from '@/components/share/Card'
 import { CardWithHeading } from '@/components/share/CardWithHeading'
 import { Table } from '@/components/share/Table'
 import { ExpensePieChart } from '@/components/chart/ExpensePieChart'
 
-const getTotal = (items: SummaryItem[]) => {
-  let ret = 0
-  for (const elm of items) {
-    ret += elm.total_amount
-  }
-  return ret
-}
-
-const getYearMonth = (year: number, month: number) => {
-  return `${year}-${month.toString().padStart(2, '0')}`
-}
+const toYearMonth = (year: number, month: number) => `${year}-${month.toString().padStart(2, '0')}`
 
 export default createRoute(async (c) => {
   const db = c.env.DB
   const year = parseInt(c.req.param('year')!)
   const month = parseInt(c.req.param('month')!)
-  const prevMonth = getPrevMonth(month)
-  const prevYear = getPrevMonthYear(year, month)
-  const yearMonth = getYearMonth(year, month)
-  const prevYearMonth = getYearMonth(prevYear, prevMonth)
-  const expenseValueData = await fetchSummary({
-    db: db,
-    table: 'expense',
-    filters: [{ field: 'year_month', op: 'eq', value: yearMonth }],
-    groupBy: ['year_month', 'category_name'],
-  })
-  const prevExpenseValueData = await fetchSummary({
-    db: db,
-    table: 'expense',
-    filters: [{ field: 'year_month', op: 'eq', value: prevYearMonth }],
-    groupBy: ['year_month', 'category_name'],
-  })
+  const yearMonth = toYearMonth(year, month)
+  const prevYearMonth = toYearMonth(getPrevMonthYear(year, month), getPrevMonth(month))
 
-  const categories = await fetchSimpleList({
-    db,
-    table: 'expense_category',
-  })
-
-  const tableItems: ExpenseTableItems = {}
-  // 一回ゼロで初期化
-  for (const elm of categories.contents) {
-    tableItems[elm.id] = {
-      categoryName: elm.name,
-      now: 0,
-      prevDiff: 0,
-    }
-  }
-  // 今月の金額を記録
-  for (const elm of expenseValueData.summary) {
-    tableItems[elm.category_id] = {
-      ...tableItems[elm.category_id],
-      now: elm.total_amount,
-      prevDiff: elm.total_amount,
-    }
-  }
-  // 前月の金額と差分を記録
-  for (const elm of prevExpenseValueData.summary) {
-    const item = tableItems[elm.category_id]
-    tableItems[elm.category_id] = {
-      ...tableItems[elm.category_id],
-      prevDiff: item.now - elm.total_amount,
-    }
+  const summaryOf = async (table: 'expense' | 'income', ym: string) => {
+    const { summary } = await fetchSummary({
+      db,
+      table,
+      filters: [{ field: 'year_month', op: 'eq', value: ym }],
+      groupBy: ['year_month', 'category_name'],
+    })
+    return summary
   }
 
-  const incomeValueData = await fetchSummary({
-    db: db,
-    table: 'income',
-    filters: [{ field: 'year_month', op: 'eq', value: yearMonth }],
-    groupBy: ['year_month', 'category_name'],
-  })
+  const [expenses, prevExpenses, incomes, categories] = await Promise.all([
+    summaryOf('expense', yearMonth),
+    summaryOf('expense', prevYearMonth),
+    summaryOf('income', yearMonth),
+    fetchSimpleList({ db, table: 'expense_category' }),
+  ])
 
-  const expenseTotal = getTotal(expenseValueData.summary)
-  const incomeTotal = getTotal(incomeValueData.summary)
-  const prevExpenseTotal = getTotal(prevExpenseValueData.summary)
-  const prevTotalDiff = expenseTotal - prevExpenseTotal
+  const { tableItems, expenseTotal, incomeTotal, balance, prevTotalDiff } = buildMonthlyBalance(
+    categories.contents,
+    expenses,
+    prevExpenses,
+    incomes
+  )
   const prevTotalDiffSign = formatDiff(prevTotalDiff).sign
   const prevTotalDiffColor = formatDiff(-1 * prevTotalDiff).color
-
-  const colormap: Record<number, string> = {}
-  for (let i = 0; i < categories.contents.length; i++) {
-    const categoryId = categories.contents[i].id
-    const color = colorSchema[i]
-    colormap[categoryId] = color
-  }
-  const balance = incomeTotal - expenseTotal
-  const diff = formatDiff(incomeTotal - expenseTotal)
+  const colormap = buildColorMap(categories.contents)
+  const diff = formatDiff(balance)
   const hearders: TableHeaderItem[] = [
     { name: 'カテゴリ', textPosition: 'left' },
     { name: '金額', textPosition: 'right' },
@@ -135,7 +83,7 @@ export default createRoute(async (c) => {
                       {Math.abs(item.prevDiff).toLocaleString()}
                     </td>
                     <td className='px-4 py-4 text-right'>
-                      {(expenseTotal > 0 ? (item.now / expenseTotal) * 100 : 0).toFixed(2)}%
+                      {(ratio(item.now, expenseTotal) * 100).toFixed(2)}%
                     </td>
                   </tr>
                 )
@@ -155,7 +103,7 @@ export default createRoute(async (c) => {
           </Table>
         </Card>
         <Card className='w-full'>
-          <ExpensePieChart items={expenseValueData.summary} colorMap={colormap} />
+          <ExpensePieChart items={expenses} colorMap={colormap} />
         </Card>
       </div>
     </div>,

@@ -85,6 +85,17 @@ describe('資産ダッシュボード', () => {
   it('データが無くても表示できる', async () => {
     await html('/auth/dashboard/2026/9/asset')
   })
+
+  it('前月・年初のデータが無くても NaN・Infinity を表示しない', async () => {
+    const bank = await insert('asset_category', { name: '普通預金' })
+    await insert('asset', { date: '2026-09-30', amount: 100, asset_category_id: bank })
+    const page = await html('/auth/dashboard/2026/9/asset')
+    expect(page).not.toMatch(/NaN|Infinity/)
+  })
+
+  it('データが無い月でも NaN・Infinity を表示しない', async () => {
+    expect(await html('/auth/dashboard/2026/9/asset')).not.toMatch(/NaN|Infinity/)
+  })
 })
 
 describe('支出カレンダー', () => {

@@ -9,6 +9,7 @@ import {
   getNextMonthYear,
   getPrevMonth,
   getPrevMonthYear,
+  ratio,
 } from '@/utils/dashboardUtils'
 
 // 注意: getBeginningOfMonth / getEndOfMonth は実行環境のTZに依存する。
@@ -92,5 +93,17 @@ describe('formatDiff', () => {
 
   it('0 は + 扱い', () => {
     expect(formatDiff(0)).toEqual({ sign: '+', color: 'text-blue-500' })
+  })
+})
+
+describe('ratio', () => {
+  it('分子 / 分母', () => {
+    expect(ratio(1, 4)).toBe(0.25)
+    expect(ratio(-3, 2)).toBe(-1.5)
+  })
+
+  it('分母が0なら0', () => {
+    expect(ratio(0, 0)).toBe(0)
+    expect(ratio(5, 0)).toBe(0)
   })
 })
