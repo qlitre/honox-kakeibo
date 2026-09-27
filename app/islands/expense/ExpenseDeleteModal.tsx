@@ -1,5 +1,5 @@
 import type { FC } from 'hono/jsx'
-import type { ExpenseWithDetails } from '@/@types/dbTypes'
+import type { Expense } from '@/@types/dbTypes'
 import { useState } from 'hono/jsx'
 import { Button } from '@/islands/Button'
 import { ModalSheet } from '@/components/share/ModalSheet'
@@ -7,7 +7,7 @@ import { formCancelClass, formDangerClass } from '@/components/share/formClasses
 
 type Props = {
   actionUrl: string
-  expense: ExpenseWithDetails
+  expense: Expense
 }
 
 export const ExpenseDeleteModal: FC<Props> = ({ actionUrl, expense }) => {
