@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { authRequest, cookies, postForm } from '../../helpers/app'
+import { authRequest, cookies, islandProps, postForm } from '../../helpers/app'
 import { count, insert, row, seedExpenseMasters } from '../../helpers/db'
 
 // 明細系（支出・収入・資産・入金履歴）の create / update / delete / 一覧 は同じ作りなので表で回す
@@ -216,6 +216,40 @@ describe.each(cases)('$endPoint', ({ endPoint, title, seed }) => {
       expect(html).toContain(String(form.description))
       expect(html).toContain(`${Number(form.amount).toLocaleString()} 円`)
       expect(html).toContain('bg-green-100')
+    })
+
+    it('追加・編集・複写・削除のモーダルに、明細の値と選択肢を渡す', async () => {
+      const { form } = await seed()
+      const id = await insert(endPoint, asStored(form))
+      const html = await (await authRequest(`${base}?page=1&lastUpdate=${id}`)).text()
+
+      const values = Object.fromEntries(Object.entries(form).map(([k, v]) => [k, String(v)]))
+      const selectNames = Object.keys(form).filter((k) => k.endsWith('_id'))
+      const forms = islandProps(html, 'TransactionFormModal')
+      const byButton = (title: string) => forms.find((p) => p.buttonTitle === title)
+
+      const add = forms.find((p) => p.buttonTitle.endsWith('追加'))
+      expect(add).toMatchObject({ actionUrl: `${base}/create` })
+      expect(add.values).toBeUndefined()
+      expect(add.selects.map((s: { name: string }) => s.name)).toEqual(selectNames)
+      for (const select of add.selects) expect(select.options.length).toBeGreaterThan(0)
+
+      // 編集は元のクエリ（lastUpdate を除く）を引き継いで更新する
+      expect(byButton('編集')).toMatchObject({
+        actionUrl: `${base}/${id}/update?page=1`,
+        values,
+      })
+      // 複写は日付だけ今日にして追加する
+      const copy = byButton('複写')
+      expect(copy.actionUrl).toBe(`${base}/create`)
+      expect(copy.values).toEqual({ ...values, date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/) })
+
+      const [del] = islandProps(html, 'TransactionDeleteModal')
+      expect(del).toMatchObject({
+        actionUrl: `${base}/${id}/delete?page=1`,
+        amount: Number(form.amount),
+      })
+      expect(del.details).toContainEqual({ label: '詳細', value: form.description })
     })
 
     it('成功・失敗Cookieがあればアラートを表示する', async () => {

@@ -1,19 +1,6 @@
-import { createRoute } from 'honox/factory'
-import { zValidator } from '@hono/zod-validator'
-import { z } from 'zod'
-import { createItem } from '@/libs/dbService'
-import { fetchSimpleList } from '@/libs/dbService'
-import { setFlash } from '@/libs/flash'
+import type { ExpenseCategory, PaymentMethod } from '@/@types/dbTypes'
 
-const schema = z.object({
-  name: z.string().min(1, '名前は必須です'),
-  expense_category_id: z.string().min(1, 'カテゴリは必須です'),
-  payment_method_id: z.string().optional(),
-  description_pattern: z.string().min(1, '検索パターンは必須です'),
-  is_active: z.string().optional(),
-})
-
-type FormData = {
+export type ExpenseCheckTemplateFormData = {
   error?: Record<string, string[] | undefined>
   name?: string
   expense_category_id?: string
@@ -22,31 +9,28 @@ type FormData = {
   is_active?: string
 }
 
-interface ExpenseCategory {
-  id: number
-  name: string
-}
-
-interface PaymentMethod {
-  id: number
-  name: string
-}
-
-const CreateForm = ({
+/** 定期支払いチェックテンプレートの追加・編集フォーム */
+export const ExpenseCheckTemplateForm = ({
+  title,
+  actionUrl,
+  submitLabel,
   data,
   categories,
   paymentMethods,
 }: {
-  data?: FormData
+  title: string
+  actionUrl: string
+  submitLabel: string
+  data?: ExpenseCheckTemplateFormData
   categories: ExpenseCategory[]
   paymentMethods: PaymentMethod[]
 }) => {
   return (
     <div className='container mx-auto px-4 py-8'>
       <div className='max-w-md mx-auto'>
-        <h1 className='text-2xl font-bold text-gray-900 mb-6'>チェックテンプレート新規追加</h1>
+        <h1 className='text-2xl font-bold text-gray-900 mb-6'>{title}</h1>
 
-        <form action='/auth/expense_check_template/create' method='post' className='space-y-6'>
+        <form action={actionUrl} method='post' className='space-y-6'>
           <div>
             <label htmlFor='name' className='block text-sm font-medium text-gray-700 mb-2'>
               名前
@@ -146,7 +130,8 @@ const CreateForm = ({
               id='is_active'
               name='is_active'
               value='1'
-              checked={data?.is_active === '1' || !data}
+              // 新規作成（data なし）は有効にしておく
+              checked={data ? data.is_active === '1' : true}
               className='h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded'
             />
             <label htmlFor='is_active' className='ml-2 block text-sm text-gray-900'>
@@ -159,7 +144,7 @@ const CreateForm = ({
               type='submit'
               className='flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition-colors cursor-pointer'
             >
-              作成
+              {submitLabel}
             </button>
             <a
               href='/auth/expense_check_template'
@@ -173,66 +158,3 @@ const CreateForm = ({
     </div>
   )
 }
-
-/** フォームの選択肢（支出カテゴリ・支払い方法） */
-const fetchOptions = async (db: D1Database) => {
-  const [categories, paymentMethods] = await Promise.all([
-    fetchSimpleList({ db, table: 'expense_category', orders: 'id' }),
-    fetchSimpleList({ db, table: 'payment_method', orders: 'name' }),
-  ])
-  return { categories: categories.contents, paymentMethods: paymentMethods.contents }
-}
-
-export default createRoute(async (c) => {
-  const options = await fetchOptions(c.env.DB)
-  return c.render(<CreateForm {...options} />, {
-    title: 'チェックテンプレート新規追加',
-  })
-})
-
-export const POST = createRoute(
-  zValidator('form', schema, async (result, c) => {
-    if (!result.success) {
-      const { name, expense_category_id, payment_method_id, description_pattern, is_active } =
-        result.data
-      return c.render(
-        <CreateForm
-          data={{
-            name,
-            expense_category_id,
-            payment_method_id,
-            description_pattern,
-            is_active,
-            error: z.flattenError(result.error).fieldErrors,
-          }}
-          {...await fetchOptions(c.env.DB)}
-        />
-      )
-    }
-  }),
-  async (c) => {
-    const db = c.env.DB
-    const { name, expense_category_id, payment_method_id, description_pattern, is_active } =
-      c.req.valid('form')
-
-    try {
-      await createItem({
-        db,
-        table: 'expense_check_template',
-        data: {
-          name,
-          expense_category_id: parseInt(expense_category_id),
-          payment_method_id: payment_method_id ? parseInt(payment_method_id) : null,
-          description_pattern,
-          is_active: is_active === '1' ? 1 : 0,
-        },
-      })
-
-      setFlash(c, 'success', 'チェックテンプレート追加に成功しました')
-    } catch (error) {
-      console.error('Error creating template:', error)
-      setFlash(c, 'danger', 'チェックテンプレート追加に失敗しました。')
-    }
-    return c.redirect('/auth/expense_check_template', 303)
-  }
-)

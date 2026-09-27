@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { authRequest, cookies, postForm } from '../../helpers/app'
+import { authRequest, cookies, islandProps, postForm } from '../../helpers/app'
 import { count, insert, row, seedExpenseMasters } from '../../helpers/db'
 
 const insertTemplate = (m: { rentId: number }, extra: Record<string, unknown> = {}) =>
@@ -127,6 +127,26 @@ describe('チェックテンプレート', () => {
     expect(html).toContain('失敗しました')
   })
 
+  it.each([
+    [1, true],
+    [0, false],
+  ])('GET [id]/update: 現在の値をフォームに入れる（is_active=%i）', async (flag, checked) => {
+    const m = await seedExpenseMasters()
+    const id = await insertTemplate(m, { payment_method_id: m.cardId, is_active: flag })
+    const html = await (await authRequest(`${base}/${id}/update`)).text()
+    const input = (name: string) => html.match(new RegExp(`<input[^>]*name="${name}"[^>]*>`))?.[0]
+    const selected = (name: string) =>
+      html
+        .match(new RegExp(`<select[^>]*name="${name}"[\\s\\S]*?</select>`))?.[0]
+        .match(/<option value="(\d+)" selected="">/)?.[1]
+    expect(html).toContain(`action="${base}/${id}/update"`)
+    expect(input('name')).toMatch(/\svalue="家賃"/)
+    expect(input('description_pattern')).toMatch(/\svalue="家賃"/)
+    expect(selected('expense_category_id')).toBe(String(m.rentId))
+    expect(selected('payment_method_id')).toBe(String(m.cardId))
+    expect(/\schecked/.test(input('is_active')!)).toBe(checked)
+  })
+
   it('POST [id]/update で更新して一覧へ303', async () => {
     const m = await seedExpenseMasters()
     const id = await insertTemplate(m, { is_active: 1 })
@@ -210,6 +230,22 @@ describe('定期支払いチェック', () => {
     } finally {
       vi.useRealTimers()
     }
+  })
+
+  it('GET: 未登録のテンプレートには、テンプレートの値を入れた追加モーダルを出す', async () => {
+    const m = await seedExpenseMasters()
+    await insertTemplate(m, { payment_method_id: m.cardId })
+    const html = await (await authRequest('/auth/expense_check?year=2026&month=8')).text()
+    const [modal] = islandProps(html, 'TransactionFormModal')
+    expect(modal).toMatchObject({
+      actionUrl: '/auth/expense_check/create',
+      values: {
+        expense_category_id: String(m.rentId),
+        payment_method_id: String(m.cardId),
+        description: '家賃',
+      },
+    })
+    expect(modal.values.date).toMatch(/^2026-08-\d{2}$/)
   })
 
   it('GET: テンプレートが無ければ案内を表示する', async () => {
