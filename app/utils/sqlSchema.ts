@@ -1,24 +1,20 @@
 type Join = {
-  table: string
-  condition: string
-  type?: 'LEFT'
+  readonly table: string
+  readonly condition: string
+  readonly type?: 'LEFT'
 }
 
-type SchemaEntry = {
-  fields: string[]
-  joinFields: string[]
-  tableName: string
-  joins: Join[]
-  requiredFields: string[]
-  optionalFields: string[]
+export type SchemaEntry = {
+  readonly fields: readonly string[]
+  /** "テーブル.カラム AS エイリアス" の形で書く（エイリアスは WHERE・GROUP BY に使える） */
+  readonly joinFields: readonly string[]
+  readonly tableName: string
+  readonly joins: readonly Join[]
+  readonly requiredFields: readonly string[]
+  readonly optionalFields: readonly string[]
 }
 
-// スキーマ全体の型
-type Schema = {
-  [key: string]: SchemaEntry
-}
-
-export const schema: Schema = {
+export const schema = {
   asset: {
     fields: [
       'id',
@@ -163,4 +159,4 @@ export const schema: Schema = {
     requiredFields: ['name', 'expense_category_id', 'description_pattern'],
     optionalFields: ['is_active', 'payment_method_id'],
   },
-}
+} as const satisfies Record<string, SchemaEntry>

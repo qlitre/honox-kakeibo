@@ -1,4 +1,3 @@
-import type { IncomeCategory } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
@@ -46,7 +45,7 @@ export const POST = createRoute(
       name: name,
     }
 
-    const response = await createItem<IncomeCategory>({
+    const response = await createItem({
       db: c.env.DB,
       table: endPoint,
       data: body,

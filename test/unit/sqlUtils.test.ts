@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { schema } from '@/utils/sqlSchema'
 import {
+  buildSqlGroupByClause,
   buildSqlOrderByClause,
   buildSqlWhereClause,
   generateInsertQuery,
@@ -42,32 +43,38 @@ describe('generateSelectQuery', () => {
 })
 
 describe('generateInsertQuery', () => {
-  it('必須 → 任意の順でカラムを並べ、同数のプレースホルダを置く', async () => {
-    expect(norm(await generateInsertQuery('expense'))).toBe(
+  it('columns を渡すとそのカラムだけ INSERT する（順序はスキーマ順）', () => {
+    expect(generateInsertQuery('asset_category', ['name'])).toBe(
+      'INSERT INTO asset_category (name) VALUES (?)'
+    )
+  })
+
+  it('必須 → 任意の順でカラムを並べ、同数のプレースホルダを置く', () => {
+    expect(norm(generateInsertQuery('expense'))).toBe(
       'INSERT INTO expense (date, amount, expense_category_id, payment_method_id, description) VALUES (?, ?, ?, ?, ?)'
     )
   })
 
-  it.each(TABLES)('%s', async (table) => {
-    expect(norm(await generateInsertQuery(table))).toMatchSnapshot()
+  it.each(TABLES)('%s', (table) => {
+    expect(norm(generateInsertQuery(table))).toMatchSnapshot()
   })
 })
 
 describe('generateUpdateQuery', () => {
-  it('必須・任意カラムに加えて updated_at を更新し、id で絞る', async () => {
-    expect(norm(await generateUpdateQuery('expense'))).toBe(
+  it('必須・任意カラムに加えて updated_at を更新し、id で絞る', () => {
+    expect(norm(generateUpdateQuery('expense'))).toBe(
       'UPDATE expense SET date = ?, amount = ?, expense_category_id = ?, payment_method_id = ?, description = ?, updated_at = ? WHERE id = ?;'
     )
   })
 
-  it.each(TABLES)('%s', async (table) => {
-    expect(norm(await generateUpdateQuery(table))).toMatchSnapshot()
+  it.each(TABLES)('%s', (table) => {
+    expect(norm(generateUpdateQuery(table))).toMatchSnapshot()
   })
 })
 
 describe('generateQueryBindValues', () => {
-  it('INSERT/UPDATEのカラム順に値を並べ、スキーマ外のキーは無視する', async () => {
-    const values = await generateQueryBindValues('expense', {
+  it('INSERT/UPDATEのカラム順に値を並べ、スキーマ外のキーは無視する', () => {
+    const values = generateQueryBindValues('expense', {
       description: 'ランチ',
       amount: 1200,
       payment_method_id: 2,
@@ -78,8 +85,8 @@ describe('generateQueryBindValues', () => {
     expect(values).toEqual(['2026-09-01', 1200, 1, 2, 'ランチ'])
   })
 
-  it('欠けているカラムは undefined になる（現状の挙動。D1は undefined のbindを拒否する）', async () => {
-    const values = await generateQueryBindValues('expense', { date: '2026-09-01' })
+  it('欠けているカラムは undefined になる（createItem はそのカラムを INSERT から外す）', () => {
+    const values = generateQueryBindValues('expense', { date: '2026-09-01' })
     expect(values).toEqual(['2026-09-01', undefined, undefined, undefined, undefined])
   })
 })
@@ -109,46 +116,53 @@ describe('generateSummaryQuery', () => {
 })
 
 describe('buildSqlWhereClause', () => {
-  const where = (table: TableName, filter: string) => buildSqlWhereClause(table, filter)
-
   it.each([
-    ['[eq]', 'amount[eq]100', 'WHERE expense.amount = ?'],
-    ['[greater_than]', 'amount[greater_than]100', 'WHERE expense.amount > ?'],
-    ['[less_than]', 'amount[less_than]100', 'WHERE expense.amount < ?'],
-    ['[greater_equal]', 'amount[greater_equal]100', 'WHERE expense.amount >= ?'],
-    ['[less_equal]', 'amount[less_equal]100', 'WHERE expense.amount <= ?'],
-  ])('%s 演算子', (_, filter, sql) => {
-    expect(where('expense', filter)).toEqual({ sql, params: [100] })
+    ['eq', 'WHERE expense.amount = ?'],
+    ['gt', 'WHERE expense.amount > ?'],
+    ['lt', 'WHERE expense.amount < ?'],
+    ['gte', 'WHERE expense.amount >= ?'],
+    ['lte', 'WHERE expense.amount <= ?'],
+  ] as const)('%s 演算子', (op, sql) => {
+    expect(buildSqlWhereClause('expense', [{ field: 'amount', op, value: 100 }])).toEqual({
+      sql,
+      params: [100],
+    })
   })
 
-  it('[contain] は前後に%を付けた値で LIKE する', () => {
-    expect(where('expense', 'description[contain]ランチ')).toEqual({
+  it('contains は前後に%を付けた値で LIKE する', () => {
+    expect(
+      buildSqlWhereClause('expense', [{ field: 'description', op: 'contains', value: 'ランチ' }])
+    ).toEqual({
       sql: "WHERE expense.description LIKE ? ESCAPE '\\'",
       params: ['%ランチ%'],
     })
   })
 
-  it('[contain] の値に含まれる % _ \\ はエスケープして文字として検索する', () => {
-    expect(where('expense', 'description[contain]100%_OFF\\').params).toEqual([
-      '%100\\%\\_OFF\\\\%',
-    ])
-  })
-
-  it('数値として解釈できる値は number、それ以外は文字列でbindする', () => {
-    expect(where('expense', 'date[greater_equal]2026-09-01').params).toEqual(['2026-09-01'])
-    expect(where('expense', 'expense_category_id[eq]3').params).toEqual([3])
-  })
-
-  it('空白だけの値は数値扱いしない', () => {
-    expect(where('expense', 'expense_category_id[eq] ').params).toEqual([' '])
-  })
-
-  it('[and] で複数条件を AND 結合し、値は順にbindする', () => {
+  it('contains の値に含まれる % _ \\ はエスケープして文字として検索する', () => {
     expect(
-      where(
-        'expense',
-        'date[greater_equal]2026-09-01[and]date[less_equal]2026-09-30[and]expense_category_id[eq]3'
-      )
+      buildSqlWhereClause('expense', [
+        { field: 'description', op: 'contains', value: '100%_OFF\\' },
+      ]).params
+    ).toEqual(['%100\\%\\_OFF\\\\%'])
+  })
+
+  it('値は渡された型のままbindする', () => {
+    expect(
+      buildSqlWhereClause('expense', [
+        { field: 'date', op: 'gte', value: '2026-09-01' },
+        { field: 'expense_category_id', op: 'eq', value: 3 },
+        { field: 'payment_method_id', op: 'eq', value: '4' },
+      ]).params
+    ).toEqual(['2026-09-01', 3, '4'])
+  })
+
+  it('複数条件を AND 結合し、値は順にbindする', () => {
+    expect(
+      buildSqlWhereClause('expense', [
+        { field: 'date', op: 'gte', value: '2026-09-01' },
+        { field: 'date', op: 'lte', value: '2026-09-30' },
+        { field: 'expense_category_id', op: 'eq', value: 3 },
+      ])
     ).toEqual({
       sql: 'WHERE expense.date >= ? AND expense.date <= ? AND expense.expense_category_id = ?',
       params: ['2026-09-01', '2026-09-30', 3],
@@ -156,37 +170,39 @@ describe('buildSqlWhereClause', () => {
   })
 
   it('JOIN先のエイリアスと year_month はテーブル名を付けずに使える', () => {
-    expect(where('asset', 'is_investment[eq]1')).toEqual({
+    expect(buildSqlWhereClause('asset', [{ field: 'is_investment', op: 'eq', value: 1 }])).toEqual({
       sql: 'WHERE is_investment = ?',
       params: [1],
     })
-    expect(where('expense', 'category_name[eq]食費').sql).toBe('WHERE category_name = ?')
-    expect(where('expense', 'year_month[eq]2026-09')).toEqual({
-      sql: 'WHERE year_month = ?',
-      params: ['2026-09'],
-    })
+    expect(
+      buildSqlWhereClause('expense', [{ field: 'category_name', op: 'eq', value: '食費' }]).sql
+    ).toBe('WHERE category_name = ?')
+    expect(
+      buildSqlWhereClause('expense', [{ field: 'year_month', op: 'eq', value: '2026-09' }])
+    ).toEqual({ sql: 'WHERE year_month = ?', params: ['2026-09'] })
   })
 
-  it('未知のカラム名は例外（カラム名はbindできないため許可リストで検査する）', () => {
-    expect(() => where('expense', 'amount = 1 OR 1[eq]1')).toThrow(
-      'Unknown filter field for expense: amount = 1 OR 1'
-    )
-    expect(() => where('expense', 'is_investment[eq]1')).toThrow('Unknown filter field')
+  it('未知のカラム名・演算子は例外（型をすり抜けても実行時に検査する）', () => {
+    expect(() =>
+      buildSqlWhereClause('expense', [{ field: 'amount = 1 OR 1' as never, op: 'eq', value: 1 }])
+    ).toThrow('Unknown filter field for expense: amount = 1 OR 1')
+    expect(() =>
+      buildSqlWhereClause('expense', [{ field: 'is_investment' as never, op: 'eq', value: 1 }])
+    ).toThrow('Unknown filter field')
+    expect(() =>
+      buildSqlWhereClause('expense', [{ field: 'amount', op: 'like' as never, value: 1 }])
+    ).toThrow('Unknown filter operator: like')
   })
 
-  it('未知の演算子の条件は黙って無視される', () => {
-    expect(where('expense', 'amount[like]100[and]amount[eq]1')).toEqual({
-      sql: 'WHERE expense.amount = ?',
-      params: [1],
-    })
-  })
-
-  it('空文字なら WHERE を付けない', () => {
-    expect(where('expense', '')).toEqual({ sql: '', params: [] })
+  it('条件が無ければ WHERE を付けない', () => {
+    expect(buildSqlWhereClause('expense', [])).toEqual({ sql: '', params: [] })
+    expect(buildSqlWhereClause('expense')).toEqual({ sql: '', params: [] })
   })
 
   it('値はSQL文字列に埋め込まれない（プレースホルダでbindする）', () => {
-    const { sql, params } = where('expense', "description[contain]x' OR '1'='1")
+    const { sql, params } = buildSqlWhereClause('expense', [
+      { field: 'description', op: 'contains', value: "x' OR '1'='1" },
+    ])
     expect(sql).not.toContain("OR '1'='1")
     expect(params).toEqual(["%x' OR '1'='1%"])
   })
@@ -201,5 +217,33 @@ describe('buildSqlOrderByClause', () => {
 
   it('単一フィールド', () => {
     expect(buildSqlOrderByClause('income', 'updated_at')).toBe('ORDER BY income.updated_at ASC')
+  })
+
+  it('テーブルに無いカラムは例外', () => {
+    expect(() => buildSqlOrderByClause('income', 'id; DROP TABLE income')).toThrow(
+      'Unknown order field for income: id; DROP TABLE income'
+    )
+    expect(() => buildSqlOrderByClause('income', 'category_name')).toThrow('Unknown order field')
+  })
+})
+
+describe('buildSqlGroupByClause', () => {
+  it('キー順にグループ化して並べる', () => {
+    expect(buildSqlGroupByClause('expense', ['year_month', 'category_name'])).toBe(
+      'GROUP BY year_month, category_name ORDER BY year_month, category_name'
+    )
+  })
+
+  it('category_id はカテゴリを持つテーブルだけ使える', () => {
+    expect(buildSqlGroupByClause('income', ['category_id'])).toBe(
+      'GROUP BY category_id ORDER BY category_id'
+    )
+    expect(() => buildSqlGroupByClause('fund_transaction', ['category_id'])).toThrow(
+      'Unknown group key for fund_transaction: category_id'
+    )
+  })
+
+  it('許可されていないキーは例外', () => {
+    expect(() => buildSqlGroupByClause('expense', ['amount'])).toThrow('Unknown group key')
   })
 })

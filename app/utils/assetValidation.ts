@@ -1,4 +1,3 @@
-import type { AssetWithCategory } from '@/@types/dbTypes'
 import { fetchListWithFilter } from '@/libs/dbService'
 import { getBeginningOfMonth, getEndOfMonth } from '@/utils/dashboardUtils'
 
@@ -22,12 +21,14 @@ export async function checkAssetCategoryDuplication({
   const ge = getBeginningOfMonth(year, month)
   const le = getEndOfMonth(year, month)
 
-  const filters = `asset_category_id[eq]${assetCategoryId}[and]date[greater_equal]${ge}[and]date[less_equal]${le}`
-
-  const result = await fetchListWithFilter<AssetWithCategory>({
+  const result = await fetchListWithFilter({
     db,
     table: 'asset',
-    filters,
+    filters: [
+      { field: 'asset_category_id', op: 'eq', value: assetCategoryId },
+      { field: 'date', op: 'gte', value: ge },
+      { field: 'date', op: 'lte', value: le },
+    ],
     limit: 10,
     offset: 0,
   })

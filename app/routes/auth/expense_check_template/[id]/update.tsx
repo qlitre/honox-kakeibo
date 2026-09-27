@@ -2,7 +2,7 @@ import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { updateItem, fetchDetail, fetchSimpleList } from '@/libs/dbService'
-import type { ExpenseCheckTemplate, ExpenseCategory, PaymentMethod } from '@/@types/dbTypes'
+import type { ExpenseCategory, PaymentMethod } from '@/@types/dbTypes'
 import { setCookie } from 'hono/cookie'
 import { successAlertCookieKey, alertCookieMaxage } from '@/settings/kakeiboSettings'
 
@@ -179,7 +179,7 @@ export default createRoute(async (c) => {
   const db = c.env.DB
 
   // テンプレート詳細を取得
-  const detail = await fetchDetail<ExpenseCheckTemplate>({
+  const detail = await fetchDetail({
     db,
     table: endPoint,
     id: id,
@@ -190,14 +190,14 @@ export default createRoute(async (c) => {
   }
 
   // 支出カテゴリ一覧を取得
-  const categories = await fetchSimpleList<ExpenseCategory>({
+  const categories = await fetchSimpleList({
     db,
     table: 'expense_category',
     orders: 'name',
   })
 
   // 支払い方法一覧を取得
-  const paymentMethods = await fetchSimpleList<PaymentMethod>({
+  const paymentMethods = await fetchSimpleList({
     db,
     table: 'payment_method',
     orders: 'name',
@@ -230,14 +230,14 @@ export const POST = createRoute(
         result.data
 
       // カテゴリ一覧を再取得（エラー時に必要）
-      const categories = await fetchSimpleList<ExpenseCategory>({
+      const categories = await fetchSimpleList({
         db,
         table: 'expense_category',
         orders: 'name',
       })
 
       // 支払い方法一覧を再取得（エラー時に必要）
-      const paymentMethods = await fetchSimpleList<PaymentMethod>({
+      const paymentMethods = await fetchSimpleList({
         db,
         table: 'payment_method',
         orders: 'name',
@@ -276,7 +276,7 @@ export const POST = createRoute(
     }
 
     try {
-      await updateItem<ExpenseCheckTemplate>({
+      await updateItem({
         db: c.env.DB,
         table: endPoint,
         id: id,

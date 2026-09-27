@@ -1,5 +1,4 @@
 // app/routes/auth/balance/transition.tsx
-import type { SummaryItem, IncomeCategory, ExpenseCategory } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { BalanceTransitionChart } from '@/components/chart/BalanceTransitionChart'
 import { Card } from '@/components/share/Card'
@@ -14,16 +13,16 @@ export default createRoute(async (c) => {
   const expenseCategoryId = c.req.query('expense_category') ?? ''
 
   /* ---------- サマリー取得 ---------- */
-  const incomeData = await fetchSummary<SummaryItem>({
+  const incomeData = await fetchSummary({
     db,
     table: 'income',
-    groupBy: 'year_month, category_name',
+    groupBy: ['year_month', 'category_name'],
   })
 
-  const expenseData = await fetchSummary<SummaryItem>({
+  const expenseData = await fetchSummary({
     db,
     table: 'expense',
-    groupBy: 'year_month, category_name',
+    groupBy: ['year_month', 'category_name'],
   })
 
   /* ---------- 月別集計を組み立て ---------- */
@@ -54,13 +53,13 @@ export default createRoute(async (c) => {
   const expenseAmounts = labels.map((m) => expMap[m] ?? 0)
 
   /* ---------- カテゴリリスト ---------- */
-  const incomeCats = await fetchSimpleList<IncomeCategory>({
+  const incomeCats = await fetchSimpleList({
     db,
     table: 'income_category',
     orders: 'updated_at',
   })
 
-  const expenseCats = await fetchSimpleList<ExpenseCategory>({
+  const expenseCats = await fetchSimpleList({
     db,
     table: 'expense_category',
     orders: 'updated_at',

@@ -1,4 +1,3 @@
-import type { FundTransation } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
@@ -35,7 +34,7 @@ export const POST = createRoute(
     }
 
     try {
-      const newItem = await createItem<FundTransation>({
+      const newItem = await createItem({
         db: c.env.DB,
         table: endPoint,
         data,

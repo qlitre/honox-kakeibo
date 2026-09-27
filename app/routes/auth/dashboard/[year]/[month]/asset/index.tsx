@@ -1,4 +1,3 @@
-import type { AssetWithCategory, AssetCategory } from '@/@types/dbTypes'
 import type { AssetTableItems } from '@/@types/common'
 import { createRoute } from 'honox/factory'
 import { fetchListWithFilter, fetchSimpleList } from '@/libs/dbService'
@@ -27,10 +26,13 @@ export default createRoute(async (c) => {
   const ge = getBeginningOfMonth(year, month)
   const le = getEndOfMonth(year, month)
 
-  const asset = await fetchListWithFilter<AssetWithCategory>({
+  const asset = await fetchListWithFilter({
     db: db,
     table: 'asset',
-    filters: `date[greater_equal]${ge}[and]date[less_equal]${le}`,
+    filters: [
+      { field: 'date', op: 'gte', value: ge },
+      { field: 'date', op: 'lte', value: le },
+    ],
     limit: 100,
     offset: 0,
   })
@@ -40,10 +42,13 @@ export default createRoute(async (c) => {
   const prevMonth = getPrevMonth(month)
   const prevGe = getBeginningOfMonth(prevYear, prevMonth)
   const prevLe = getEndOfMonth(prevYear, prevMonth)
-  const prevAsset = await fetchListWithFilter<AssetWithCategory>({
+  const prevAsset = await fetchListWithFilter({
     db: db,
     table: 'asset',
-    filters: `date[greater_equal]${prevGe}[and]date[less_equal]${prevLe}`,
+    filters: [
+      { field: 'date', op: 'gte', value: prevGe },
+      { field: 'date', op: 'lte', value: prevLe },
+    ],
     limit: 100,
     offset: 0,
   })
@@ -51,10 +56,13 @@ export default createRoute(async (c) => {
   const annualStartYear = getAnnualStartYear(year, month)
   const annualStartGe = getBeginningOfMonth(annualStartYear, annualStartMonth)
   const annualStartLe = getEndOfMonth(annualStartYear, annualStartMonth)
-  const annualStartAsset = await fetchListWithFilter<AssetWithCategory>({
+  const annualStartAsset = await fetchListWithFilter({
     db: db,
     table: 'asset',
-    filters: `date[greater_equal]${annualStartGe}[and]date[less_equal]${annualStartLe}`,
+    filters: [
+      { field: 'date', op: 'gte', value: annualStartGe },
+      { field: 'date', op: 'lte', value: annualStartLe },
+    ],
     limit: 100,
     offset: 0,
   })
@@ -121,14 +129,14 @@ export default createRoute(async (c) => {
   const annualTotalDiffRatio = annualTotalDiff / annualTotalAmount
 
   // BarChart用のデータの取得
-  const preReq = await fetchListWithFilter<AssetWithCategory>({
+  const preReq = await fetchListWithFilter({
     db: db,
     table: 'asset',
     limit: 1,
     offset: 0,
   })
   const totalCount = preReq.totalCount
-  const allAssets = await fetchListWithFilter<AssetWithCategory>({
+  const allAssets = await fetchListWithFilter({
     db: db,
     table: 'asset',
     limit: totalCount,
@@ -136,7 +144,7 @@ export default createRoute(async (c) => {
   })
 
   // カテゴリ一覧取得
-  const categories = await fetchSimpleList<AssetCategory>({
+  const categories = await fetchSimpleList({
     db,
     table: 'asset_category',
     orders: 'updated_at',

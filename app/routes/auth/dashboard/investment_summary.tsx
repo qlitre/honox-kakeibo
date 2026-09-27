@@ -1,4 +1,3 @@
-import type { SummaryItem } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { InvestmentSummaryChart } from '@/components/chart/InvestmentSummaryChart'
 import { fetchSummary } from '@/libs/dbService'
@@ -9,12 +8,11 @@ import { Card } from '@/components/share/Card'
 export default createRoute(async (c) => {
   const db = c.env.DB
 
-  const holdingValueData = await fetchSummary<SummaryItem>({
+  const holdingValueData = await fetchSummary({
     db,
     table: 'asset',
-    filters: 'is_investment[eq]1',
-    groupBy: 'year_month, is_investment, category_name',
-    orderRaw: 'year_month ASC',
+    filters: [{ field: 'is_investment', op: 'eq', value: 1 }],
+    groupBy: ['year_month', 'is_investment', 'category_name'],
   })
 
   const mySet = new Set<string>()
@@ -27,11 +25,10 @@ export default createRoute(async (c) => {
   }
   const labels: string[] = Array.from(mySet)
   labels.sort((a, b) => a.localeCompare(b))
-  const investmentData = await fetchSummary<SummaryItem>({
+  const investmentData = await fetchSummary({
     db: db,
     table: 'fund_transaction',
-    groupBy: 'year_month',
-    orders: 'date',
+    groupBy: ['year_month'],
   })
   const objInvestmentValues: Record<string, number> = {}
   for (const elm of investmentData.summary) {

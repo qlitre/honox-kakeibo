@@ -64,7 +64,7 @@ const ExpenseCheckTemplateDeleteForm = ({
 
 export default createRoute(async (c) => {
   const id = c.req.param('id')!
-  const detail = await fetchDetail<ExpenseCheckTemplate>({
+  const detail = await fetchDetail({
     db: c.env.DB,
     table: endPoint,
     id: id,
@@ -98,7 +98,7 @@ export const POST = createRoute(async (c) => {
     console.error('Error deleting template:', error)
 
     // エラー時は詳細を再取得して削除画面を再表示
-    const detail = await fetchDetail<ExpenseCheckTemplate>({
+    const detail = await fetchDetail({
       db: c.env.DB,
       table: endPoint,
       id: id,

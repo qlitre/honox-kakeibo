@@ -1,4 +1,3 @@
-import type { ExpenseCategory } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { fetchSimpleList } from '@/libs/dbService'
 import { getCookie } from 'hono/cookie'
@@ -10,7 +9,7 @@ export default createRoute(async (c) => {
   const dangerMessage = getCookie(c, dangerAlertCookieKey)
   const pageTitle = '支出カテゴリ一覧'
   const endPoint = 'expense_category'
-  const categories = await fetchSimpleList<ExpenseCategory>({
+  const categories = await fetchSimpleList({
     db: c.env.DB,
     table: endPoint,
   })

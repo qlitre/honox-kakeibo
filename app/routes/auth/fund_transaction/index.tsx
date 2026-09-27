@@ -1,5 +1,4 @@
 import type { TableHeaderItem } from '@/@types/common'
-import type { FundTransation } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
@@ -24,7 +23,7 @@ export default createRoute(async (c) => {
   const baseUrl = new URL(c.req.url).origin
   const queryString = getQueryString(c.req.url, baseUrl)
 
-  const fundTransactions = await fetchListWithFilter<FundTransation>({
+  const fundTransactions = await fetchListWithFilter({
     db,
     table: 'fund_transaction',
     orders: '-date',

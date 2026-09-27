@@ -1,5 +1,4 @@
 import type { TableHeaderItem } from '@/@types/common'
-import type { ExpenseCategory, PaymentMethod, ExpenseWithDetails } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
@@ -14,6 +13,7 @@ import { kakeiboPerPage } from '@/settings/kakeiboSettings'
 import { getBeginningOfMonth, getEndOfMonth } from '@/utils/dashboardUtils'
 import { getQueryString } from '@/utils/getQueryString'
 import { fetchListWithFilter, fetchSimpleList } from '@/libs/dbService'
+import type { Filter } from '@/utils/sqlUtils'
 import { getTodayDate } from '@/utils/dateUtils'
 
 export default createRoute(async (c) => {
@@ -25,49 +25,42 @@ export default createRoute(async (c) => {
   const categoryId = c.req.query('categoryId')
   const paymentMethodId = c.req.query('paymentMethodId')
   const keyword = c.req.query('keyword')
-  let filterString = ''
+  const filters: Filter<'expense'>[] = []
   if (month) {
     const year = Number(month.slice(0, 4))
     const _month = Number(month.slice(5, 7))
-    const ge = getBeginningOfMonth(year, _month)
-    const le = getEndOfMonth(year, _month)
-    filterString += `date[greater_equal]${ge}[and]date[less_equal]${le}`
+    filters.push(
+      { field: 'date', op: 'gte', value: getBeginningOfMonth(year, _month) },
+      { field: 'date', op: 'lte', value: getEndOfMonth(year, _month) }
+    )
   }
-  if (categoryId) {
-    const s = `expense_category_id[eq]${categoryId}`
-    filterString += filterString ? `[and]${s}` : s
-  }
-  if (paymentMethodId) {
-    const s = `payment_method_id[eq]${paymentMethodId}`
-    filterString += filterString ? `[and]${s}` : s
-  }
-  if (keyword) {
-    const s = `description[contain]${keyword}`
-    filterString += filterString ? `[and]${s}` : s
-  }
+  if (categoryId) filters.push({ field: 'expense_category_id', op: 'eq', value: categoryId })
+  if (paymentMethodId)
+    filters.push({ field: 'payment_method_id', op: 'eq', value: paymentMethodId })
+  if (keyword) filters.push({ field: 'description', op: 'contains', value: keyword })
 
   const query = c.req.query()
   const baseUrl = new URL(c.req.url).origin
   const queryString = getQueryString(c.req.url, baseUrl)
 
   // 支出一覧の取得
-  const expenses = await fetchListWithFilter<ExpenseWithDetails>({
+  const expenses = await fetchListWithFilter({
     db,
     table: 'expense',
-    filters: filterString,
+    filters,
     orders: '-date,expense_category_id',
     limit,
     offset,
   })
 
   // カテゴリ・支払い方法
-  const categories = await fetchSimpleList<ExpenseCategory>({
+  const categories = await fetchSimpleList({
     db,
     table: 'expense_category',
     orders: 'updated_at',
   })
 
-  const paymentMethods = await fetchSimpleList<PaymentMethod>({
+  const paymentMethods = await fetchSimpleList({
     db,
     table: 'payment_method',
     orders: 'updated_at',

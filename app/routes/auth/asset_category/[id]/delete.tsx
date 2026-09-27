@@ -1,4 +1,3 @@
-import type { AssetCategory } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { deleteItem, fetchDetail, isForeignKeyConstraintError } from '@/libs/dbService'
 import { CategoryDeleteForm } from '@/components/share/CategoryDeleteForm'
@@ -18,7 +17,7 @@ const inUseMessage =
 
 export default createRoute(async (c) => {
   const id = c.req.param('id')!
-  const detail = await fetchDetail<AssetCategory>({
+  const detail = await fetchDetail({
     db: c.env.DB,
     table: endPoint,
     id: id,

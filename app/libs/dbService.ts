@@ -1,6 +1,8 @@
-import type { TableName, WhereClause } from '@/utils/sqlUtils'
+import type { RowOf, SummaryItem } from '@/@types/dbTypes'
+import type { Filter, SummaryKey, TableName, WhereClause } from '@/utils/sqlUtils'
 import {
   generateSelectQuery,
+  buildSqlGroupByClause,
   buildSqlOrderByClause,
   buildSqlWhereClause,
   generateInsertQuery,
@@ -20,26 +22,24 @@ interface ListResponse<T> {
 }
 
 /* ---------- 一覧取得 (フィルタ／ソート有) ---------- */
-export async function fetchListWithFilter<T>(params: {
+export async function fetchListWithFilter<N extends TableName>(params: {
   db: D1Database
-  table: TableName
-  filters?: string
+  table: N
+  filters?: Filter<N>[]
   orders?: string
   limit: number
   offset: number
-}): Promise<ListResponse<T>> {
+}): Promise<ListResponse<RowOf[N]>> {
   const { db, table, filters, orders, limit, offset } = params
 
   let sql = generateSelectQuery(table)
   let countSql = `SELECT COUNT(*) AS total FROM ${table}`
-  let bindValues: WhereClause['params'] = []
-
-  if (filters) {
-    const where = buildSqlWhereClause(table, filters)
+  const where = buildSqlWhereClause(table, filters)
+  if (where.sql) {
     sql += ` ${where.sql}`
     countSql += ` ${where.sql}`
-    bindValues = where.params
   }
+  const bindValues: WhereClause['params'] = where.params
 
   if (orders) {
     sql += ` ${buildSqlOrderByClause(table, orders)}`
@@ -60,7 +60,7 @@ export async function fetchListWithFilter<T>(params: {
     )?.total ?? 0
 
   return {
-    contents: results as T[],
+    contents: results as RowOf[N][],
     totalCount: total,
     limit,
     offset,
@@ -69,24 +69,24 @@ export async function fetchListWithFilter<T>(params: {
 }
 
 /* ---------- 一覧取得 (フィルタなし) ---------- */
-export async function fetchSimpleList<T>(params: {
+export async function fetchSimpleList<N extends TableName>(params: {
   db: D1Database
-  table: TableName
+  table: N
   orders?: string
   limit?: number
-}): Promise<ListResponse<T>> {
+}): Promise<ListResponse<RowOf[N]>> {
   const { db, table, orders, limit = 100 } = params
 
   let sql = generateSelectQuery(table)
   if (orders) {
     sql += ` ${buildSqlOrderByClause(table, orders)}`
   }
-  sql += ` LIMIT ${limit}`
+  sql += ` LIMIT ?`
 
-  const { results } = await db.prepare(sql).all()
+  const { results } = await db.prepare(sql).bind(limit).all()
 
   return {
-    contents: results as T[],
+    contents: results as RowOf[N][],
     totalCount: results.length,
     limit,
     offset: 0,
@@ -95,31 +95,31 @@ export async function fetchSimpleList<T>(params: {
 }
 
 /* ---------- 単一詳細取得 ---------- */
-export async function fetchDetail<T>(params: {
+export async function fetchDetail<N extends TableName>(params: {
   db: D1Database
-  table: TableName
+  table: N
   id: number | string
-}): Promise<T | null> {
+}): Promise<RowOf[N] | null> {
   const { db, table, id } = params
 
   const sql = `${generateSelectQuery(table)} WHERE ${table}.id = ?`
-  const record = await db.prepare(sql).bind(id).first<T>()
+  const record = await db.prepare(sql).bind(id).first<RowOf[N]>()
 
   return record ?? null
 }
 
 /* ---------- レコード追加 (CREATE) ---------- */
-export async function createItem<T>(params: {
+export async function createItem<N extends TableName>(params: {
   db: D1Database
-  table: TableName
+  table: N
   data: Record<string, unknown>
-}): Promise<T> {
+}): Promise<RowOf[N]> {
   const { db, table, data } = params
 
   // 値が undefined のカラムは入れず、DBの既定値に任せる
   const columns = Object.keys(data).filter((key) => data[key] !== undefined)
-  const insertSql = await generateInsertQuery(table, columns)
-  const values = (await generateQueryBindValues(table, data)).filter((v) => v !== undefined)
+  const insertSql = generateInsertQuery(table, columns)
+  const values = generateQueryBindValues(table, data).filter((v) => v !== undefined)
 
   const insertResult = await db
     .prepare(insertSql)
@@ -136,23 +136,23 @@ export async function createItem<T>(params: {
     throw new Error(`Cannot fetch last_row_id for ${table}`)
   }
 
-  const detail = await fetchDetail<T>({ db, table, id: lastId })
+  const detail = await fetchDetail({ db, table, id: lastId })
   if (!detail) throw new Error(`Inserted ${table} not found`)
 
   return detail
 }
 
 /* ---------- レコード更新 (UPDATE) ---------- */
-export async function updateItem<T>(params: {
+export async function updateItem<N extends TableName>(params: {
   db: D1Database
-  table: TableName
+  table: N
   id: number | string
   data: Record<string, unknown>
-}): Promise<T> {
+}): Promise<RowOf[N]> {
   const { db, table, id, data } = params
 
-  const updateSql = await generateUpdateQuery(table)
-  const values = await generateQueryBindValues(table, data)
+  const updateSql = generateUpdateQuery(table)
+  const values = generateQueryBindValues(table, data)
 
   // updated_at を自動更新するカラムがある場合は utilities 内で生成済み
   values.push(new Date().toISOString().replace('T', ' ').split('.')[0])
@@ -166,7 +166,7 @@ export async function updateItem<T>(params: {
     throw new Error(`Failed to update ${table}`)
   }
 
-  const detail = await fetchDetail<T>({ db, table, id })
+  const detail = await fetchDetail({ db, table, id })
   if (!detail) throw new Error(`Updated ${table} not found`)
 
   return detail
@@ -192,54 +192,29 @@ export async function deleteItem(params: {
   }
 }
 
-/** 集計結果の型 */
-type SummaryResponse<T> = {
-  summary: T[]
-}
-
 /**
- * テーブルのサマリー（合計・月次集計など）を取得する
+ * テーブルの年月別サマリー（合計）を取得する。groupBy のキー順に並べる
  *
- * @param orders  例: "-date,category_id"       ← 既存（テーブル名を前に付与）
- * @param orderRaw 例: "year_month ASC,total_amount DESC"
- *                 プレフィックスを **付けず** にそのまま渡したいときに使用
- *                 （SELECT 句で定義したエイリアスを並べ替えたい場合など）
+ * @param groupBy 例: ['year_month', 'category_name']
  */
-export async function fetchSummary<T>(params: {
+export async function fetchSummary<N extends TableName>(params: {
   db: D1Database
-  table: TableName
-  filters?: string
-  groupBy?: string
-  orders?: string
-  orderRaw?: string // ⭐ 追加
-}): Promise<SummaryResponse<T>> {
-  const { db, table, filters, groupBy, orders, orderRaw } = params
+  table: N
+  filters?: Filter<N>[]
+  groupBy: SummaryKey<N>[]
+}): Promise<{ summary: SummaryItem[] }> {
+  const { db, table, filters, groupBy } = params
 
-  let sql = generateSummaryQuery(table)
-  let bindValues: WhereClause['params'] = []
-
-  if (filters) {
-    const where = buildSqlWhereClause(table, filters)
-    sql += ` ${where.sql}`
-    bindValues = where.params
-  }
-  if (groupBy) {
-    sql += ` GROUP BY ${groupBy}`
-  }
-
-  // ── 並べ替え ─────────────────────────────
-  if (orderRaw) {
-    sql += ` ORDER BY ${orderRaw}` // alias をそのまま使用
-  } else if (orders) {
-    sql += ` ${buildSqlOrderByClause(table, orders)}` // 既存ロジック
-  }
-  // ─────────────────────────────────────
+  const where = buildSqlWhereClause(table, filters)
+  const sql = [generateSummaryQuery(table), where.sql, buildSqlGroupByClause(table, groupBy)]
+    .filter(Boolean)
+    .join(' ')
 
   const { results } = await db
     .prepare(sql)
-    .bind(...bindValues)
+    .bind(...where.params)
     .all()
-  return { summary: results as T[] }
+  return { summary: results as SummaryItem[] }
 }
 
 /* ---------- 定期支払いチェック ---------- */

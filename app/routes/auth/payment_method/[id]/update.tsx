@@ -1,4 +1,3 @@
-import type { PaymentMethod } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
@@ -18,7 +17,7 @@ const successMesage = '編集に成功しました'
 const redirectUrl = '/auth/payment_method'
 export default createRoute(async (c) => {
   const id = c.req.param('id')!
-  const detail = await fetchDetail<PaymentMethod>({
+  const detail = await fetchDetail({
     db: c.env.DB,
     table: endPoint,
     id: id,
@@ -60,7 +59,7 @@ export const POST = createRoute(
     const body = {
       name: name,
     }
-    const response = await updateItem<PaymentMethod>({
+    const response = await updateItem({
       db: c.env.DB,
       table: endPoint,
       id: id,

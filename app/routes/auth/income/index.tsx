@@ -1,6 +1,5 @@
 // app/routes/auth/income/index.tsx
 import type { TableHeaderItem } from '@/@types/common'
-import type { IncomeCategory, IncomeWithCategory } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
@@ -26,7 +25,7 @@ export default createRoute(async (c) => {
   const queryString = getQueryString(c.req.url, baseUrl)
 
   // 収入一覧取得
-  const incomes = await fetchListWithFilter<IncomeWithCategory>({
+  const incomes = await fetchListWithFilter({
     db,
     table: 'income',
     orders: '-date,income_category_id',
@@ -35,7 +34,7 @@ export default createRoute(async (c) => {
   })
 
   // カテゴリ一覧取得
-  const categories = await fetchSimpleList<IncomeCategory>({
+  const categories = await fetchSimpleList({
     db,
     table: 'income_category',
     orders: 'updated_at',

@@ -1,4 +1,4 @@
-import type { ExpenseCategory, SummaryItem } from '@/@types/dbTypes'
+import type { SummaryItem } from '@/@types/dbTypes'
 import type { ExpenseTableItems } from '@/@types/common'
 import type { TableHeaderItem } from '@/@types/common'
 import { createRoute } from 'honox/factory'
@@ -32,22 +32,20 @@ export default createRoute(async (c) => {
   const prevYear = getPrevMonthYear(year, month)
   const yearMonth = getYearMonth(year, month)
   const prevYearMonth = getYearMonth(prevYear, prevMonth)
-  const expenseValueData = await fetchSummary<SummaryItem>({
+  const expenseValueData = await fetchSummary({
     db: db,
     table: 'expense',
-    filters: `year_month[eq]${yearMonth}`,
-    groupBy: 'year_month, category_name',
-    orderRaw: 'year_month ASC',
+    filters: [{ field: 'year_month', op: 'eq', value: yearMonth }],
+    groupBy: ['year_month', 'category_name'],
   })
-  const prevExpenseValueData = await fetchSummary<SummaryItem>({
+  const prevExpenseValueData = await fetchSummary({
     db: db,
     table: 'expense',
-    filters: `year_month[eq]${prevYearMonth}`,
-    groupBy: 'year_month, category_name',
-    orderRaw: 'year_month ASC',
+    filters: [{ field: 'year_month', op: 'eq', value: prevYearMonth }],
+    groupBy: ['year_month', 'category_name'],
   })
 
-  const categories = await fetchSimpleList<ExpenseCategory>({
+  const categories = await fetchSimpleList({
     db,
     table: 'expense_category',
   })
@@ -78,12 +76,11 @@ export default createRoute(async (c) => {
     }
   }
 
-  const incomeValueData = await fetchSummary<SummaryItem>({
+  const incomeValueData = await fetchSummary({
     db: db,
     table: 'income',
-    filters: `year_month[eq]${yearMonth}`,
-    groupBy: 'year_month, category_name',
-    orderRaw: 'year_month ASC',
+    filters: [{ field: 'year_month', op: 'eq', value: yearMonth }],
+    groupBy: ['year_month', 'category_name'],
   })
 
   const expenseTotal = getTotal(expenseValueData.summary)
