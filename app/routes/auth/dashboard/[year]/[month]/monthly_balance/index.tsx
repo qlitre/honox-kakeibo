@@ -138,7 +138,7 @@ export default createRoute(async (c) => {
                       {Math.abs(item.prevDiff).toLocaleString()}
                     </td>
                     <td className='px-4 py-4 text-right'>
-                      {((item.now / expenseTotal) * 100).toFixed(2)}%
+                      {(expenseTotal > 0 ? (item.now / expenseTotal) * 100 : 0).toFixed(2)}%
                     </td>
                   </tr>
                 )

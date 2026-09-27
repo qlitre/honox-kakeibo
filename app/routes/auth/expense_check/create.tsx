@@ -6,10 +6,17 @@ import { setCookie } from 'hono/cookie'
 import { alertCookieMaxage, successAlertCookieKey } from '@/settings/kakeiboSettings'
 import { sendSlackNotification } from '@/libs/slack'
 import { createItem } from '@/libs/dbService'
+import { getYearMonth } from '@/utils/dateUtils'
 
 const endPoint = 'expense'
 const successMessage = '支出追加に成功しました'
 const slackSuccessMessage = '支出が追加されました。'
+
+/** 入力日付の年月の定期支払いチェック画面 */
+const checkUrl = (date: unknown) => {
+  const { year, month } = getYearMonth(typeof date === 'string' ? date : undefined)
+  return `/auth/expense_check?year=${year}&month=${month}`
+}
 
 /* --------------------- バリデーション --------------------- */
 const schema = z.object({
@@ -23,25 +30,8 @@ const schema = z.object({
 export const POST = createRoute(
   zValidator('form', schema, (result, c) => {
     if (!result.success) {
-      // バリデーションエラー時もdateから年月を取得してリダイレクト
-      let redirectYear, redirectMonth
-      try {
-        const dateValue = result.data.date
-        if (dateValue) {
-          const dateObj = new Date(dateValue)
-          redirectYear = dateObj.getFullYear().toString()
-          redirectMonth = (dateObj.getMonth() + 1).toString()
-        } else {
-          throw new Error('No date provided')
-        }
-      } catch {
-        // dateが無効な場合は現在の年月を使用
-        const now = new Date()
-        redirectYear = now.getFullYear().toString()
-        redirectMonth = (now.getMonth() + 1).toString()
-      }
-
-      return c.redirect(`/auth/expense_check?year=${redirectYear}&month=${redirectMonth}`, 303)
+      // バリデーションエラー時もdateから年月を取得してリダイレクト（不正なら現在の年月）
+      return c.redirect(checkUrl(result.data.date), 303)
     }
   }),
   async (c) => {
@@ -79,32 +69,11 @@ ${newItem.date}
       `.trim()
       await sendSlackNotification(message, c.env.SLACK_WEBHOOK_URL)
 
-      // 入力されたdateから年月を取得してリダイレクトパラメータに設定
-      const dateObj = new Date(data.date)
-      const redirectYear = dateObj.getFullYear().toString()
-      const redirectMonth = (dateObj.getMonth() + 1).toString()
-
-      return c.redirect(`/auth/expense_check?year=${redirectYear}&month=${redirectMonth}`, 303)
+      return c.redirect(checkUrl(data.date), 303)
     } catch (err) {
       console.error(`${endPoint} create error:`, err)
 
-      // エラー時もdateから年月を取得してリダイレクト（フォールバック付き）
-      let redirectYear, redirectMonth
-      try {
-        const dateObj = new Date(data.date)
-        redirectYear = dateObj.getFullYear().toString()
-        redirectMonth = (dateObj.getMonth() + 1).toString()
-      } catch {
-        // dateが無効な場合は現在の年月を使用
-        const now = new Date()
-        redirectYear = now.getFullYear().toString()
-        redirectMonth = (now.getMonth() + 1).toString()
-      }
-
-      return c.redirect(
-        `/auth/expense_check?year=${redirectYear}&month=${redirectMonth}&error=create_failed`,
-        303
-      )
+      return c.redirect(`${checkUrl(data.date)}&error=create_failed`, 303)
     }
   }
 )

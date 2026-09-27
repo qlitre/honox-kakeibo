@@ -57,12 +57,7 @@ describe('月間収支', () => {
     expect(t).toContain('合計 80,350 +79,351 100.00%')
   })
 
-  it('FIXME: 支出が0件の月は割合が NaN% になる', async () => {
-    await seedExpenseMasters()
-    expect(await html('/auth/dashboard/2026/9/monthly_balance')).toContain('NaN%')
-  })
-
-  it.fails('支出が0件の月でも NaN を表示しない', async () => {
+  it('支出が0件の月でも NaN を表示しない', async () => {
     await seedExpenseMasters()
     expect(await html('/auth/dashboard/2026/9/monthly_balance')).not.toContain('NaN')
   })
@@ -181,6 +176,19 @@ describe('収支推移', () => {
     )
     expect(s.income).toEqual([0, 500000])
     expect(s.expense).toEqual([0, 80000])
+  })
+
+  it('フィルターに選択中のカテゴリが残る', async () => {
+    const { m, bonus } = await setup()
+    const page = await html(
+      `/auth/dashboard/balance_transition?income_category=${bonus}&expense_category=${m.rentId}`
+    )
+    const selected = (name: string) =>
+      page
+        .match(new RegExp(`<select[^>]*name="${name}"[\\s\\S]*?</select>`))?.[0]
+        .match(/<option value="(\d+)" selected="">/)?.[1]
+    expect(selected('income_category')).toBe(String(bonus))
+    expect(selected('expense_category')).toBe(String(m.rentId))
   })
 })
 

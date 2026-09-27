@@ -70,10 +70,24 @@ describe('チェックテンプレート', () => {
     expect(await count('expense_check_template')).toBe(0)
   })
 
-  it('FIXME: POST create の入力エラーで再表示すると、カテゴリの選択肢が空になる', async () => {
-    await seedExpenseMasters()
-    const html = await (await postForm(`${base}/create`, { name: '' })).text()
-    expect(html).not.toContain('食費')
+  it('GET create で「有効」に初期チェックが入る', async () => {
+    const html = await (await authRequest(`${base}/create`)).text()
+    expect(html.match(/<input[^>]*name="is_active"[^>]*>/)?.[0]).toMatch(/\schecked=""/)
+  })
+
+  it('POST create の入力エラーで再表示すると、選択肢と入力値が残る', async () => {
+    const m = await seedExpenseMasters()
+    const html = await (
+      await postForm(`${base}/create`, {
+        name: '家賃',
+        expense_category_id: m.rentId,
+        description_pattern: '',
+      })
+    ).text()
+    expect(html).toContain('食費')
+    expect(html).toMatch(new RegExp(`<option value="${m.rentId}" selected=""`))
+    expect(html.match(/<input[^>]*name="name"[^>]*>/)?.[0]).toMatch(/\svalue="家賃"/)
+    expect(html.match(/<input[^>]*name="is_active"[^>]*>/)?.[0]).not.toMatch(/\schecked/)
   })
 
   it('POST create: 存在しないカテゴリは「作成に失敗しました」を表示する', async () => {
@@ -162,6 +176,17 @@ describe('定期支払いチェック', () => {
     expect(html).toContain('¥80,000')
   })
 
+  it('GET: 年月の指定が無ければ日本時間の今月', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-09-30T16:00:00Z')) // JST 10/1 01:00
+    try {
+      const html = await (await authRequest('/auth/expense_check')).text()
+      expect(html).toMatch(/<option value="10" selected="">/)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('GET: テンプレートが無ければ案内を表示する', async () => {
     const html = await (await authRequest('/auth/expense_check?year=2026&month=9')).text()
     expect(html).toContain('チェックテンプレートが登録されていません')
@@ -208,18 +233,7 @@ describe('定期支払いチェック', () => {
     expect(res.headers.get('Location')).toBe('/auth/expense_check?year=2026&month=8')
   })
 
-  it('FIXME: 日付が不正な入力エラーでは year=NaN&month=NaN へリダイレクトされる', async () => {
-    const res = await postForm('/auth/expense_check/create', {
-      date: 'abc',
-      amount: 1,
-      expense_category_id: 1,
-      payment_method_id: 1,
-      description: '',
-    })
-    expect(res.headers.get('Location')).toBe('/auth/expense_check?year=NaN&month=NaN')
-  })
-
-  it.fails('日付が不正な入力エラーでは現在の年月へ戻る', async () => {
+  it('日付が不正な入力エラーでは現在の年月へ戻る', async () => {
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(new Date('2026-09-15T03:00:00Z'))
     try {

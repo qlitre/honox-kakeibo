@@ -54,7 +54,7 @@ const CreateForm = ({
               type='text'
               id='name'
               name='name'
-              defaultValue={data?.name}
+              value={data?.name}
               className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'
               placeholder='家賃、電気代など'
             />
@@ -71,12 +71,15 @@ const CreateForm = ({
             <select
               id='expense_category_id'
               name='expense_category_id'
-              defaultValue={data?.expense_category_id}
               className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'
             >
               <option value=''>選択してください</option>
               {categories.map((category) => (
-                <option key={category.id} value={category.id}>
+                <option
+                  key={category.id}
+                  value={String(category.id)}
+                  selected={String(category.id) === data?.expense_category_id}
+                >
                   {category.name}
                 </option>
               ))}
@@ -124,7 +127,7 @@ const CreateForm = ({
               type='text'
               id='description_pattern'
               name='description_pattern'
-              defaultValue={data?.description_pattern}
+              value={data?.description_pattern}
               className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'
               placeholder='家賃、電気など（部分一致）'
             />
@@ -142,7 +145,7 @@ const CreateForm = ({
               id='is_active'
               name='is_active'
               value='1'
-              defaultChecked={data?.is_active === '1' || !data}
+              checked={data?.is_active === '1' || !data}
               className='h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded'
             />
             <label htmlFor='is_active' className='ml-2 block text-sm text-gray-900'>
@@ -170,33 +173,24 @@ const CreateForm = ({
   )
 }
 
+/** フォームの選択肢（支出カテゴリ・支払い方法） */
+const fetchOptions = async (db: D1Database) => {
+  const [categories, paymentMethods] = await Promise.all([
+    fetchSimpleList<ExpenseCategory>({ db, table: 'expense_category', orders: 'id' }),
+    fetchSimpleList<PaymentMethod>({ db, table: 'payment_method', orders: 'name' }),
+  ])
+  return { categories: categories.contents, paymentMethods: paymentMethods.contents }
+}
+
 export default createRoute(async (c) => {
-  const db = c.env.DB
-
-  // 支出カテゴリ一覧を取得
-  const categories = await fetchSimpleList<ExpenseCategory>({
-    db,
-    table: 'expense_category',
-    orders: 'id',
+  const options = await fetchOptions(c.env.DB)
+  return c.render(<CreateForm {...options} />, {
+    title: 'チェックテンプレート新規追加',
   })
-
-  // 支払い方法一覧を取得
-  const paymentMethods = await fetchSimpleList<PaymentMethod>({
-    db,
-    table: 'payment_method',
-    orders: 'name',
-  })
-
-  return c.render(
-    <CreateForm categories={categories.contents} paymentMethods={paymentMethods.contents} />,
-    {
-      title: 'チェックテンプレート新規追加',
-    }
-  )
 })
 
 export const POST = createRoute(
-  zValidator('form', schema, (result, c) => {
+  zValidator('form', schema, async (result, c) => {
     if (!result.success) {
       const { name, expense_category_id, payment_method_id, description_pattern, is_active } =
         result.data
@@ -210,8 +204,7 @@ export const POST = createRoute(
             is_active,
             error: z.flattenError(result.error).fieldErrors,
           }}
-          categories={[]}
-          paymentMethods={[]}
+          {...await fetchOptions(c.env.DB)}
         />
       )
     }

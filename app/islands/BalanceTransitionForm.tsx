@@ -44,11 +44,14 @@ export const BalanceTransitionForm: FC<Props> = ({
               name='income_category'
               className='w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
               onChange={handleSelectChange}
-              defaultValue={incomeDefaultValue}
             >
               <option value=''>全カテゴリ</option>
               {incomeCategories.map((category) => (
-                <option value={category.id} key={category.id}>
+                <option
+                  value={category.id}
+                  key={category.id}
+                  selected={String(category.id) === incomeDefaultValue}
+                >
                   {category.name}
                 </option>
               ))}
@@ -66,11 +69,14 @@ export const BalanceTransitionForm: FC<Props> = ({
               name='expense_category'
               className='w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
               onChange={handleSelectChange}
-              defaultValue={expenseDefaultValue}
             >
               <option value=''>全カテゴリ</option>
               {expenseCategories.map((category) => (
-                <option value={category.id} key={category.id}>
+                <option
+                  value={category.id}
+                  key={category.id}
+                  selected={String(category.id) === expenseDefaultValue}
+                >
                   {category.name}
                 </option>
               ))}

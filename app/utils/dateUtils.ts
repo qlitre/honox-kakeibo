@@ -13,3 +13,12 @@ export const getTodayDate = (): string => {
   // yyyy-mm-dd形式で返す
   return `${year}-${month}-${day}`
 }
+
+/**
+ * yyyy-mm-dd の年・月を返す。形式が不正なら日本時間の今日の年・月
+ */
+export const getYearMonth = (date: string = getTodayDate()): { year: number; month: number } => {
+  const match = /^(\d{4})-(\d{2})-\d{2}$/.exec(date)
+  if (!match) return getYearMonth()
+  return { year: Number(match[1]), month: Number(match[2]) }
+}
