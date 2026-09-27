@@ -118,7 +118,7 @@ function isNumeric(value: string): boolean {
 }
 
 // LIKE の % と _ をワイルドカードではなく文字として扱う（ESCAPE '\' と組で使う）
-const escapeLike = (value: string) => value.replace(/[\\%_]/g, (c) => `\\${c}`)
+export const escapeLike = (value: string) => value.replace(/[\\%_]/g, (c) => `\\${c}`)
 
 // テーブル外で WHERE に使える名前: JOIN先のエイリアス（"x.name AS category_name" の右側）と集計用の year_month
 const extraFilterFields = (tableName: TableName) =>

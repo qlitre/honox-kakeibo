@@ -606,15 +606,23 @@ describe('checkMonthlyExpenses（定期支払いチェック）', () => {
     expect(res.map((r) => r.template.name)).toEqual(['A', 'B'])
   })
 
-  it('FIXME: パターン中の % や _ はワイルドカードとして扱われる', async () => {
+  it('パターン中の % や _ は文字として扱う', async () => {
     const { m, tpl } = await setup()
-    await tpl('家賃', '家_')
-    await insertExpense(
-      { date: '2026-09-01', amount: 1, expense_category_id: m.rentId, payment_method_id: m.cashId },
-      '家賃'
-    )
+    await tpl('_', '家_')
+    await tpl('%', '100%')
+    const expense = {
+      date: '2026-09-01',
+      amount: 1,
+      expense_category_id: m.rentId,
+      payment_method_id: m.cashId,
+    }
+    await insertExpense(expense, '家賃')
+    await insertExpense(expense, 'ポイント100%還元')
 
-    const [r] = await checkMonthlyExpenses({ db: db(), year: '2026', month: '9' })
-    expect(r.isRegistered).toBe(true)
+    const res = await checkMonthlyExpenses({ db: db(), year: '2026', month: '9' })
+    expect(Object.fromEntries(res.map((r) => [r.template.name, r.isRegistered]))).toEqual({
+      '%': true,
+      _: false,
+    })
   })
 })
