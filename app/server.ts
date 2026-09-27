@@ -5,7 +5,8 @@ import mcpApp from './routes/mcp'
 
 const app = createApp()
 
-showRoutes(app)
+// ルート一覧の出力は開発時だけ（本番では起動のたびにログが出るため）
+if (import.meta.env.DEV) showRoutes(app)
 
 export default new OAuthProvider({
   apiRoute: '/mcp',
@@ -15,7 +16,7 @@ export default new OAuthProvider({
   tokenEndpoint: '/oauth/token',
   clientRegistrationEndpoint: '/oauth/register',
   scopesSupported: ['mcp:write', 'mcp:get'],
-  // TODO: 7/23以降に accessTokenTTL: 3600, refreshTokenTTL: 30 * 24 * 3600 に戻す
-  accessTokenTTL: 900,
-  refreshTokenTTL: 0,
+  // アクセストークン1時間、リフレッシュトークン30日（期限内は再認証なしで更新できる）
+  accessTokenTTL: 3600,
+  refreshTokenTTL: 30 * 24 * 3600,
 })

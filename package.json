@@ -1,5 +1,5 @@
 {
-  "name": "basic",
+  "name": "honox-kakeibo",
   "type": "module",
   "scripts": {
     "dev": "vite",
