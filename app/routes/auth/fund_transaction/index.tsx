@@ -4,8 +4,9 @@ import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
 import { getFlash } from '@/libs/flash'
 import { FlashAlerts } from '@/components/FlashAlerts'
-import { FundTransactionCreateModal } from '@/islands/fund_transation/FundTransactionCreateModal'
-import { FundTransactionDeleteModal } from '@/islands/fund_transation/FundTransactionDeleteModal'
+import { TransactionFormModal, type SelectField } from '@/islands/TransactionFormModal'
+import { TransactionDeleteModal } from '@/islands/TransactionDeleteModal'
+import { toFormValues, toOptions } from '@/components/transactionForms'
 import { Table } from '@/components/share/Table'
 import { getQueryString } from '@/utils/getQueryString'
 import { fetchListWithFilter } from '@/libs/dbService'
@@ -31,6 +32,7 @@ export default createRoute(async (c) => {
   })
 
   const flash = getFlash(c)
+  const selects: SelectField[] = []
 
   const headers: TableHeaderItem[] = [
     { name: '日付', textPosition: 'left' },
@@ -47,11 +49,12 @@ export default createRoute(async (c) => {
         <FlashAlerts {...flash} />
         <div className='flex items-center justify-between'>
           <PageHeader title='投資用口座入金履歴' />
-          <FundTransactionCreateModal
+          <TransactionFormModal
             buttonType='primary'
             buttonTitle='履歴追加'
             title='作成'
             actionUrl='/auth/fund_transaction/create'
+            selects={selects}
           />
         </div>
         <Table headers={headers}>
@@ -69,31 +72,27 @@ export default createRoute(async (c) => {
                   {tx.description || '-'}
                 </td>
                 <td className='whitespace-nowrap px-6 py-4 text-sm text-gray-500 flex space-x-4 justify-center'>
-                  <FundTransactionCreateModal
+                  <TransactionFormModal
                     buttonType='success'
                     buttonTitle='編集'
-                    data={{
-                      date: tx.date,
-                      amount: String(tx.amount),
-                      description: tx.description || '',
-                    }}
+                    values={toFormValues(tx, selects)}
                     title='編集'
                     actionUrl={`/auth/fund_transaction/${tx.id}/update?${queryString}`}
+                    selects={selects}
                   />
-                  <FundTransactionCreateModal
+                  <TransactionFormModal
                     buttonType='primary'
                     buttonTitle='複写'
-                    data={{
-                      date: getTodayDate(),
-                      amount: String(tx.amount),
-                      description: tx.description || '',
-                    }}
+                    values={{ ...toFormValues(tx, selects), date: getTodayDate() }}
                     title='複写'
                     actionUrl='/auth/fund_transaction/create'
+                    selects={selects}
                   />
-                  <FundTransactionDeleteModal
+                  <TransactionDeleteModal
+                    title='投資口座入出金履歴削除'
                     actionUrl={`/auth/fund_transaction/${tx.id}/delete?${queryString}`}
-                    fundTransaction={tx}
+                    details={[{ label: '詳細', value: tx.description || '説明なし' }]}
+                    amount={tx.amount}
                   />
                 </td>
               </tr>

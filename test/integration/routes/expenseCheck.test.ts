@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { authRequest, cookies, postForm } from '../../helpers/app'
+import { authRequest, cookies, islandProps, postForm } from '../../helpers/app'
 import { count, insert, row, seedExpenseMasters } from '../../helpers/db'
 
 const insertTemplate = (m: { rentId: number }, extra: Record<string, unknown> = {}) =>
@@ -210,6 +210,22 @@ describe('定期支払いチェック', () => {
     } finally {
       vi.useRealTimers()
     }
+  })
+
+  it('GET: 未登録のテンプレートには、テンプレートの値を入れた追加モーダルを出す', async () => {
+    const m = await seedExpenseMasters()
+    await insertTemplate(m, { payment_method_id: m.cardId })
+    const html = await (await authRequest('/auth/expense_check?year=2026&month=8')).text()
+    const [modal] = islandProps(html, 'TransactionFormModal')
+    expect(modal).toMatchObject({
+      actionUrl: '/auth/expense_check/create',
+      values: {
+        expense_category_id: String(m.rentId),
+        payment_method_id: String(m.cardId),
+        description: '家賃',
+      },
+    })
+    expect(modal.values.date).toMatch(/^2026-08-\d{2}$/)
   })
 
   it('GET: テンプレートが無ければ案内を表示する', async () => {

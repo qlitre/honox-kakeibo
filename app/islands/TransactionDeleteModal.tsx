@@ -3,36 +3,35 @@ import { useState } from 'hono/jsx'
 import { Button } from '@/islands/Button'
 import { ModalSheet } from '@/components/share/ModalSheet'
 import { formCancelClass, formDangerClass } from '@/components/share/formClasses'
-import type { AssetWithCategory } from '@/@types/dbTypes'
 
 type Props = {
+  title: string
   actionUrl: string
-  asset: AssetWithCategory
+  /** 金額の上に並べる項目（詳細・カテゴリなど） */
+  details: { label: string; value: string }[]
+  amount: number
 }
 
-export const AssetDeleteModal: FC<Props> = ({ actionUrl, asset }) => {
+/** 明細の削除確認 */
+export const TransactionDeleteModal: FC<Props> = ({ title, actionUrl, details, amount }) => {
   const [open, setOpen] = useState(false)
-  const handleClick = () => {
-    setOpen(true)
-  }
 
   return (
     <>
-      <Button type='danger' onClick={handleClick}>
+      <Button type='danger' onClick={() => setOpen(true)}>
         削除
       </Button>
       {open && (
-        <ModalSheet title='資産削除' onClose={() => setOpen(false)}>
+        <ModalSheet title={title} onClose={() => setOpen(false)}>
           <form action={actionUrl} method='post' className='space-y-4'>
             <div className='space-y-2 text-base text-gray-800'>
-              <p>
-                <strong>詳細：</strong> {asset.description || '説明なし'}
-              </p>
-              <p>
-                <strong>カテゴリ：</strong> {asset.category_name}
-              </p>
+              {details.map(({ label, value }) => (
+                <p key={label}>
+                  <strong>{label}：</strong> {value}
+                </p>
+              ))}
               <p className='font-semibold'>
-                <strong>金額：</strong> {asset.amount}円
+                <strong>金額：</strong> {amount}円
               </p>
             </div>
             <p className='text-sm text-gray-500'>削除すると元に戻せません。本当に削除しますか？</p>

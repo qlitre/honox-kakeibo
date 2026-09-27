@@ -1,6 +1,7 @@
 import { createRoute } from 'honox/factory'
 import { checkMonthlyExpenses, fetchSimpleList } from '@/libs/dbService'
-import { ExpenseCreateModal } from '@/islands/expense/ExpenseCreateModal'
+import { TransactionFormModal, type SelectField } from '@/islands/TransactionFormModal'
+import { toOptions } from '@/components/transactionForms'
 import { getFlash } from '@/libs/flash'
 import { FlashAlerts } from '@/components/FlashAlerts'
 import { getTodayDate, getYearMonth } from '@/utils/dateUtils'
@@ -37,6 +38,14 @@ export default createRoute(async (c) => {
 
     // 成功メッセージを取得
     const flash = getFlash(c)
+    const selects: SelectField[] = [
+      { name: 'expense_category_id', label: 'カテゴリ', options: toOptions(categories.contents) },
+      {
+        name: 'payment_method_id',
+        label: '支払い方法',
+        options: toOptions(paymentMethods.contents),
+      },
+    ]
 
     return c.render(
       <div className='container mx-auto px-4 py-8'>
@@ -175,20 +184,18 @@ export default createRoute(async (c) => {
                   </span>
 
                   {!result.isRegistered && (
-                    <ExpenseCreateModal
+                    <TransactionFormModal
                       buttonType='primary'
                       buttonTitle='追加'
-                      data={{
+                      values={{
                         date: `${year}-${month.padStart(2, '0')}-${today.slice(8, 10)}`,
-                        amount: '',
-                        expense_category_id: result.template.expense_category_id.toString(),
-                        payment_method_id: result.template.payment_method_id?.toString() || '',
+                        expense_category_id: String(result.template.expense_category_id),
+                        payment_method_id: String(result.template.payment_method_id ?? ''),
                         description: result.template.description_pattern,
                       }}
                       title='支出追加'
                       actionUrl='/auth/expense_check/create'
-                      categories={categories}
-                      payment_methods={paymentMethods}
+                      selects={selects}
                     />
                   )}
                 </div>

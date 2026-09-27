@@ -2,61 +2,72 @@ import type { FC } from 'hono/jsx'
 import { useState } from 'hono/jsx'
 import { Button } from '@/islands/Button'
 import { ModalSheet } from '@/components/share/ModalSheet'
-import {
-  formErrorClass,
-  formInputClass,
-  formLabelClass,
-  formSubmitClass,
-} from '@/components/share/formClasses'
+import { formInputClass, formLabelClass, formSubmitClass } from '@/components/share/formClasses'
 import { getTodayDate } from '@/utils/dateUtils'
 
-type Data = {
-  date: string
-  amount: string
-  description: string
-  error?: Record<string, string[] | undefined>
+// island の props はシリアライズしてブラウザへ渡すので、関数やJSXではなくデータで受ける
+export type SelectField = {
+  name: string
+  label: string
+  options: { value: string; label: string }[]
 }
 
-type CreateFormProps = {
-  data?: Data
-  title: string
-  actionUrl: string
-}
-
-type Props = CreateFormProps & {
+type Props = {
   buttonType: 'primary' | 'success'
   buttonTitle: string
+  title: string
+  actionUrl: string
+  /** 初期値（name → 値）。date が無ければ今日 */
+  values?: Record<string, string>
+  /** 日付・金額と説明の間に並べるセレクト（2つなら横並び） */
+  selects?: SelectField[]
 }
 
-export const FundTransactionCreateModal: FC<Props> = ({
+/** 明細（支出・収入・資産・入金履歴）の追加・編集・複写フォーム */
+export const TransactionFormModal: FC<Props> = ({
   buttonType,
   buttonTitle,
-  data,
   title,
   actionUrl,
+  values = {},
+  selects = [],
 }) => {
   const [open, setOpen] = useState(false)
-  const handleClick = () => {
-    setOpen(true)
-  }
-  const [formData, setFormData] = useState<Data>({
-    date: data?.date || getTodayDate(),
-    amount: data?.amount || '',
-    description: data?.description || '',
-    error: data?.error,
+  // 閉じて開き直しても入力途中の値を残す
+  const [formData, setFormData] = useState<Record<string, string>>({
+    date: getTodayDate(),
+    amount: '',
+    description: '',
+    ...values,
   })
 
   const handleChange = (e: Event) => {
-    const target = e.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    const { name, value } = target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    const { name, value } = e.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    setFormData((prev) => ({ ...prev, [name]: value }))
   }
+
+  const select = ({ name, label, options }: SelectField) => (
+    <div key={name}>
+      <label htmlFor={name} className={formLabelClass}>
+        {label}
+      </label>
+      <select id={name} name={name} required className={formInputClass} onChange={handleChange}>
+        {options.map((option) => (
+          <option
+            value={option.value}
+            key={option.value}
+            selected={option.value === formData[name]}
+          >
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  )
+
   return (
     <>
-      <Button type={buttonType} onClick={handleClick}>
+      <Button type={buttonType} onClick={() => setOpen(true)}>
         {buttonTitle}
       </Button>
       {open && (
@@ -76,9 +87,7 @@ export const FundTransactionCreateModal: FC<Props> = ({
                   value={formData.date}
                   onChange={handleChange}
                 />
-                {formData.error?.date && <p className={formErrorClass}>{formData.error.date}</p>}
               </div>
-
               <div>
                 <label htmlFor='amount' className={formLabelClass}>
                   金額
@@ -93,11 +102,14 @@ export const FundTransactionCreateModal: FC<Props> = ({
                   value={formData.amount}
                   onChange={handleChange}
                 />
-                {formData.error?.amount && (
-                  <p className={formErrorClass}>{formData.error.amount}</p>
-                )}
               </div>
             </div>
+
+            {selects.length > 1 ? (
+              <div className='grid grid-cols-2 gap-3'>{selects.map(select)}</div>
+            ) : (
+              selects.map(select)
+            )}
 
             <div>
               <label htmlFor='description' className={formLabelClass}>
@@ -111,9 +123,6 @@ export const FundTransactionCreateModal: FC<Props> = ({
                 value={formData.description}
                 onChange={handleChange}
               ></textarea>
-              {formData.error?.description && (
-                <p className={formErrorClass}>{formData.error.description}</p>
-              )}
             </div>
 
             <div>

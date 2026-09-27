@@ -59,3 +59,11 @@ const unescapeHtml = (s: string) =>
 export function chartData(html: string): any[] {
   return [...html.matchAll(/data-chart-data="([^"]*)"/g)].map((m) => JSON.parse(unescapeHtml(m[1])))
 }
+
+/** island（<honox-island>）に渡された props を、export名で絞って取り出す */
+export function islandProps(html: string, exportName: string): any[] {
+  return [...html.matchAll(/<honox-island ([^>]*)>/g)]
+    .map((m) => m[1])
+    .filter((attrs) => attrs.includes(`component-export="${exportName}"`))
+    .map((attrs) => JSON.parse(unescapeHtml(attrs.match(/data-serialized-props="([^"]*)"/)![1])))
+}

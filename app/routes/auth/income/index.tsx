@@ -3,8 +3,9 @@ import type { TableHeaderItem } from '@/@types/common'
 import { createRoute } from 'honox/factory'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
-import { IncomeDeleteModal } from '@/islands/income/IncomeDeleteModal'
-import { IncomeCreateModal } from '@/islands/income/IncomeCreateModal'
+import { TransactionFormModal, type SelectField } from '@/islands/TransactionFormModal'
+import { TransactionDeleteModal } from '@/islands/TransactionDeleteModal'
+import { toFormValues, toOptions } from '@/components/transactionForms'
 import { Table } from '@/components/share/Table'
 import { getFlash } from '@/libs/flash'
 import { FlashAlerts } from '@/components/FlashAlerts'
@@ -40,6 +41,9 @@ export default createRoute(async (c) => {
   })
 
   const flash = getFlash(c)
+  const selects: SelectField[] = [
+    { name: 'income_category_id', label: 'カテゴリ', options: toOptions(categories.contents) },
+  ]
   const headers: TableHeaderItem[] = [
     { name: '日付', textPosition: 'left' },
     { name: 'カテゴリ', textPosition: 'left' },
@@ -55,12 +59,12 @@ export default createRoute(async (c) => {
         <FlashAlerts {...flash} />
         <div className='flex items-center justify-between'>
           <PageHeader title='収入リスト' />
-          <IncomeCreateModal
+          <TransactionFormModal
             buttonType='primary'
             buttonTitle='収入追加'
             title='作成'
             actionUrl='/auth/income/create'
-            categories={categories}
+            selects={selects}
           />
         </div>
         <Table headers={headers}>
@@ -81,35 +85,30 @@ export default createRoute(async (c) => {
                   {income.description || '-'}
                 </td>
                 <td className='whitespace-nowrap px-6 py-4 text-sm text-gray-500 flex space-x-4 justify-center'>
-                  <IncomeCreateModal
+                  <TransactionFormModal
                     buttonType='success'
                     buttonTitle='編集'
-                    data={{
-                      date: income.date,
-                      amount: String(income.amount),
-                      income_category_id: String(income.income_category_id),
-                      description: income.description || '',
-                    }}
+                    values={toFormValues(income, selects)}
                     title='収入編集'
                     actionUrl={`/auth/income/${income.id}/update?${queryString}`}
-                    categories={categories}
+                    selects={selects}
                   />
-                  <IncomeCreateModal
+                  <TransactionFormModal
                     buttonType='primary'
                     buttonTitle='複写'
-                    data={{
-                      date: getTodayDate(),
-                      amount: String(income.amount),
-                      income_category_id: String(income.income_category_id),
-                      description: income.description || '',
-                    }}
+                    values={{ ...toFormValues(income, selects), date: getTodayDate() }}
                     title='複写'
                     actionUrl='/auth/income/create'
-                    categories={categories}
+                    selects={selects}
                   />
-                  <IncomeDeleteModal
+                  <TransactionDeleteModal
+                    title='収入削除'
                     actionUrl={`/auth/income/${income.id}/delete?${queryString}`}
-                    income={income}
+                    details={[
+                      { label: '詳細', value: income.description || '説明なし' },
+                      { label: 'カテゴリ', value: income.category_name },
+                    ]}
+                    amount={income.amount}
                   />
                 </td>
               </tr>

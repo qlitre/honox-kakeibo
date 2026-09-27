@@ -2,8 +2,9 @@ import type { TableHeaderItem } from '@/@types/common'
 import { createRoute } from 'honox/factory'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
-import { AssetDeleteModal } from '@/islands/asset/AssetDeleteModal'
-import { AssetCreateModal } from '@/islands/asset/AssetCreateModal'
+import { TransactionFormModal, type SelectField } from '@/islands/TransactionFormModal'
+import { TransactionDeleteModal } from '@/islands/TransactionDeleteModal'
+import { toFormValues, toOptions } from '@/components/transactionForms'
 import { Table } from '@/components/share/Table'
 import { getFlash } from '@/libs/flash'
 import { FlashAlerts } from '@/components/FlashAlerts'
@@ -38,6 +39,9 @@ export default createRoute(async (c) => {
   })
 
   const flash = getFlash(c)
+  const selects: SelectField[] = [
+    { name: 'asset_category_id', label: 'カテゴリ', options: toOptions(categories.contents) },
+  ]
   const headers: TableHeaderItem[] = [
     { name: '日付', textPosition: 'left' },
     { name: 'カテゴリ', textPosition: 'left' },
@@ -54,12 +58,12 @@ export default createRoute(async (c) => {
         <FlashAlerts {...flash} />
         <div className='flex items-center justify-between'>
           <PageHeader title='資産リスト' />
-          <AssetCreateModal
+          <TransactionFormModal
             buttonType='primary'
             buttonTitle='資産追加'
             title='作成'
             actionUrl='/auth/asset/create'
-            categories={categories}
+            selects={selects}
           />
         </div>
         <Table headers={headers}>
@@ -80,35 +84,30 @@ export default createRoute(async (c) => {
                   {asset.description || '-'}
                 </td>
                 <td className='whitespace-nowrap px-6 py-4 text-sm text-gray-500 flex space-x-4 justify-center'>
-                  <AssetCreateModal
+                  <TransactionFormModal
                     buttonType='success'
                     buttonTitle='編集'
-                    data={{
-                      date: asset.date,
-                      amount: String(asset.amount),
-                      asset_category_id: String(asset.asset_category_id),
-                      description: asset.description ?? '',
-                    }}
+                    values={toFormValues(asset, selects)}
                     title='編集'
                     actionUrl={`/auth/asset/${asset.id}/update?${queryString}`}
-                    categories={categories}
+                    selects={selects}
                   />
-                  <AssetCreateModal
+                  <TransactionFormModal
                     buttonType='primary'
                     buttonTitle='複写'
-                    data={{
-                      date: getTodayDate(),
-                      amount: String(asset.amount),
-                      asset_category_id: String(asset.asset_category_id),
-                      description: asset.description ?? '',
-                    }}
+                    values={{ ...toFormValues(asset, selects), date: getTodayDate() }}
                     title='複写'
                     actionUrl='/auth/asset/create'
-                    categories={categories}
+                    selects={selects}
                   />
-                  <AssetDeleteModal
+                  <TransactionDeleteModal
+                    title='資産削除'
                     actionUrl={`/auth/asset/${asset.id}/delete?${queryString}`}
-                    asset={asset}
+                    details={[
+                      { label: '詳細', value: asset.description || '説明なし' },
+                      { label: 'カテゴリ', value: asset.category_name },
+                    ]}
+                    amount={asset.amount}
                   />
                 </td>
               </tr>

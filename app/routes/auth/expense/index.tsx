@@ -4,8 +4,9 @@ import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
 import { getFlash } from '@/libs/flash'
 import { FlashAlerts } from '@/components/FlashAlerts'
-import { ExpenseDeleteModal } from '@/islands/expense/ExpenseDeleteModal'
-import { ExpenseCreateModal } from '@/islands/expense/ExpenseCreateModal'
+import { TransactionFormModal, type SelectField } from '@/islands/TransactionFormModal'
+import { toFormValues, toOptions } from '@/components/transactionForms'
+import { TransactionDeleteModal } from '@/islands/TransactionDeleteModal'
 import { ExpenseSearchForm } from '@/islands/expense/ExpenseSearchForm'
 import { Table } from '@/components/share/Table'
 import { kakeiboPerPage } from '@/settings/kakeiboSettings'
@@ -66,6 +67,10 @@ export default createRoute(async (c) => {
   })
 
   const flash = getFlash(c)
+  const selects: SelectField[] = [
+    { name: 'expense_category_id', label: 'カテゴリ', options: toOptions(categories.contents) },
+    { name: 'payment_method_id', label: '支払い方法', options: toOptions(paymentMethods.contents) },
+  ]
 
   const headers: TableHeaderItem[] = [
     { name: '日付', textPosition: 'left' },
@@ -85,13 +90,12 @@ export default createRoute(async (c) => {
         <FlashAlerts {...flash} />
         <div className='flex items-center justify-between'>
           <PageHeader title='支出リスト' />
-          <ExpenseCreateModal
+          <TransactionFormModal
             buttonType='primary'
             buttonTitle='支出追加'
             title='作成'
             actionUrl='/auth/expense/create'
-            categories={categories}
-            payment_methods={paymentMethods}
+            selects={selects}
           />
         </div>
         <ExpenseSearchForm
@@ -127,39 +131,31 @@ export default createRoute(async (c) => {
                   {expense.description || '-'}
                 </td>
                 <td className='whitespace-nowrap px-6 py-4 text-sm text-gray-500 flex space-x-4 justify-center'>
-                  <ExpenseCreateModal
+                  <TransactionFormModal
                     buttonType='success'
                     buttonTitle='編集'
-                    data={{
-                      date: expense.date,
-                      amount: String(expense.amount),
-                      expense_category_id: String(expense.expense_category_id),
-                      payment_method_id: String(expense.payment_method_id),
-                      description: expense.description || '',
-                    }}
+                    values={toFormValues(expense, selects)}
                     title='編集'
                     actionUrl={`/auth/expense/${expense.id}/update?${queryString}`}
-                    categories={categories}
-                    payment_methods={paymentMethods}
+                    selects={selects}
                   />
-                  <ExpenseCreateModal
+                  <TransactionFormModal
                     buttonType='primary'
                     buttonTitle='複写'
-                    data={{
-                      date: getTodayDate(),
-                      amount: String(expense.amount),
-                      expense_category_id: String(expense.expense_category_id),
-                      payment_method_id: String(expense.payment_method_id),
-                      description: expense.description || '',
-                    }}
+                    values={{ ...toFormValues(expense, selects), date: getTodayDate() }}
                     title='複写'
                     actionUrl='/auth/expense/create'
-                    categories={categories}
-                    payment_methods={paymentMethods}
+                    selects={selects}
                   />
-                  <ExpenseDeleteModal
+                  <TransactionDeleteModal
+                    title='支出削除'
                     actionUrl={`/auth/expense/${expense.id}/delete?${queryString}`}
-                    expense={expense}
+                    details={[
+                      { label: '詳細', value: expense.description || '説明なし' },
+                      { label: 'カテゴリ', value: expense.category_name },
+                      { label: '支払い方法', value: expense.payment_method_name },
+                    ]}
+                    amount={expense.amount}
                   />
                 </td>
               </tr>
