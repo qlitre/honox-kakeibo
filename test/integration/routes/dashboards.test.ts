@@ -57,12 +57,7 @@ describe('月間収支', () => {
     expect(t).toContain('合計 80,350 +79,351 100.00%')
   })
 
-  it('FIXME: 支出が0件の月は割合が NaN% になる', async () => {
-    await seedExpenseMasters()
-    expect(await html('/auth/dashboard/2026/9/monthly_balance')).toContain('NaN%')
-  })
-
-  it.fails('支出が0件の月でも NaN を表示しない', async () => {
+  it('支出が0件の月でも NaN を表示しない', async () => {
     await seedExpenseMasters()
     expect(await html('/auth/dashboard/2026/9/monthly_balance')).not.toContain('NaN')
   })
