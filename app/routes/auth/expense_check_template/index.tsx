@@ -1,6 +1,5 @@
 import { createRoute } from 'honox/factory'
 import { fetchSimpleList } from '@/libs/dbService'
-import type { ExpenseCheckTemplateWithDetails } from '@/@types/dbTypes'
 import type { TableHeaderItem } from '@/@types/common'
 import { PageHeader } from '@/components/PageHeader'
 import { Table } from '@/components/share/Table'
@@ -8,7 +7,7 @@ import { Table } from '@/components/share/Table'
 export default createRoute(async (c) => {
   const db = c.env.DB
 
-  const templates = await fetchSimpleList<ExpenseCheckTemplateWithDetails>({
+  const templates = await fetchSimpleList({
     db,
     table: 'expense_check_template',
     orders: 'updated_at',

@@ -1,4 +1,3 @@
-import type { ExpenseCategory } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
@@ -19,7 +18,7 @@ const redirectUrl = '/auth/expense_category'
 
 export default createRoute(async (c) => {
   const id = c.req.param('id')!
-  const detail = await fetchDetail<ExpenseCategory>({
+  const detail = await fetchDetail({
     db: c.env.DB,
     table: endPoint,
     id: id,
@@ -61,7 +60,7 @@ export const POST = createRoute(
     const body = {
       name: name,
     }
-    const response = await updateItem<ExpenseCategory>({
+    const response = await updateItem({
       db: c.env.DB,
       table: endPoint,
       id: id,

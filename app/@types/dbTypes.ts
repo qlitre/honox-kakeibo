@@ -101,3 +101,16 @@ export type AssetCategoryResponse = KakeiboListResponse<AssetCategory>
 export type ExpenseCategoryResponse = KakeiboListResponse<ExpenseCategory>
 export type PaymentMethodResponse = KakeiboListResponse<PaymentMethod>
 export type IncomeCategoryResponse = KakeiboListResponse<IncomeCategory>
+
+/** 各テーブルを fetch したときの行の型（SELECT は常にJOIN先のエイリアス込み） */
+export type RowOf = {
+  asset: AssetWithCategory
+  asset_category: AssetCategory
+  fund_transaction: FundTransation
+  expense: ExpenseWithDetails
+  expense_category: ExpenseCategory
+  payment_method: PaymentMethod
+  income: IncomeWithCategory
+  income_category: IncomeCategory
+  expense_check_template: ExpenseCheckTemplateWithDetails
+}

@@ -1,4 +1,3 @@
-import type { Income } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
@@ -41,7 +40,7 @@ export const POST = createRoute(
 
     try {
       /* 3. 更新処理（D1 直接） */
-      await updateItem<Income>({
+      await updateItem({
         db: c.env.DB,
         table: endPoint,
         id: recordId,

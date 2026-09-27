@@ -37,7 +37,7 @@ describe('fetchListWithFilter', () => {
       })
     }
 
-    const res = await fetchListWithFilter<any>({
+    const res = await fetchListWithFilter({
       db: db(),
       table: 'expense',
       orders: '-date',
@@ -77,10 +77,13 @@ describe('fetchListWithFilter', () => {
       payment_method_id: m.cashId,
     })
 
-    const res = await fetchListWithFilter<any>({
+    const res = await fetchListWithFilter({
       db: db(),
       table: 'expense',
-      filters: 'date[greater_equal]2026-09-01[and]date[less_equal]2026-09-30',
+      filters: [
+        { field: 'date', op: 'gte', value: '2026-09-01' },
+        { field: 'date', op: 'lte', value: '2026-09-30' },
+      ],
       orders: 'date',
       limit: 30,
       offset: 0,
@@ -100,10 +103,10 @@ describe('fetchListWithFilter', () => {
       'スーパー'
     )
 
-    const res = await fetchListWithFilter<any>({
+    const res = await fetchListWithFilter({
       db: db(),
       table: 'expense',
-      filters: 'description[contain]ランチ',
+      filters: [{ field: 'description', op: 'contains', value: 'ランチ' }],
       limit: 30,
       offset: 0,
     })
@@ -129,7 +132,7 @@ describe('fetchListWithFilter', () => {
     const res = await fetchListWithFilter({
       db: db(),
       table: 'expense',
-      filters: "description[contain]存在しない' OR 1=1 OR '",
+      filters: [{ field: 'description', op: 'contains', value: "存在しない' OR 1=1 OR '" }],
       limit: 30,
       offset: 0,
     })
@@ -144,10 +147,10 @@ describe('fetchListWithFilter', () => {
       "McDonald's"
     )
 
-    const res = await fetchListWithFilter<any>({
+    const res = await fetchListWithFilter({
       db: db(),
       table: 'expense',
-      filters: "description[contain]McDonald's",
+      filters: [{ field: 'description', op: 'contains', value: "McDonald's" }],
       limit: 30,
       offset: 0,
     })
@@ -165,10 +168,10 @@ describe('fetchListWithFilter', () => {
     await insertExpense(row, '100%還元')
     await insertExpense(row, '1000円')
 
-    const res = await fetchListWithFilter<any>({
+    const res = await fetchListWithFilter({
       db: db(),
       table: 'expense',
-      filters: 'description[contain]100%',
+      filters: [{ field: 'description', op: 'contains', value: '100%' }],
       limit: 30,
       offset: 0,
     })
@@ -180,7 +183,7 @@ describe('fetchListWithFilter', () => {
       fetchListWithFilter({
         db: db(),
         table: 'expense',
-        filters: 'no_such[eq]1',
+        filters: [{ field: 'no_such' as never, op: 'eq', value: 1 }],
         limit: 30,
         offset: 0,
       })
@@ -192,7 +195,7 @@ describe('fetchSimpleList', () => {
   it('並び順を指定して全件取得する', async () => {
     await insert('payment_method', { name: 'B' })
     await insert('payment_method', { name: 'A' })
-    const res = await fetchSimpleList<{ name: string }>({
+    const res = await fetchSimpleList({
       db: db(),
       table: 'payment_method',
       orders: 'name',
@@ -222,7 +225,7 @@ describe('fetchDetail', () => {
       expense_category_id: m.rentId,
       payment_method_id: m.cardId,
     })
-    const detail = await fetchDetail<Expense & { category_name: string }>({
+    const detail = await fetchDetail({
       db: db(),
       table: 'expense',
       id,
@@ -250,7 +253,7 @@ describe('fetchDetail', () => {
 describe('createItem', () => {
   it('登録して、JOIN先の名前付きの詳細を返す', async () => {
     const m = await seedExpenseMasters()
-    const item = await createItem<any>({
+    const item = await createItem({
       db: db(),
       table: 'expense',
       data: {
@@ -273,7 +276,7 @@ describe('createItem', () => {
   })
 
   it('スキーマ外のキーは無視される', async () => {
-    const item = await createItem<any>({
+    const item = await createItem({
       db: db(),
       table: 'payment_method',
       data: { name: '現金', id: 999, created_at: '2000-01-01' },
@@ -283,7 +286,7 @@ describe('createItem', () => {
   })
 
   it('任意カラムを省略するとDBの既定値が入る', async () => {
-    const item = await createItem<any>({
+    const item = await createItem({
       db: db(),
       table: 'asset_category',
       data: { name: '証券口座' },
@@ -330,7 +333,7 @@ describe('updateItem', () => {
     })
 
     const before = Date.now()
-    const item = await updateItem<any>({
+    const item = await updateItem({
       db: db(),
       table: 'expense',
       id,
@@ -397,9 +400,7 @@ describe('deleteItem', () => {
     await expect(deleteItem({ db: db(), table: 'expense_category', id: m.foodId })).rejects.toThrow(
       /FOREIGN KEY/
     )
-    expect(
-      await fetchDetail<ExpenseCategory>({ db: db(), table: 'expense_category', id: m.foodId })
-    ).not.toBeNull()
+    expect(await fetchDetail({ db: db(), table: 'expense_category', id: m.foodId })).not.toBeNull()
   })
 })
 
@@ -459,12 +460,11 @@ describe('fetchSummary', () => {
       payment_method_id: m.cashId,
     })
 
-    const { summary } = await fetchSummary<any>({
+    const { summary } = await fetchSummary({
       db: db(),
       table: 'expense',
-      filters: 'year_month[eq]2026-09',
-      groupBy: 'year_month, category_name',
-      orderRaw: 'year_month ASC',
+      filters: [{ field: 'year_month', op: 'eq', value: '2026-09' }],
+      groupBy: ['year_month', 'category_name'],
     })
 
     const byCategory = Object.fromEntries(summary.map((s) => [s.category_name, s]))
@@ -481,16 +481,15 @@ describe('fetchSummary', () => {
     })
   })
 
-  it('年月だけでグループ化し、orders で並べる（投資サマリと同じ呼び方）', async () => {
+  it('年月だけでグループ化し、年月順に並べる（投資サマリと同じ呼び方）', async () => {
     await insert('fund_transaction', { date: '2026-08-10', amount: 30000 })
     await insert('fund_transaction', { date: '2026-07-10', amount: 10000 })
     await insert('fund_transaction', { date: '2026-07-25', amount: 5000 })
 
-    const { summary } = await fetchSummary<any>({
+    const { summary } = await fetchSummary({
       db: db(),
       table: 'fund_transaction',
-      groupBy: 'year_month',
-      orders: 'date',
+      groupBy: ['year_month'],
     })
     expect(summary).toEqual([
       { total_amount: 15000, year_month: '2026-07' },
@@ -504,19 +503,27 @@ describe('fetchSummary', () => {
     await insert('asset', { date: '2026-09-30', amount: 1_000_000, asset_category_id: invest })
     await insert('asset', { date: '2026-09-30', amount: 500_000, asset_category_id: bank })
 
-    const { summary } = await fetchSummary<any>({
+    const { summary } = await fetchSummary({
       db: db(),
       table: 'asset',
-      filters: 'is_investment[eq]1',
-      groupBy: 'year_month, is_investment, category_name',
-      orderRaw: 'year_month ASC',
+      filters: [{ field: 'is_investment', op: 'eq', value: 1 }],
+      groupBy: ['year_month', 'is_investment', 'category_name'],
     })
     expect(summary).toHaveLength(1)
     expect(summary[0]).toMatchObject({ total_amount: 1_000_000, category_name: '証券口座' })
   })
 
+  it('グループ化キーの順に並ぶ（登録順に関係なく）', async () => {
+    const cat = await insert('income_category', { name: '給与' })
+    for (const date of ['2026-09-25', '2026-07-25', '2026-08-25']) {
+      await insert('income', { date, amount: 1, income_category_id: cat, description: '' })
+    }
+    const { summary } = await fetchSummary({ db: db(), table: 'income', groupBy: ['year_month'] })
+    expect(summary.map((s) => s.year_month)).toEqual(['2026-07', '2026-08', '2026-09'])
+  })
+
   it('データが無ければ空', async () => {
-    const { summary } = await fetchSummary({ db: db(), table: 'income', groupBy: 'year_month' })
+    const { summary } = await fetchSummary({ db: db(), table: 'income', groupBy: ['year_month'] })
     expect(summary).toEqual([])
   })
 })

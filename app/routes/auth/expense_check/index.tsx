@@ -1,6 +1,5 @@
 import { createRoute } from 'honox/factory'
 import { checkMonthlyExpenses, fetchSimpleList } from '@/libs/dbService'
-import type { ExpenseCategory, PaymentMethod } from '@/@types/dbTypes'
 import { ExpenseCreateModal } from '@/islands/expense/ExpenseCreateModal'
 import { getCookie } from 'hono/cookie'
 import { successAlertCookieKey } from '@/settings/kakeiboSettings'
@@ -25,13 +24,13 @@ export default createRoute(async (c) => {
     const checkResults = await checkMonthlyExpenses({ db, year, month })
 
     // 支出カテゴリと支払い方法を取得（モーダル用）
-    const categories = await fetchSimpleList<ExpenseCategory>({
+    const categories = await fetchSimpleList({
       db,
       table: 'expense_category',
       orders: 'id',
     })
 
-    const paymentMethods = await fetchSimpleList<PaymentMethod>({
+    const paymentMethods = await fetchSimpleList({
       db,
       table: 'payment_method',
       orders: 'name',

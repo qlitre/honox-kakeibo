@@ -176,8 +176,8 @@ const CreateForm = ({
 /** フォームの選択肢（支出カテゴリ・支払い方法） */
 const fetchOptions = async (db: D1Database) => {
   const [categories, paymentMethods] = await Promise.all([
-    fetchSimpleList<ExpenseCategory>({ db, table: 'expense_category', orders: 'id' }),
-    fetchSimpleList<PaymentMethod>({ db, table: 'payment_method', orders: 'name' }),
+    fetchSimpleList({ db, table: 'expense_category', orders: 'id' }),
+    fetchSimpleList({ db, table: 'payment_method', orders: 'name' }),
   ])
   return { categories: categories.contents, paymentMethods: paymentMethods.contents }
 }

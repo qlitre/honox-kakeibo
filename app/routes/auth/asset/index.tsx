@@ -1,5 +1,4 @@
 import type { TableHeaderItem } from '@/@types/common'
-import type { AssetCategory, AssetWithCategory } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
@@ -24,7 +23,7 @@ export default createRoute(async (c) => {
   const queryString = getQueryString(c.req.url, baseUrl)
 
   // 資産一覧取得
-  const assets = await fetchListWithFilter<AssetWithCategory>({
+  const assets = await fetchListWithFilter({
     db,
     table: 'asset',
     orders: '-date,asset_category_id',
@@ -33,7 +32,7 @@ export default createRoute(async (c) => {
   })
 
   // カテゴリ一覧取得
-  const categories = await fetchSimpleList<AssetCategory>({
+  const categories = await fetchSimpleList({
     db,
     table: 'asset_category',
     orders: 'updated_at',

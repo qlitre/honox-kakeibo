@@ -6,7 +6,7 @@ import { Hono } from 'hono'
 import type { Env } from 'hono'
 import { createItem, fetchSimpleList } from '@/libs/dbService'
 import { getTodayDate } from '@/utils/dateUtils'
-import type { Expense, ExpenseCategory, PaymentMethod } from '@/@types/dbTypes'
+import type { Expense } from '@/@types/dbTypes'
 
 export const getMcpServer = async (c: Context<Env>) => {
   const server = new McpServer({
@@ -40,7 +40,7 @@ export const getMcpServer = async (c: Context<Env>) => {
       description?: string
     }) => {
       const { amount, expense_category_id, payment_method_id, date, description } = params
-      const expense = await createItem<Expense>({
+      const expense = await createItem({
         db: c.env.DB,
         table: 'expense',
         data: {
@@ -65,7 +65,7 @@ export const getMcpServer = async (c: Context<Env>) => {
         '支出カテゴリの一覧を取得する。add_paymentで指定するexpense_category_idはここで確認できる。',
     },
     async () => {
-      const { contents } = await fetchSimpleList<ExpenseCategory>({
+      const { contents } = await fetchSimpleList({
         db: c.env.DB,
         table: 'expense_category',
       })
@@ -84,7 +84,7 @@ export const getMcpServer = async (c: Context<Env>) => {
         '支払い方法の一覧を取得する。add_paymentで指定するpayment_method_idはここで確認できる。',
     },
     async () => {
-      const { contents } = await fetchSimpleList<PaymentMethod>({
+      const { contents } = await fetchSimpleList({
         db: c.env.DB,
         table: 'payment_method',
       })

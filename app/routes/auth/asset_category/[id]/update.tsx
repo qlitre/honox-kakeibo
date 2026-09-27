@@ -1,4 +1,3 @@
-import type { AssetCategory } from '@/@types/dbTypes'
 import { createRoute } from 'honox/factory'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
@@ -20,7 +19,7 @@ const redirectUrl = '/auth/asset_category'
 
 export default createRoute(async (c) => {
   const id = c.req.param('id')!
-  const detail = await fetchDetail<AssetCategory>({
+  const detail = await fetchDetail({
     db: c.env.DB,
     table: endPoint,
     id: id,
@@ -66,7 +65,7 @@ export const POST = createRoute(
       name: name,
       is_investment: _is_investment,
     }
-    const response = await updateItem<AssetCategory>({
+    const response = await updateItem({
       db: c.env.DB,
       table: endPoint,
       id: id,
