@@ -47,7 +47,7 @@ export const CategoryCreateForm: FC<Props> = ({ data, title, actionUrl, backUrl 
             name='name'
             required
             className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-            defaultValue={data?.name} // defaultValueに変更
+            value={data?.name}
           />
           {data?.error?.name && <p className='text-red-500 text-sm mt-1'>{data.error.name}</p>}
         </div>

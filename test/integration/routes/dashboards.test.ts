@@ -177,6 +177,19 @@ describe('収支推移', () => {
     expect(s.income).toEqual([0, 500000])
     expect(s.expense).toEqual([0, 80000])
   })
+
+  it('フィルターに選択中のカテゴリが残る', async () => {
+    const { m, bonus } = await setup()
+    const page = await html(
+      `/auth/dashboard/balance_transition?income_category=${bonus}&expense_category=${m.rentId}`
+    )
+    const selected = (name: string) =>
+      page
+        .match(new RegExp(`<select[^>]*name="${name}"[\\s\\S]*?</select>`))?.[0]
+        .match(/<option value="(\d+)" selected="">/)?.[1]
+    expect(selected('income_category')).toBe(String(bonus))
+    expect(selected('expense_category')).toBe(String(m.rentId))
+  })
 })
 
 describe('投資サマリ', () => {

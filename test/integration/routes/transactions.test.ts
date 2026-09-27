@@ -259,6 +259,24 @@ describe('支出一覧の検索・ページング', () => {
     expect(html).not.toContain('9月の家賃')
   })
 
+  it('検索フォームに検索条件が残る', async () => {
+    const m = await setup()
+    const html = await (
+      await authRequest(
+        `/auth/expense?month=2026-09&categoryId=${m.foodId}&paymentMethodId=${m.cashId}&keyword=ランチ`
+      )
+    ).text()
+    const input = (name: string) => html.match(new RegExp(`<input[^>]*name="${name}"[^>]*>`))?.[0]
+    const selected = (name: string) =>
+      html
+        .match(new RegExp(`<select[^>]*name="${name}"[\\s\\S]*?</select>`))?.[0]
+        .match(/<option value="(\d+)" selected="">/)?.[1]
+    expect(input('month')).toMatch(/\svalue="2026-09"/)
+    expect(input('keyword')).toMatch(/\svalue="ランチ"/)
+    expect(selected('categoryId')).toBe(String(m.foodId))
+    expect(selected('paymentMethodId')).toBe(String(m.cashId))
+  })
+
   it('30件ごとにページを分ける', async () => {
     const m = await seedExpenseMasters()
     for (let i = 1; i <= 31; i++) {

@@ -101,16 +101,7 @@ describe.each(cases)('$endPoint', ({ endPoint, seedInUse }) => {
   // name 入力欄の <input ...> タグだけを取り出す（失敗時にHTML全体を出さないため）
   const nameInput = (html: string) => html.match(/<input[^>]*name="name"[^>]*>/)?.[0]
 
-  it('FIXME: GET [id]/update の現在値が defaultValue 属性で出力され、ブラウザでは空欄になる', async () => {
-    const id = await insert(endPoint, { name: '旧名' })
-    const res = await authRequest(`${base}/${id}/update`)
-    expect(res.status).toBe(200)
-    const input = nameInput(await res.text())
-    expect(input).toContain('defaultValue="旧名"')
-    expect(input).not.toMatch(/\svalue=/)
-  })
-
-  it.fails('GET [id]/update で現在の値が value 属性に入る', async () => {
+  it('GET [id]/update で現在の値が value 属性に入る', async () => {
     const id = await insert(endPoint, { name: '旧名' })
     const input = nameInput(await (await authRequest(`${base}/${id}/update`)).text())
     expect(input).toMatch(/\svalue="旧名"/)

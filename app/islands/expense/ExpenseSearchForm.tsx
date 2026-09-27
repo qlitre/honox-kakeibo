@@ -74,18 +74,21 @@ export const ExpenseSearchForm: FC<Props> = ({ data, categories, paymentMethods 
             type='month'
             className='border border-gray-300 rounded px-3 py-2 w-full sm:w-auto'
             placeholder='年月'
-            defaultValue={data?.month || ''}
+            value={data?.month || ''}
           />
 
           {/* カテゴリの選択 */}
           <select
             name='categoryId'
             className='border border-gray-300 rounded px-3 py-2 w-full sm:w-48'
-            defaultValue={data?.category_id || ''}
           >
             <option value=''>カテゴリ</option>
             {categories.contents.map((category) => (
-              <option key={category.id} value={category.id}>
+              <option
+                key={category.id}
+                value={category.id}
+                selected={String(category.id) === data?.category_id}
+              >
                 {category.name}
               </option>
             ))}
@@ -95,11 +98,14 @@ export const ExpenseSearchForm: FC<Props> = ({ data, categories, paymentMethods 
           <select
             name='paymentMethodId'
             className='border border-gray-300 rounded px-3 py-2 w-full sm:w-48'
-            defaultValue={data?.payment_method_id || ''}
           >
             <option value=''>支払い方法</option>
             {paymentMethods.contents.map((paymentMethod) => (
-              <option key={paymentMethod.id} value={paymentMethod.id}>
+              <option
+                key={paymentMethod.id}
+                value={paymentMethod.id}
+                selected={String(paymentMethod.id) === data?.payment_method_id}
+              >
                 {paymentMethod.name}
               </option>
             ))}
@@ -111,7 +117,7 @@ export const ExpenseSearchForm: FC<Props> = ({ data, categories, paymentMethods 
             type='text'
             className='border border-gray-300 rounded px-3 py-2 w-full sm:w-auto'
             placeholder='キーワード検索'
-            defaultValue={data?.keyword || ''}
+            value={data?.keyword || ''}
           />
 
           {/* ボタン群 */}

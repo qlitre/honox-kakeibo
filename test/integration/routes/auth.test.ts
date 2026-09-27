@@ -76,6 +76,12 @@ describe('ログイン', () => {
     expect(rawSetCookie(res, 'session')).toBeUndefined()
   })
 
+  it('入力エラーで再表示すると、メールアドレスは残しパスワードは出さない', async () => {
+    const html = await (await postForm('/login', { email: 'x', password: 'short' })).text()
+    expect(html.match(/<input[^>]*name="email"[^>]*>/)?.[0]).toMatch(/\svalue="x"/)
+    expect(html.match(/<input[^>]*name="password"[^>]*>/)?.[0]).not.toMatch(/value=/i)
+  })
+
   it('成功するとセッションCookie（HttpOnly・Secure・SameSite=Strict・5日）を発行して /auth へ303', async () => {
     vi.mocked(signInWithEmailAndPassword).mockResolvedValue({
       user: { getIdToken: async () => 'id-token' },

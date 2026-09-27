@@ -70,10 +70,24 @@ describe('チェックテンプレート', () => {
     expect(await count('expense_check_template')).toBe(0)
   })
 
-  it('FIXME: POST create の入力エラーで再表示すると、カテゴリの選択肢が空になる', async () => {
-    await seedExpenseMasters()
-    const html = await (await postForm(`${base}/create`, { name: '' })).text()
-    expect(html).not.toContain('食費')
+  it('GET create で「有効」に初期チェックが入る', async () => {
+    const html = await (await authRequest(`${base}/create`)).text()
+    expect(html.match(/<input[^>]*name="is_active"[^>]*>/)?.[0]).toMatch(/\schecked=""/)
+  })
+
+  it('POST create の入力エラーで再表示すると、選択肢と入力値が残る', async () => {
+    const m = await seedExpenseMasters()
+    const html = await (
+      await postForm(`${base}/create`, {
+        name: '家賃',
+        expense_category_id: m.rentId,
+        description_pattern: '',
+      })
+    ).text()
+    expect(html).toContain('食費')
+    expect(html).toMatch(new RegExp(`<option value="${m.rentId}" selected=""`))
+    expect(html.match(/<input[^>]*name="name"[^>]*>/)?.[0]).toMatch(/\svalue="家賃"/)
+    expect(html.match(/<input[^>]*name="is_active"[^>]*>/)?.[0]).not.toMatch(/\schecked/)
   })
 
   it('POST create: 存在しないカテゴリは「作成に失敗しました」を表示する', async () => {
