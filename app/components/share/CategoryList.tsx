@@ -5,29 +5,21 @@ import type {
   IncomeCategory,
   PaymentMethod,
 } from '@/@types/dbTypes'
-import { Alert } from '@/islands/share/Alert'
+import { FlashAlerts } from '@/components/FlashAlerts'
 import { PageHeader } from '@/components/PageHeader'
 
 type Props = {
-  message?: string
-  dangerMessage?: string
+  flash: { success?: string; danger?: string }
   categories: AssetCategory[] | ExpenseCategory[] | IncomeCategory[] | PaymentMethod[]
   pageTitle: string
   endpoint: string
 }
 
-export const CategoryList: FC<Props> = ({
-  message,
-  dangerMessage,
-  categories,
-  pageTitle,
-  endpoint,
-}) => {
+export const CategoryList: FC<Props> = ({ flash, categories, pageTitle, endpoint }) => {
   return (
     <div className='min-h-screen py-8 px-4 sm:px-6 lg:px-8'>
       <div className='max-w-3xl mx-auto'>
-        {message && <Alert message={message} type='success' />}
-        {dangerMessage && <Alert message={dangerMessage} type='danger' />}
+        <FlashAlerts {...flash} />
         <div className='flex justify-between items-center mb-4'>
           <PageHeader className='mb-0 md:mb-0' title={pageTitle} />
           <a

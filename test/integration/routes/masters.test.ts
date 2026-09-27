@@ -195,6 +195,12 @@ describe('asset_category の投資フラグ', () => {
     })
   })
 
+  it('入力エラーで再表示しても、チェック状態が残る', async () => {
+    const res = await postForm('/auth/asset_category/create', { name: '', is_investment: '1' })
+    expect(res.status).toBe(200)
+    expect(checkbox(await res.text())).toMatch(/\schecked/)
+  })
+
   it('更新でチェックを外すと0になる', async () => {
     const id = await insert('asset_category', { name: '証券口座', is_investment: 1 })
     await postForm(`/auth/asset_category/${id}/update`, { name: '証券口座' })

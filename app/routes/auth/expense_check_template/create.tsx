@@ -3,6 +3,7 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { createItem } from '@/libs/dbService'
 import { fetchSimpleList } from '@/libs/dbService'
+import { setFlash } from '@/libs/flash'
 
 const schema = z.object({
   name: z.string().min(1, '名前は必須です'),
@@ -227,15 +228,11 @@ export const POST = createRoute(
         },
       })
 
-      return c.redirect('/auth/expense_check_template', 303)
+      setFlash(c, 'success', 'チェックテンプレート追加に成功しました')
     } catch (error) {
       console.error('Error creating template:', error)
-      return c.render(
-        <div className='container mx-auto px-4 py-8'>
-          <div className='text-red-600'>作成に失敗しました</div>
-        </div>,
-        { title: 'エラー' }
-      )
+      setFlash(c, 'danger', 'チェックテンプレート追加に失敗しました。')
     }
+    return c.redirect('/auth/expense_check_template', 303)
   }
 )

@@ -127,23 +127,29 @@ describe.each(cases)('$endPoint', ({ endPoint, title, seed }) => {
       ['金額が小数', { amount: '12.5' }],
       ['金額が負', { amount: '-1' }],
       ['金額が空', { amount: '' }],
-    ])('入力エラー（%s）は一覧へ303で、登録も通知もしない', async (_, override) => {
-      const { form } = await seed()
-      const res = await postForm(`${base}/create`, { ...form, ...override })
-      expect(res.status).toBe(303)
-      expect(res.headers.get('Location')).toBe(base)
-      expect(await count(endPoint)).toBe(0)
-      expect(fetch).not.toHaveBeenCalled()
-    })
+    ])(
+      '入力エラー（%s）は失敗メッセージ付きで一覧へ303で、登録も通知もしない',
+      async (_, override) => {
+        const { form } = await seed()
+        const res = await postForm(`${base}/create`, { ...form, ...override })
+        expect(res.status).toBe(303)
+        expect(res.headers.get('Location')).toBe(base)
+        expect(cookies(res).dangerMessage).toContain('入力内容を確認してください')
+        expect(await count(endPoint)).toBe(0)
+        expect(fetch).not.toHaveBeenCalled()
+      }
+    )
 
     it.skipIf(endPoint === 'fund_transaction')(
-      '存在しないカテゴリ等（DBエラー）は500のJSON',
+      '存在しないカテゴリ等（DBエラー）は失敗メッセージ付きで一覧へ303',
       async () => {
         const { brokenFk } = await seed()
         const res = await postForm(`${base}/create`, brokenFk!)
-        expect(res.status).toBe(500)
-        expect(await res.json()).toEqual({ error: `Failed to add ${endPoint}` })
+        expect(res.status).toBe(303)
+        expect(res.headers.get('Location')).toBe(base)
+        expect(cookies(res).dangerMessage).toContain('追加に失敗しました')
         expect(await count(endPoint)).toBe(0)
+        expect(fetch).not.toHaveBeenCalled()
       }
     )
   })
@@ -161,11 +167,11 @@ describe.each(cases)('$endPoint', ({ endPoint, title, seed }) => {
       expect(cookies(res).successMessage).toContain('成功')
     })
 
-    it('クエリが無いと末尾に & が付く（現状の挙動）', async () => {
+    it('クエリが無ければ lastUpdate だけ付ける', async () => {
       const { form, alt } = await seed()
       const id = await insert(endPoint, asStored(form))
       const res = await postForm(`${base}/${id}/update`, alt)
-      expect(res.headers.get('Location')).toBe(`${base}?lastUpdate=${id}&`)
+      expect(res.headers.get('Location')).toBe(`${base}?lastUpdate=${id}`)
     })
 
     it('入力エラーは一覧へ303で、更新しない', async () => {
@@ -177,11 +183,13 @@ describe.each(cases)('$endPoint', ({ endPoint, title, seed }) => {
       expect(await row(endPoint, id)).toMatchObject(asStored(form))
     })
 
-    it('存在しないidは500のJSON', async () => {
+    it('存在しないidは失敗メッセージ付きで一覧へ303', async () => {
       const { alt } = await seed()
-      const res = await postForm(`${base}/999/update`, alt)
-      expect(res.status).toBe(500)
-      expect(await res.json()).toEqual({ error: `Failed to update ${endPoint}` })
+      const res = await postForm(`${base}/999/update?page=2`, alt)
+      expect(res.status).toBe(303)
+      expect(res.headers.get('Location')).toBe(`${base}?page=2`)
+      expect(cookies(res).dangerMessage).toContain('編集に失敗しました')
+      expect(await count(endPoint)).toBe(0)
     })
   })
 
@@ -210,12 +218,16 @@ describe.each(cases)('$endPoint', ({ endPoint, title, seed }) => {
       expect(html).toContain('bg-green-100')
     })
 
-    it('成功Cookieがあればアラートを表示する', async () => {
+    it('成功・失敗Cookieがあればアラートを表示する', async () => {
       await seed()
       const res = await authRequest(base, {
-        headers: { Cookie: `successMessage=${encodeURIComponent('保存しました')}` },
+        headers: {
+          Cookie: `successMessage=${encodeURIComponent('保存しました')}; dangerMessage=${encodeURIComponent('失敗しました')}`,
+        },
       })
-      expect(await res.text()).toContain('保存しました')
+      const html = await res.text()
+      expect(html).toContain('保存しました')
+      expect(html).toContain('失敗しました')
     })
   })
 })
@@ -375,7 +387,7 @@ describe('資産の重複チェック（同月・同カテゴリは1件まで）
       asset_category_id: bank,
       description: '',
     })
-    expect(res.headers.get('Location')).toBe(`/auth/asset?lastUpdate=${bankSep}&`)
+    expect(res.headers.get('Location')).toBe(`/auth/asset?lastUpdate=${bankSep}`)
     expect(await row('asset', bankSep)).toMatchObject({ amount: 999 })
   })
 
@@ -405,7 +417,7 @@ describe('資産の重複チェック（同月・同カテゴリは1件まで）
       asset_category_id: bank,
       description: '',
     })
-    expect(res.headers.get('Location')).toBe(`/auth/asset?lastUpdate=${bankSep}&`)
+    expect(res.headers.get('Location')).toBe(`/auth/asset?lastUpdate=${bankSep}`)
     expect(await row('asset', bankSep)).toMatchObject({ date: '2026-11-30' })
   })
 })

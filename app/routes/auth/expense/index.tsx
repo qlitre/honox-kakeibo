@@ -2,9 +2,8 @@ import type { TableHeaderItem } from '@/@types/common'
 import { createRoute } from 'honox/factory'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
-import { Alert } from '@/islands/share/Alert'
-import { getCookie } from 'hono/cookie'
-import { successAlertCookieKey } from '@/settings/kakeiboSettings'
+import { getFlash } from '@/libs/flash'
+import { FlashAlerts } from '@/components/FlashAlerts'
 import { ExpenseDeleteModal } from '@/islands/expense/ExpenseDeleteModal'
 import { ExpenseCreateModal } from '@/islands/expense/ExpenseCreateModal'
 import { ExpenseSearchForm } from '@/islands/expense/ExpenseSearchForm'
@@ -66,7 +65,7 @@ export default createRoute(async (c) => {
     orders: 'updated_at',
   })
 
-  const successMessage = getCookie(c, successAlertCookieKey)
+  const flash = getFlash(c)
 
   const headers: TableHeaderItem[] = [
     { name: '日付', textPosition: 'left' },
@@ -83,7 +82,7 @@ export default createRoute(async (c) => {
   return c.render(
     <>
       <div className='px-4 sm:px-6 lg:px-8'>
-        {successMessage && <Alert message={successMessage} type='success' />}
+        <FlashAlerts {...flash} />
         <div className='flex items-center justify-between'>
           <PageHeader title='支出リスト' />
           <ExpenseCreateModal

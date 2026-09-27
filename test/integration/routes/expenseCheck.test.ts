@@ -90,16 +90,41 @@ describe('チェックテンプレート', () => {
     expect(html.match(/<input[^>]*name="is_active"[^>]*>/)?.[0]).not.toMatch(/\schecked/)
   })
 
-  it('POST create: 存在しないカテゴリは「作成に失敗しました」を表示する', async () => {
+  it('POST create: 存在しないカテゴリは失敗メッセージ付きで一覧へ303', async () => {
     await seedExpenseMasters()
     const res = await postForm(`${base}/create`, {
       name: 'x',
       expense_category_id: 999,
       description_pattern: 'x',
     })
-    expect(res.status).toBe(200)
-    expect(await res.text()).toContain('作成に失敗しました')
+    expect(res.status).toBe(303)
+    expect(res.headers.get('Location')).toBe(base)
+    expect(cookies(res).dangerMessage).toContain('追加に失敗しました')
     expect(await count('expense_check_template')).toBe(0)
+  })
+
+  it('POST [id]/update: 存在しないカテゴリは失敗メッセージ付きで一覧へ303', async () => {
+    const m = await seedExpenseMasters()
+    const id = await insertTemplate(m)
+    const res = await postForm(`${base}/${id}/update`, {
+      name: 'x',
+      expense_category_id: 999,
+      description_pattern: 'x',
+    })
+    expect(res.headers.get('Location')).toBe(base)
+    expect(cookies(res).dangerMessage).toContain('編集に失敗しました')
+    expect(await row('expense_check_template', id)).toMatchObject({ name: '家賃' })
+  })
+
+  it('GET 一覧で成功・失敗メッセージを表示する', async () => {
+    const res = await authRequest(base, {
+      headers: {
+        Cookie: `successMessage=${encodeURIComponent('保存しました')}; dangerMessage=${encodeURIComponent('失敗しました')}`,
+      },
+    })
+    const html = await res.text()
+    expect(html).toContain('保存しました')
+    expect(html).toContain('失敗しました')
   })
 
   it('POST [id]/update で更新して一覧へ303', async () => {
@@ -207,7 +232,7 @@ describe('定期支払いチェック', () => {
     expect(fetch).toHaveBeenCalledTimes(1)
   })
 
-  it('POST create: DBエラーは error=create_failed 付きで戻る', async () => {
+  it('POST create: DBエラーは失敗メッセージ付きで、その年月へ戻る', async () => {
     const m = await seedExpenseMasters()
     const res = await postForm('/auth/expense_check/create', {
       date: '2026-09-27',
@@ -216,9 +241,8 @@ describe('定期支払いチェック', () => {
       payment_method_id: m.cardId,
       description: '',
     })
-    expect(res.headers.get('Location')).toBe(
-      '/auth/expense_check?year=2026&month=9&error=create_failed'
-    )
+    expect(res.headers.get('Location')).toBe('/auth/expense_check?year=2026&month=9')
+    expect(cookies(res).dangerMessage).toContain('支出追加に失敗しました')
     expect(await count('expense')).toBe(0)
   })
 

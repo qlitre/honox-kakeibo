@@ -2,12 +2,11 @@ import type { TableHeaderItem } from '@/@types/common'
 import { createRoute } from 'honox/factory'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
-import { Alert } from '@/islands/share/Alert'
 import { AssetDeleteModal } from '@/islands/asset/AssetDeleteModal'
 import { AssetCreateModal } from '@/islands/asset/AssetCreateModal'
 import { Table } from '@/components/share/Table'
-import { getCookie } from 'hono/cookie'
-import { successAlertCookieKey, dangerAlertCookieKey } from '@/settings/kakeiboSettings'
+import { getFlash } from '@/libs/flash'
+import { FlashAlerts } from '@/components/FlashAlerts'
 import { getQueryString } from '@/utils/getQueryString'
 import { fetchListWithFilter, fetchSimpleList } from '@/libs/dbService'
 import { kakeiboPerPage } from '@/settings/kakeiboSettings'
@@ -38,8 +37,7 @@ export default createRoute(async (c) => {
     orders: 'updated_at',
   })
 
-  const successMessage = getCookie(c, successAlertCookieKey)
-  const dangerMessage = getCookie(c, dangerAlertCookieKey)
+  const flash = getFlash(c)
   const headers: TableHeaderItem[] = [
     { name: '日付', textPosition: 'left' },
     { name: 'カテゴリ', textPosition: 'left' },
@@ -53,8 +51,7 @@ export default createRoute(async (c) => {
   return c.render(
     <>
       <div className='px-4 sm:px-6 lg:px-8'>
-        {successMessage && <Alert message={successMessage} type='success' />}
-        {dangerMessage && <Alert message={dangerMessage} type='danger' />}
+        <FlashAlerts {...flash} />
         <div className='flex items-center justify-between'>
           <PageHeader title='資産リスト' />
           <AssetCreateModal
