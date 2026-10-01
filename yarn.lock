@@ -992,10 +992,10 @@
     "@hono/node-server" "^1.19.11"
     minimatch "^9.0.3"
 
-"@hono/zod-validator@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@hono/zod-validator/-/zod-validator-0.8.0.tgz#2bf9653e205810506d1a9f9b4f4ed4ac7f43f92e"
-  integrity sha512-5uS4S1/LKtZQYvD4BtpPUFkOv8d1wNxHHrChm26buMiEYc1FrHWvDUaKVBwkiVtvSExHSpLGDvcnpI2Copyj9w==
+"@hono/zod-validator@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@hono/zod-validator/-/zod-validator-0.9.1.tgz#0a2957320c06de84d410d2bc1fd7a82fdcbc3ad5"
+  integrity sha512-iiv6w0qrIc0arfvCtUqBWsvl4fXjzaTcQcCJTTtCnkawF9HHGE+KjEl0ox3gQJ6rKZEgE3mLExlQCF72M+mNuw==
 
 "@img/colour@^1.1.0":
   version "1.1.0"
