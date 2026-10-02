@@ -39,7 +39,7 @@
     "@vitest/coverage-istanbul": "^4.1.11",
     "@vitest/ui": "^4.1.9",
     "jsdom": "^30.0.1",
-    "knip": "^5.84.1",
+    "knip": "^6.38.0",
     "prettier": "^3.9.6",
     "tailwindcss": "^4.3.2",
     "vite": "^8.0.10",
