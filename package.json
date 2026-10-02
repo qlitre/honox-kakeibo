@@ -28,7 +28,7 @@
     "hono": "^4.13.8",
     "honox": "^0.1.61",
     "typescript": "^6.0.3",
-    "zod": "^4.3.6"
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.22.0",
