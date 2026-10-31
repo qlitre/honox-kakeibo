@@ -21,6 +21,8 @@ declare module 'hono' {
       OAUTH_PROVIDER: OAuthHelpers
       CF_ACCESS_TEAM_DOMAIN: string
       CF_ACCESS_AUDIENCE: string
+      // MCPのOAuth認可を許可するメールアドレス（カンマ区切り）
+      ALLOWED_EMAILS: string
     }
   }
   interface ContextRenderer {

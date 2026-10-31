@@ -15,7 +15,8 @@
     "SLACK_WEBHOOK_URL": "https://slack.test/webhook",
     "PUBLIC_JWK_CACHE_KEY": "test-jwk-cache-key",
     "CF_ACCESS_TEAM_DOMAIN": "",
-    "CF_ACCESS_AUDIENCE": ""
+    "CF_ACCESS_AUDIENCE": "",
+    "ALLOWED_EMAILS": "user@example.com"
   },
   "kv_namespaces": [
     { "binding": "PUBLIC_JWK_CACHE_KV", "id": "test-jwk-cache" },

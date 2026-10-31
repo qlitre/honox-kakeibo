@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { verifyWithJwks } from 'hono/jwt'
 import { request } from '../../helpers/app'
 
 // Cloudflare Access のJWT検証（外部の公開鍵を取りに行く）だけ差し替える
@@ -94,5 +95,39 @@ describe('MCP用OAuthのトークン', () => {
       body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' }),
     })
     expect(res.status).not.toBe(401)
+  })
+})
+
+describe('MCP用OAuthの認可（Cloudflare Access）', () => {
+  it('JWTの検証で aud と iss も確認する', async () => {
+    await request('/oauth/authorize', { headers: { 'Cf-Access-Jwt-Assertion': 'valid' } })
+    expect(vi.mocked(verifyWithJwks)).toHaveBeenLastCalledWith(
+      'valid',
+      expect.objectContaining({
+        verification: expect.objectContaining({ aud: expect.anything(), iss: expect.anything() }),
+      }),
+      expect.anything()
+    )
+  })
+
+  it('JWTがなければ401', async () => {
+    const res = await request('/oauth/authorize')
+    expect(res.status).toBe(401)
+  })
+
+  it('JWTの検証に失敗したら401', async () => {
+    vi.mocked(verifyWithJwks).mockRejectedValueOnce(new Error('bad aud'))
+    const res = await request('/oauth/authorize', {
+      headers: { 'Cf-Access-Jwt-Assertion': 'other-app' },
+    })
+    expect(res.status).toBe(401)
+  })
+
+  it('ALLOWED_EMAILS にないメールアドレスは403', async () => {
+    vi.mocked(verifyWithJwks).mockResolvedValueOnce({ email: 'stranger@example.com' })
+    const res = await request('/oauth/authorize', {
+      headers: { 'Cf-Access-Jwt-Assertion': 'valid' },
+    })
+    expect(res.status).toBe(403)
   })
 })
