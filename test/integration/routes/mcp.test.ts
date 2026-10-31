@@ -2,7 +2,7 @@ import { env } from 'cloudflare:workers'
 import { describe, expect, it } from 'vitest'
 import mcpApp from '@/routes/mcp'
 import { getTodayDate } from '@/utils/dateUtils'
-import { count, row, seedExpenseMasters } from '../../helpers/db'
+import { count, insert, row, seedExpenseMasters } from '../../helpers/db'
 
 // OAuth（OAuthProvider）の手前にある MCP アプリへ直接 JSON-RPC を送って、ツールの挙動を検証する
 
@@ -99,5 +99,40 @@ describe('MCPツール', () => {
     })
     expect(result.isError).toBe(true)
     expect(await count('expense')).toBe(0)
+  })
+
+  it('get_asset_categories は id と name だけを返す', async () => {
+    await insert('asset_category', { name: '普通預金' })
+    expect(json(await callTool('get_asset_categories'))).toEqual([{ id: 1, name: '普通預金' }])
+  })
+
+  it('add_asset で資産を登録し、登録内容を返す', async () => {
+    const id = await insert('asset_category', { name: '普通預金' })
+    const result = await callTool('add_asset', {
+      amount: 300000,
+      asset_category_id: id,
+      date: '2026-10-31',
+      description: '月末残高',
+    })
+    expect(json(result)).toMatchObject({ amount: 300000, category_name: '普通預金' })
+    expect(await row('asset', 1)).toMatchObject({ date: '2026-10-31', amount: 300000 })
+  })
+
+  it('add_asset で同月・同カテゴリは isError で、登録しない', async () => {
+    const id = await insert('asset_category', { name: '普通預金' })
+    await insert('asset', { date: '2026-10-01', amount: 1, asset_category_id: id })
+    const result = await callTool('add_asset', {
+      amount: 100,
+      asset_category_id: id,
+      date: '2026-10-31',
+    })
+    expect(result.isError).toBe(true)
+    expect(await count('asset')).toBe(1)
+  })
+
+  it('add_asset で存在しないカテゴリは isError で、登録しない', async () => {
+    const result = await callTool('add_asset', { amount: 100, asset_category_id: 999 })
+    expect(result.isError).toBe(true)
+    expect(await count('asset')).toBe(0)
   })
 })
