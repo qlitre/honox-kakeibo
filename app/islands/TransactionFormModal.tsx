@@ -41,6 +41,26 @@ export const TransactionFormModal: FC<Props> = ({
     ...values,
   })
 
+  // 金額への増減（前月値+5000 のような入力用）。「＋」で入力欄を出し、送信時に金額へ合算する
+  const [showAdjust, setShowAdjust] = useState(false)
+  const [adjust, setAdjust] = useState('')
+  const adjustValue = Number(adjust) || 0
+  const total = (Number(formData.amount) || 0) + adjustValue
+
+  const handleSubmit = (e: Event) => {
+    const form = e.currentTarget as HTMLFormElement
+    const input = form.elements.namedItem('amount') as HTMLInputElement
+    if (total < 0) {
+      e.preventDefault()
+      input.setCustomValidity('増減後の金額が0円未満になります')
+      input.reportValidity()
+      return
+    }
+    input.setCustomValidity('')
+    // adjust は name を持たないので送信されない。合算後の値を amount として送る
+    input.value = String(total)
+  }
+
   const handleChange = (e: Event) => {
     const { name, value } = e.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     setFormData((prev) => ({ ...prev, [name]: value }))
@@ -72,7 +92,7 @@ export const TransactionFormModal: FC<Props> = ({
       </Button>
       {open && (
         <ModalSheet title={title} onClose={() => setOpen(false)}>
-          <form action={actionUrl} method='post' className='space-y-4'>
+          <form action={actionUrl} method='post' className='space-y-4' onSubmit={handleSubmit}>
             <div className='grid grid-cols-2 gap-3'>
               <div>
                 <label htmlFor='date' className={formLabelClass}>
@@ -102,8 +122,35 @@ export const TransactionFormModal: FC<Props> = ({
                   value={formData.amount}
                   onChange={handleChange}
                 />
+                {!showAdjust && (
+                  <button
+                    type='button'
+                    className='mt-1 text-sm text-indigo-600 hover:underline'
+                    onClick={() => setShowAdjust(true)}
+                  >
+                    ＋ 増減を追加
+                  </button>
+                )}
               </div>
             </div>
+
+            {showAdjust && (
+              <div>
+                <label htmlFor='adjust' className={formLabelClass}>
+                  増減（マイナス可）
+                </label>
+                <input
+                  type='number'
+                  inputMode='numeric'
+                  id='adjust'
+                  className={formInputClass}
+                  placeholder='例: 5000 / -3000'
+                  value={adjust}
+                  onChange={(e) => setAdjust((e.target as HTMLInputElement).value)}
+                />
+                <p className='mt-1 text-sm text-gray-500'>合計: {total.toLocaleString()} 円</p>
+              </div>
+            )}
 
             {selects.length > 1 ? (
               <div className='grid grid-cols-2 gap-3'>{selects.map(select)}</div>
