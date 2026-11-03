@@ -40,7 +40,7 @@
     "@vitest/ui": "^4.1.9",
     "jsdom": "^30.0.1",
     "knip": "^6.38.0",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.10",
     "tailwindcss": "^4.3.2",
     "vite": "^8.0.10",
     "vitest": "^4.1.9",
