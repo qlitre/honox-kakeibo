@@ -23,6 +23,8 @@ declare module 'hono' {
       CF_ACCESS_AUDIENCE: string
       // MCPのOAuth認可を許可するメールアドレス（カンマ区切り）
       ALLOWED_EMAILS: string
+      // 公開 origin（OAuth の resource / issuer に使う。wrangler.jsonc の vars で設定）
+      PUBLIC_ORIGIN: string
     }
   }
   interface ContextRenderer {
