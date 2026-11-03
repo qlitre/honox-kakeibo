@@ -16,7 +16,9 @@
     "PUBLIC_JWK_CACHE_KEY": "test-jwk-cache-key",
     "CF_ACCESS_TEAM_DOMAIN": "",
     "CF_ACCESS_AUDIENCE": "",
-    "ALLOWED_EMAILS": "user@example.com"
+    "ALLOWED_EMAILS": "user@example.com",
+    // test/helpers/app.ts の BASE と一致させる（http は loopback のみ許可）
+    "PUBLIC_ORIGIN": "http://localhost"
   },
   "kv_namespaces": [
     { "binding": "PUBLIC_JWK_CACHE_KV", "id": "test-jwk-cache" },
