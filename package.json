@@ -18,7 +18,7 @@
   },
   "private": true,
   "dependencies": {
-    "@cloudflare/workers-oauth-provider": "^0.10.3",
+    "@cloudflare/workers-oauth-provider": "^1.2.4",
     "@hono/firebase-auth": "^1.4.2",
     "@hono/zod-validator": "^0.9.1",
     "@modelcontextprotocol/server": "^2.0.0",
