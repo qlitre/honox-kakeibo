@@ -2,7 +2,7 @@ import { env } from 'cloudflare:workers'
 import { describe, expect, it } from 'vitest'
 import mcpApp from '@/routes/mcp'
 import { getTodayDate } from '@/utils/dateUtils'
-import { count, row, seedExpenseMasters } from '../../helpers/db'
+import { count, insert, row, seedExpenseMasters } from '../../helpers/db'
 
 // OAuth（OAuthProvider）の手前にある MCP アプリへ直接 JSON-RPC を送って、ツールの挙動を検証する
 
@@ -99,5 +99,35 @@ describe('MCPツール', () => {
     })
     expect(result.isError).toBe(true)
     expect(await count('expense')).toBe(0)
+  })
+  it('get_assets で指定月のカテゴリ別資産・合計・前月比・年初比を返す', async () => {
+    const bank = await insert('asset_category', { name: '普通預金', is_investment: 0 })
+    const invest = await insert('asset_category', { name: '証券口座', is_investment: 1 })
+    await insert('asset', { date: '2026-01-31', amount: 1_000_000, asset_category_id: bank })
+    await insert('asset', { date: '2026-08-31', amount: 1_200_000, asset_category_id: bank })
+    await insert('asset', { date: '2026-09-30', amount: 1_500_000, asset_category_id: bank })
+    await insert('asset', { date: '2026-09-30', amount: 500_000, asset_category_id: invest })
+
+    const result = json(await callTool('get_assets', { year: 2026, month: 9 }))
+    expect(result).toMatchObject({
+      year: 2026,
+      month: 9,
+      total_amount: 2_000_000,
+      prev_month_diff: 800_000,
+      annual_start_diff: 1_000_000,
+    })
+    expect(result.categories).toContainEqual(
+      expect.objectContaining({
+        name: '普通預金',
+        amount: 1_500_000,
+        prev_month_diff: 300_000,
+        annual_start_diff: 500_000,
+      })
+    )
+  })
+
+  it('get_assets は資産が無い月でも合計0で返す', async () => {
+    const result = json(await callTool('get_assets', { year: 2026, month: 9 }))
+    expect(result).toMatchObject({ total_amount: 0, categories: [] })
   })
 })
